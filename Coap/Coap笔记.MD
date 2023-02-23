@@ -1,22 +1,47 @@
-Coap
+<div align="center">
+	  <h1>Coap笔记</h1>
+  <hr/>
+</div>
 
-Server流程
+<div id="dir"><h2>目录</h2>
+<ul>
+    <li><a href="#howToUse">如何使用?</a></li>
+    <li><a href="https://github.com/MrHulu/Solution-Selector/release">下载地址</a></li>
+    <li><a href="#struct">源码结构</a></li>
+</ul>
+</div>
 
-1.开始与结束
-    必须有coap_startup(), 没什么意义，就是要有
+<hr/>
+<h2>Server流程</h2>
+
+<div id="开始与结束"><hr/>
+<h3>1.开始与结束</h3>
+	<pre>
+	必须有coap_startup(), 没什么意义，就是要有
     RAII: 有coap_startup()后, 结束必须要有coap_cleanup(); 
+	</pre>
+</div>
 
-
-2.context创建释放上下文
-    coap_context_t *coap_new_context(const coap_address_t *listen_addr);
-    例子: auto cxt = coap_new_context(nullptr); // 通过判断cxt是否为null来确定是否正常, 如果是空, 问题严重
-    
-    void coap_free_context(coap_context_t *context);
+<div id="context"><hr/>
+<h3>2.context创建释放上下文</h3>
+	<core>coap_context_t *coap_new_context(const coap_address_t *listen_addr);<br></core>
+    <li>例子:</li> 
+	<core>
+    auto cxt = coap_new_context(nullptr); //通过判断cxt是否为null来确定是否正常, 如果是空, 问题严重
+	void coap_free_context(coap_context_t *context);
+    <br></core>
+	<pre>
     解释: 此函数清除接收队列和发送队列中的所有条目，并删除已注册的资源，并释放连接的终结点。
-    RAII: 有coap_new_context()就必须要有coap_free_context()
+    RAII: 有coap_new_context()就必须要有coap_free_context() 
+	</pre>
+</div>
 
-3.网络
+<div id="网络"><hr/>
+<h3>3.网络</h3>
+	<core>
     coap_addr_info_t *coap_resolve_address_info(const coap_str_const_t *server, uint16_t port, uint16_t secure_port, int ai_hints_flags, int scheme_hint_bits);
+    <br></core>
+	<pre>
     解释: 将指定的服务器解析为一组coap_address_t, 可用于bind()或connect()。
     参数:
         server - 要解析的地址。
@@ -25,12 +50,21 @@ Server流程
         ai_hints_flags - 用于内部getaddrinfo()的AI_*提示标志。
         scheme_hint_bits - 要返回哪些方案的信息。一个或多个COAP_URI_SCHEME_*_BIT或一起。
     返回： 一个或多个coap_addr_info_t的链接集, 如果出错则为NULL。
-    例子: auto info_list = coap_resolve_address_info(, 5683, 5684, AI_PASSIVE | AI_NUMERICHOST, COAP_URI_SCHEME_ALL_COAP_BITS);
-
-    void coap_free_address_info(coap_addr_info_t *info_list)
+    例子: 
+	</pre>
+    <core>
+    auto info_list = coap_resolve_address_info(, 5683, 5684, AI_PASSIVE | AI_NUMERICHOST, COAP_URI_SCHEME_ALL_COAP_BITS);
+	void coap_free_address_info(coap_addr_info_t *info_list)
+    <br></core>
+    <pre>
     解释: Free off the one or more linked sets of coap_addr_info_t returned from coap_resolve_address_info().
     参数: info_list - The set of coap_addr_info_t to free off.
     RAII: coap_resolve_address_info()就必须要有coap_free_address_info()
+    </pre>
+</div>
+
+    
+    
 
 4.endpoint端点
     coap_endpoint_t *coap_new_endpoint(coap_context_t *context, const coap_address_t *listen_addr, coap_proto_t proto);
