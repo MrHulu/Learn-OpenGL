@@ -25,11 +25,11 @@
 <div id="context"><hr/>
 <h3>2.context创建释放上下文</h3>
 	<pre>
-	<core>coap_context_t *coap_new_context(const coap_address_t *listen_addr);<br></core>
+	<core class="lang-C++">coap_context_t *coap_new_context(const coap_address_t *listen_addr);</core>
     例子: 
-	<core>auto cxt = coap_new_context(nullptr); //通过判断cxt是否为null来确定是否正常, 如果是空, 问题严重
+	<core class="lang-C++">auto cxt = coap_new_context(nullptr); //通过判断cxt是否为null来确定是否正常, 如果是空, 问题严重
     
-	void coap_free_context(coap_context_t *context);<br></core>
+	void coap_free_context(coap_context_t *context);</core>
     解释: 此函数清除接收队列和发送队列中的所有条目，并删除已注册的资源，并释放连接的终结点。
     RAII: 有coap_new_context()就必须要有coap_free_context() 
 	</pre>
@@ -39,8 +39,7 @@
 <h3>3.网络</h3>
 	<pre>
 	<code class="lang-C++"> coap_addr_info_t *coap_resolve_address_info(const coap_str_const_t *server, uint16_t port, uint16_t secure_port, int ai_hints_flags, int scheme_hint_bits);
-    <br></core>
-    <main>
+    </code>
     解释: 将指定的服务器解析为一组coap_address_t, 可用于bind()或connect()。
     参数:
         server - 要解析的地址。
@@ -50,9 +49,10 @@
         scheme_hint_bits - 要返回哪些方案的信息。一个或多个COAP_URI_SCHEME_*_BIT或一起。
     返回： 一个或多个coap_addr_info_t的链接集, 如果出错则为NULL。
     例子: 
-    </main>
-    <code class="lang-C++"> auto info_list = coap_resolve_address_info(, 5683, 5684, AI_PASSIVE | AI_NUMERICHOST, COAP_URI_SCHEME_ALL_COAP_BITS);
-	void coap_free_address_info(coap_addr_info_t *info_list)<br></core>
+    <code class="lang-C++">
+	auto info_list = coap_resolve_address_info(, 5683, 5684, AI_PASSIVE | AI_NUMERICHOST, COAP_URI_SCHEME_ALL_COAP_BITS);
+	void coap_free_address_info(coap_addr_info_t *info_list)
+	</code>
     解释: Free off the one or more linked sets of coap_addr_info_t returned from coap_resolve_address_info().
     参数: info_list - The set of coap_addr_info_t to free off.
     RAII: coap_resolve_address_info()就必须要有coap_free_address_info()
@@ -64,7 +64,7 @@
 	<pre>
 	<code class="lang-C++"> 
     coap_endpoint_t *coap_new_endpoint(coap_context_t *context, const coap_address_t *listen_addr, coap_proto_t proto);
-    </core>
+    </code>
 	解释：创建一个新的端点，用于与对等体进行通信。
     参数：
         context 将拥有新端点的coap上下文。
@@ -74,7 +74,7 @@
     例子:
 	<code class="lang-C++"> 
 	auto endpoint = coap_new_endpoint(ctx, &info->addr, COAP_PROTO_UDP); //通过判断endpoint是否为null来确定是否正常, 如果是空, 问题严重
-	</core>
+	</code>
 	</pre>
 </div>
 
@@ -83,7 +83,7 @@
 	<pre>
 	<code class="lang-C++"> 
     coap_resource_t *coap_resource_init(coap_str_const_t *uri_path, int flags)
-	</core>
+	</code>
     解释: 创建一个新的资源对象，并将链接字段初始化为字符串uri_path。这个函数返回新的coap_resource_t对象。
     如果在flags中设置了COAP_RESOURCE_FLAGS_RELEASE_URI时，字符串将被coap_delete_resource()释放掉，
     那么coap_str_const_t的's'变量必须指向常量文本，或者指向分配的coap_str_const_t参数中的数据。
@@ -101,7 +101,7 @@
 	<pre>
 	<code class="lang-C++"> 
     coap_attr_t *coap_add_attr(coap_resource_t *resource, coap_str_const_t *name, coap_str_const_t *value, int flags)
-    </core>
+    </code>
 	解释:在给定的资源上注册一个新属性。由于该属性的coap_str_const_字段将指向name和value，调用者必须确保这些指针在该属性的有效期内有效。
     如果名称和/或值字符串将在属性移除时通过设置COAP_ATTR_FLAGS_RELEASE_NAME或COAP_ATTR_FLAGS_RELEASE_VALUE来释放，
     那么coap_str_const_t的's'变量必须指向常量文本，或者指向分配的coap_str_const_t参数的数据。
@@ -121,7 +121,7 @@
 	<pre>
 	<code class="lang-C++"> 
     void coap_register_request_handler(coap_resource_t *resource, coap_request_t method, coap_method_handler_t handler)
-    </core>
+    </code>
 	解释：将指定的处理程序注册为请求类型方法的消息处理程序。
     参数:
         resource - 处理程序应被注册的资源。
@@ -135,10 +135,10 @@
 	<pre>
 	<code class="lang-C++"> 
     typedef void(* coap_method_handler_t) (coap_resource_t *, coap_session_t *, const coap_pdu_t *, const coap_string_t *, coap_pdu_t *)
-    </core>
+    </code>
 	解释: 回调函数需要自己实现
     例子1:
-	<core>
+	<code class="lang-C++"> 
         // libcoap coap-server.cc
         static void hnd_get_index(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *request, 
                                     const coap_string_t *query COAP_UNUSED, coap_pdu_t *response)
@@ -154,7 +154,7 @@
                                         0x2ffff, 0, strlen(INDEX),
                                         (const uint8_t *)INDEX, NULL, NULL);
         }
-	</core>
+	</code>
     例子2:
 	<code class="lang-C++"> 
     // libcoap coap-server.cc
@@ -205,7 +205,7 @@
             coap_pdu_set_code(response, COAP_RESPONSE_CODE_NOT_FOUND);
         }
     }
-    </core>
+    </code>
     </pre>
 </div>
 
