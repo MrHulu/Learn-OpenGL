@@ -1,0 +1,8 @@
+{
+    "cmake.generator": "Ninja",
+    "C_Cpp.errorSquiggles": "Enabled",
+    "cmake.configureArgs": [
+        "-DOPENSSL_ROOT_DIR=D:\\Qt\\Tools\\OpenSSL\\Win_x86",
+        "-Dlibcoap_DIR=F:\\project\\learn\\libcoap\\install\\lib\\cmake\\libcoap"
+    ]
+}
