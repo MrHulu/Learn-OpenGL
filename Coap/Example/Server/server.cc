@@ -1,0 +1,80 @@
+#include "server.h"
+#include <stdexcept>
+#include <iostream>
+
+SimpleServer::SimpleServer()
+{
+  coap_startup();
+  m_ctx = coap_new_context(nullptr);
+  if(!m_ctx) {
+    coap_cleanup();
+    throw std::runtime_error("coap_new_context fail");
+  }
+  
+  // 网络
+  coap_address_init(&m_address);
+  m_address.addr.sin.sin_family = AF_INET;
+  m_address.addr.sin.sin_addr.s_addr = INADDR_ANY;
+  m_address.addr.sin.sin_port = htons(5683);
+
+  // UDP方式
+  m_endpoint = coap_new_endpoint(m_ctx, &m_address, COAP_PROTO_UDP);
+  if (!m_endpoint) {
+      coap_free_context(m_ctx);
+      throw std::runtime_error("coap_new_endpoint fail");
+  }
+}
+
+SimpleServer::~SimpleServer()
+{
+  coap_free_context(m_ctx);
+  coap_cleanup();
+  stop();
+}
+
+void SimpleServer::start(int timeout_ms)
+{
+  stop();
+  std::lock_guard<std::mutex> lock(m_mutex);
+  m_flag = true;
+  m_timeout_ms = timeout_ms;
+  m_thread = new std::thread(&SimpleServer::startCoapProcess, this);
+}
+
+void SimpleServer::stop()
+{
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_flag = false;
+  }
+  if(m_thread) {
+    m_thread->join();
+    delete m_thread;
+    m_thread = nullptr;
+  }
+}
+
+void SimpleServer::startCoapProcess()
+{
+  auto wait_ms = m_timeout_ms;   
+  coap_context_t *ctx;
+  while (true) { 
+    bool flag; 
+    {
+      std::lock_guard<std::mutex> lock(m_mutex);
+      flag = m_flag;
+      ctx = m_ctx;
+    }
+    if (!flag) break;
+    std::cout << "----" << flag << std::endl;
+    auto result = coap_io_process(ctx, wait_ms);
+    if (result < 0)  
+      break; 
+    else if (result && result < wait_ms)
+      wait_ms -= result; 
+    else {
+      std::lock_guard<std::mutex> lock(m_mutex);
+      wait_ms = m_timeout_ms;
+    }
+  }
+}
