@@ -12,7 +12,8 @@ public:
     void start(int timeout_ms = COAP_IO_WAIT);
     void stop();
 
-    //void addTextResource(std::string url);
+    // TODO: 临时做法，以后使用多态实现resource的管理、添加等
+    void addTextResource(std::string url);
 
 private:
     std::mutex m_mutex;

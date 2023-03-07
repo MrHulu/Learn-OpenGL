@@ -9,13 +9,18 @@ int main()
         SimpleServer server;
         //server.addTextResource("ok");
         server.start(1000);
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        server.stop();
+        
+        /* 测试是否可以被stop */
+        //std::this_thread::sleep_for(std::chrono::seconds(5));
+        //server.stop();
+
     }
     catch(std::exception& e) {
         std::cout << e.what() <<std::endl;
         return -1;
     }
+    
+    while(1); // 阻塞
     std::cout << "app stop..." <<std::endl;
     return 0;
 }
