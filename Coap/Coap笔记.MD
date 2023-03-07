@@ -57,6 +57,19 @@
     解释: Free off the one or more linked sets of coap_addr_info_t returned from coap_resolve_address_info().
     参数: info_list - The set of coap_addr_info_t to free off.
     RAII: coap_resolve_address_info()就必须要有coap_free_address_info()
+
+    <code class="lang-C++">
+        void coap_address_init(coap_address_t * 	addr);
+    </code>
+    解释：将给定的coap_address_t对象addr重置为其默认值。特别是，成员的大小必须被初始化为存储地址的可用大小。
+    参数：addr 要初始化的coap_address_t对象。
+    例子：
+    <code class="lang-C++">
+        coap_address_init(&listen_addr);
+        listen_addr.addr.sin.sin_family = AF_INET;
+        listen_addr.addr.sin.sin_addr.s_addr = INADDR_ANY;
+        listen_addr.addr.sin.sin_port = htons(5683);
+    </code>
 	</pre>
 </div>
 
@@ -149,8 +162,8 @@
 
 <div id="resourceRelatedFunc"><hr/>
 <h3>8.一些回调会用上的函数</h3>
-	<pre>
     <h4>设置资源是否可被观察</h4>
+	<pre>
 	<code class="lang-C++"> 
         void coap_resource_set_get_observable(coap_resource_t *resource, int mode)
     </code>
@@ -161,8 +174,10 @@
         resource - The CoAP resource to use.
         mode – 如果要设置Observable则为1，否则为0。
     用法：一般在资源初始化时调用
-    
+    </pre>
+
     <h4>从请求中获取资源路径</h4>
+    <pre>
     <code class="lang-C++"> 
         coap_string_t *coap_get_uri_path( const coap_pdu_t *request)
     </code>
@@ -205,10 +220,18 @@
             // uri_path = coap_get_uri_path(request); // 拿到路径, 不过好像也没什么作用？
             // if(code == COAP_REQUEST_CODE_GET) //判断是否get
             coap_pdu_set_code(response, COAP_RESPONSE_CODE_CONTENT);
+            // 块传输
             coap_add_data_large_response(resource, session, request, response,
                                         query, COAP_MEDIATYPE_TEXT_PLAIN,
                                         0x2ffff, 0, strlen(INDEX),
                                         (const uint8_t *)INDEX, NULL, NULL);
+            // 非块传输
+            coap_add_option(response,
+                      COAP_OPTION_CONTENT_FORMAT,
+                      coap_encode_var_safe(buf, sizeof(buf), COAP_MEDIATYPE_TEXT_PLAIN),
+                      buf); //buf 只是一个壳子
+            coap_add_data(response, 5, (const uint8_t *)"world");
+            
         }
 	</code>
     例子2:
@@ -401,3 +424,151 @@
     </pre>
 </div>
 
+<hr/>
+<h2>Client 流程</h2>
+
+<div id="client"><hr/>
+<pre>
+  void coap_register_response_handler(coap_context_t * 	context, coap_response_handler_t handler);
+  解释：注册一个新的消息处理程序，每当收到一个响应时就会被调用。
+  参数：
+    context 要注册处理程序的上下文。
+    handler 要注册的响应处理程序。
+
+  typedef coap_response_t (*coap_response_handler_t)(coap_session_t *session,
+                                                   const coap_pdu_t *sent,
+                                                   const coap_pdu_t *received,
+                                                   const coap_mid_t mid);
+    回调函数例子：
+    coap_response_t message_handler(coap_session_t *session COAP_UNUSED,
+                const coap_pdu_t *sent,
+                const coap_pdu_t *received,
+                const coap_mid_t id COAP_UNUSED) 
+    {
+    coap_opt_t *block_opt;
+    coap_opt_iterator_t opt_iter;
+    size_t len;
+    const uint8_t *databuf;
+    size_t offset;
+    size_t total;
+    // 获取接收的code： 402..502等
+    coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
+    // 获取接收的类型：CON, NON, ACK, RST四个
+    coap_pdu_type_t rcv_type = coap_pdu_get_type(received);
+    // 获取token: TODO: 客户端需要吗？
+    coap_bin_const_t token = coap_pdu_get_token(received);
+
+    /*
+        COAP_RESPONSE_CLASS(rcv_code)：
+        0 空报文
+        2 正确响应
+        4 客服端错误
+        5 服务器错误
+
+        rcv_code & 0x1F:
+        1 GET
+        2 POST
+        3 PUT
+        4 DELETE
+    */ 
+    coap_log_debug("** process incoming %d.%02d response:\n",
+            COAP_RESPONSE_CLASS(rcv_code), rcv_code & 0x1F);
+    // if (coap_get_log_level() < COAP_LOG_DEBUG)
+    //   coap_show_pdu(COAP_LOG_INFO, received);
+
+    /* check if this is a response to our original request */
+    // if (!track_check_token(&token)) {
+    //   /* drop if this was just some message, or send RST in case of notification */
+    //   if (!sent && (rcv_type == COAP_MESSAGE_CON ||
+    //                 rcv_type == COAP_MESSAGE_NON)) {
+    //     /* Cause a CoAP RST to be sent */
+    //     return COAP_RESPONSE_FAIL;
+    //   }
+    //   return COAP_RESPONSE_OK;
+    // }
+
+    // 表示服务器返回了一个RST
+    if (rcv_type == COAP_MESSAGE_RST) {
+        coap_log_info("got RST\n");
+        return COAP_RESPONSE_OK;
+    }
+
+    /* output the received data, if any */
+    if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
+
+        /*  
+        **********************************************************************
+            这段代码是处理CoAP协议中观测（Observe）的部分。
+            在这段代码中，如果客户端向服务器订阅了某个资源并且服务器成功地建立了观测关系，那么就会启动一个计时器，
+            计时器的时间为 obs_seconds 秒。
+            当计时器超时时，就会向服务器重新发送一次请求，以便获取资源最新的状态信息。
+            同时，obs_ms_reset 被设置为1，用于表示计时器被重置了。
+            这个标志位的作用是，当客户端收到服务器返回的响应时，可以检查这个标志位，
+            如果为1则说明计时器已经被重置过了，可以不再启动新的计时器。
+            如果为0则说明计时器没有被重置，需要重新启动计时器。 
+        **********************************************************************
+        */
+        if (doing_observe && !obs_started &&
+            coap_check_option(received, COAP_OPTION_OBSERVE, &opt_iter)) {
+        coap_log_debug(
+                "observation relationship established, set timeout to %d\n",
+                obs_seconds);
+        obs_started = 1; // 观察已经开始
+        obs_ms = obs_seconds * 1000;
+        obs_ms_reset = 1; // 计时器被重置了
+        }
+
+        // do something..
+        if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {
+        append_to_output(databuf, len);
+        if ((len + offset == total) && add_nl)
+            append_to_output((const uint8_t*)"\n", 1);
+        }
+
+        // /* Check if Block2 option is set */
+        // block_opt = coap_check_option(received, COAP_OPTION_BLOCK2, &opt_iter);
+        // if (!single_block_requested && block_opt) { /* handle Block2 */
+
+        //   /* TODO: check if we are looking at the correct block number */
+        //   if (coap_opt_block_num(block_opt) == 0) {
+        //     /* See if observe is set in first response */
+        //     ready = doing_observe ? coap_check_option(received,
+        //                               COAP_OPTION_OBSERVE, &opt_iter) == NULL : 1;
+        //   }
+        //   if(COAP_OPT_BLOCK_MORE(block_opt)) {
+        //     doing_getting_block = 1;
+        //   } else {
+        //     doing_getting_block = 0;
+        //     if (!is_mcast)
+        //       track_flush_token(&token);
+        //   }
+        //   return COAP_RESPONSE_OK;
+        // }
+    } else {      /* no 2.05 */
+        /* check if an error was signaled and output payload if so */
+        if (COAP_RESPONSE_CLASS(rcv_code) >= 4) {
+        fprintf(stderr, "%d.%02d", COAP_RESPONSE_CLASS(rcv_code),
+                rcv_code & 0x1F);
+        if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {
+            fprintf(stderr, " ");
+            while(len--) {
+            fprintf(stderr, "%c", isprint(*databuf) ? *databuf : '.');
+            databuf++;
+            }
+        }
+        fprintf(stderr, "\n");
+        }
+
+    }
+    if (!is_mcast)
+        track_flush_token(&token);
+
+    /* our job is done, we can exit at any time */
+    ready = doing_observe ? coap_check_option(received,
+                                    COAP_OPTION_OBSERVE, &opt_iter) == NULL : 1;
+    return COAP_RESPONSE_OK;
+    }
+  coap_register_event_handler(ctx, event_handler);
+  coap_register_nack_handler(ctx, nack_handler);
+</pre>
+</div>
