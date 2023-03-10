@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.1.8)
 
-#utils
-file(GLOB_RECURSE utils_files "utils/*.cc" "utils/*.h")
-
 # Qt
 file(GLOB_RECURSE widget_files "widget/*.cc" "widget/*.h" "widget/*.ui")
 find_package(QT NAMES Qt6 Qt5 Core COMPONENTS Widgets REQUIRED)
@@ -20,7 +17,7 @@ add_executable(client
     ${widget_files}
     ${utils_files}
 )
-target_include_directories(client PRIVATE libcoap::coap-3 Qt5::Core Qt5::Widgets)
+target_include_directories(client PRIVATE libcoap::coap-3 Qt5::Core Qt5::Widgets ${UTILS_DIR})
 target_link_libraries(client PRIVATE libcoap::coap-3 OpenSSL::SSL Qt5::Core Qt5::Widgets)
 set_target_properties(client PROPERTIES 
     CXX_STANDARD 20
