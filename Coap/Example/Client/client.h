@@ -1,9 +1,9 @@
 #include <coap3/coap.h>
 #include <map>
+#include <functional>
 #include <thread>
 #include <mutex>
 //#include "SignalSlot.h"
-
 class SimpleClient 
 {
 public:
@@ -34,13 +34,13 @@ public:
      */
     void stopCoapProcess() noexcept;
 
-    void registerEvent(std::function<coap_event_handler_t> handlerFunc) noexcept;
-    void registerNack(std::function<coap_nack_handler_t>  handlerFunc) noexcept;
-    void registerResponse(std::function<coap_response_handler_t> handlerFunc) noexcept;
+    void registerEvent(coap_event_handler_t handlerFunc) noexcept;
+    void registerNack(coap_nack_handler_t  handlerFunc) noexcept;
+    void registerResponse(coap_response_handler_t handlerFunc) noexcept;
 
-    void sendRequest(const coap_pdu_t* pdu, CallbackFunc callback);
+    void sendRequest(coap_pdu_t* pdu, CallbackFunc callback);
     void observe(const std::string& urlPath, CallbackFunc callback);
-    void unsubscribe(const std::string& urlPath, CallbackFunc callback);
+    void unsubscribe(const std::string& urlPath);
 
     /* 默认的回调函数 */
 public:
@@ -60,7 +60,13 @@ private:
     coap_context_t*     m_ctx {};
     coap_session_t*     m_session {};
     static std::map<coap_mid_t, CallbackFunc> m_requestsCallbackFuncs;
-    static std::map<std::string, CallbackFunc> m_subscriptionsCallbackFuncs;
+    using subscriptionkey = std::pair<std::string, coap_binary_t>;
+    struct SortByString {
+        bool operator()(const subscriptionkey& lhs, const subscriptionkey& rhs) const {
+            return lhs.first < rhs.first;
+        }
+    };
+    static std::map<subscriptionkey, CallbackFunc, SortByString> m_subscriptionsCallbackFuncs;
 };
 
 

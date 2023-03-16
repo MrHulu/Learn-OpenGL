@@ -1,10 +1,14 @@
 #include "client.h"
 #include <stdexcept>
 #include <iostream>
-#include <functional>
+
+std::map<coap_mid_t, SimpleClient::CallbackFunc> SimpleClient::m_requestsCallbackFuncs;
+std::map<SimpleClient::subscriptionkey, SimpleClient::CallbackFunc, SimpleClient::SortByString> SimpleClient::m_subscriptionsCallbackFuncs;
 
 SimpleClient::SimpleClient()
 {
+  m_requestsCallbackFuncs = std::map<coap_mid_t, CallbackFunc>{};
+  m_subscriptionsCallbackFuncs = std::map<subscriptionkey, CallbackFunc, SortByString>{};
   coap_startup();
   m_ctx = coap_new_context(nullptr);
   if(!m_ctx) {
@@ -35,16 +39,15 @@ SimpleClient::~SimpleClient()
   coap_cleanup();
 }
 
-void SimpleClient::asynchronousStartCoapProcess(int timeout_ms)
+void SimpleClient::asynchronousStartCoapProcess(int timeout_ms) noexcept
 {
   stopCoapProcess();
   std::lock_guard<std::mutex> lock(m_mutex);
   m_flag = true;
-  auto lambda = [this, timeout_ms]() { this->synchronousStartCoapProcess(timeout_ms); };
-  m_thread = new std::thread(lambda, this);
+  m_thread = new std::thread(&SimpleClient::synchronousStartCoapProcess, this, timeout_ms);
 }
 
-void SimpleClient::synchronousStartCoapProcess(int timeout_ms)
+void SimpleClient::synchronousStartCoapProcess(int timeout_ms) noexcept
 {
   stopCoapProcess();
   auto wait_ms = timeout_ms;
@@ -72,8 +75,8 @@ void SimpleClient::synchronousStartCoapProcess(int timeout_ms)
     }
   }
 }
-
-void SimpleClient::stopCoapProcess()
+ 
+void SimpleClient::stopCoapProcess() noexcept
 {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -86,19 +89,19 @@ void SimpleClient::stopCoapProcess()
   }
 }
 
-void SimpleClient::registerEvent(std::function<coap_event_handler_t> handlerFunc) noexcept
+void SimpleClient::registerEvent(coap_event_handler_t handlerFunc) noexcept
 {
-  coap_register_event_handler(m_ctx, *handlerFunc.target<coap_event_handler_t>());
+  coap_register_event_handler(m_ctx, handlerFunc);
 }
 
-void SimpleClient::registerNack(std::function<coap_nack_handler_t> handlerFunc) noexcept
+void SimpleClient::registerNack(coap_nack_handler_t handlerFunc) noexcept
 {
-  coap_register_nack_handler(m_ctx, *handlerFunc.target<coap_nack_handler_t>());
+  coap_register_nack_handler(m_ctx, handlerFunc);
 }
 
-void SimpleClient::registerResponse(std::function<coap_response_handler_t> handlerFunc) noexcept
+void SimpleClient::registerResponse(coap_response_handler_t handlerFunc) noexcept
 {
-  coap_register_response_handler(m_ctx, *handlerFunc.target<coap_response_handler_t>());
+  coap_register_response_handler(m_ctx, handlerFunc);
 }
 
 void SimpleClient::sendRequest(coap_pdu_t *pdu, CallbackFunc callback)
@@ -118,8 +121,29 @@ void SimpleClient::observe(const std::string &urlPath, CallbackFunc callback)
   // 添加观察者选项
   uint8_t buf[4];
   auto len = coap_encode_var_safe(buf, sizeof(buf), COAP_OBSERVE_ESTABLISH);
-  coap_add_option(pdu, COAP_OPTION_OBSERVE, len, buf);
-
+  if(!coap_add_option(pdu, COAP_OPTION_OBSERVE, len, buf)) {
+    coap_show_pdu(COAP_LOG_WARN, pdu);
+    std::string error = __FUNCTION__ + std::string("coap_add_option is fail! path is:") +  urlPath;
+    throw std::runtime_error(error.c_str());
+  }
+  /*
+    添加token，使用观察者机制必须要带上token。
+    在CoAP协议中，观察者机制是通过在观察请求和响应之间传递一个令牌来实现的。
+    这个令牌标识了观察的资源。
+    当服务器端有关于该资源的状态更新时，它会发送一个包含相同令牌的观察响应给客户端，以此来通知客户端资源状态的变化。
+  */ 
+  uint8_t tokens[8];
+  coap_binary_t token { 8, tokens };
+  coap_session_new_token(m_session, &token.length, token.s);
+  if(!coap_add_token(pdu, token.length, token.s)) {
+    coap_show_pdu(COAP_LOG_WARN, pdu);
+    std::string error = __FUNCTION__ + std::string("coap_add_token is fail! path is:") +  urlPath;
+    throw std::runtime_error(error.c_str());
+  }
+  // 值得注意的是，当使用观察机制进行通信时，需要小心处理分块传输和大数据接收逻辑，并确保正确设置选项和使用正确的API以避免出现问题。
+  // coap_context_set_block_mode()函数用于设置块传输模式，该函数的第二个参数为COAP_BLOCK_USE_LIBCOAP，表示使用libcoap内部的块传输处理逻辑。
+  // coap_context_set_block_mode(m_ctx, COAP_BLOCK_USE_LIBCOAP);
+  
   // 解释URL
   coap_uri_t url;
   auto urlPath_const_uint8_t = reinterpret_cast<const uint8_t*>(urlPath.c_str());
@@ -127,7 +151,10 @@ void SimpleClient::observe(const std::string &urlPath, CallbackFunc callback)
     std::string error = __FUNCTION__ + std::string("coap_split_uri is fail! path is:") +  urlPath;
     throw std::runtime_error(error.c_str());
   }
-  // 解释Path
+  // 无需解析查询参数
+  //auto queryCount = coap_split_query(url.query.s, url.query.length, queryBuff, nullptr);
+  
+  // 解析Path
   uint8_t* segmentBuff = nullptr;
   auto segmentCount = coap_split_path(url.path.s, url.path.length, segmentBuff, nullptr);
   if (segmentCount > 0 && segmentBuff) {
@@ -146,12 +173,26 @@ void SimpleClient::observe(const std::string &urlPath, CallbackFunc callback)
     coap_show_pdu(COAP_LOG_WARN, pdu);
     throw std::runtime_error("Failed to send CoAP PDU with observe");
   }
-  m_subscriptionsCallbackFuncs[urlPath] = callback;
+  subscriptionkey key = std::make_pair(urlPath, token);
+  m_subscriptionsCallbackFuncs.emplace(key, callback);
 }
 
-void SimpleClient::unsubscribe(const std::string &urlPath, CallbackFunc callback)
+void SimpleClient::unsubscribe(const std::string &urlPath)
 {
-
+  auto iter = std::find_if(m_subscriptionsCallbackFuncs.begin(), m_subscriptionsCallbackFuncs.end(),
+                            [urlPath](const auto& pair) { return pair.first.first == urlPath; });
+  if (iter != m_subscriptionsCallbackFuncs.end()) {
+      auto token = static_cast<coap_binary_t*>(const_cast<coap_binary_t*>(&iter->first.second));
+      if(!coap_cancel_observe(m_session, token, COAP_MESSAGE_NON)) {
+        std::string error = __FUNCTION__ + std::string("coap_cancel_observe is fail! path is:") +  urlPath;
+        throw std::runtime_error(error.c_str());
+      }else
+        m_subscriptionsCallbackFuncs.erase(iter);
+      
+  }else {
+      std::string error = __FUNCTION__ + std::string(" No find subscriptions! path is:") +  urlPath;
+      throw std::runtime_error(error.c_str());
+  }
 }
 
 void SimpleClient::registerDefaultResponse() noexcept
@@ -165,7 +206,7 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
   coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
   // 获取接收的类型：CON, NON, ACK, RST四个
   coap_pdu_type_t rcv_type = coap_pdu_get_type(received);
-  // 获取token: TODO: 客户端需要吗？
+  // 获取token
   coap_bin_const_t token = coap_pdu_get_token(received);
 
   /*
@@ -195,9 +236,11 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
   }
 
   auto iter = std::find_if(m_subscriptionsCallbackFuncs.begin(), m_subscriptionsCallbackFuncs.end(),
-                            [mid, received](const auto& pair) {
+                            [token, received](const auto& pair) {
                               std::string urlPath((const char*)coap_get_uri_path(received)->s, coap_get_uri_path(received)->length);
-                              return pair.first == urlPath;
+                              auto destUrlPath = pair.first.first;
+                              auto destToken = pair.first.second;
+                              return destUrlPath == urlPath && destToken.length == token.length && memcmp(destToken.s, token.s, token.length) == 0;
                             });
   if (iter != m_subscriptionsCallbackFuncs.end()) {
       iter->second(sent, received);
