@@ -1,4 +1,6 @@
 #include "client.h"
+#include "utils.h"
+
 #include <stdexcept>
 #include <iostream>
 
@@ -208,33 +210,26 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
   coap_pdu_type_t rcv_type = coap_pdu_get_type(received);
   // 获取token
   coap_bin_const_t token = coap_pdu_get_token(received);
+ 
+  coap_log_debug("** process incoming %d.%02d response:\n", Coap::getResponseStatus(rcv_code), Coap::getRequestMethod(rcv_code));
+  coap_show_pdu(COAP_LOG_INFO, received);
 
-  /*
-    COAP_RESPONSE_CLASS(rcv_code)：
-    0 空报文
-    2 正确响应
-    4 客服端错误
-    5 服务器错误
-
-    rcv_code & 0x1F:
-    1 GET
-    2 POST
-    3 PUT
-    4 DELETE
-  */ 
   // 表示服务器返回了一个RST
   if (rcv_type == COAP_MESSAGE_RST) {
     coap_log_info("got RST\n");
     return COAP_RESPONSE_OK;
   }
 
+  // 表示服务器返回了一个ACK
   if(auto iter = m_requestsCallbackFuncs.find(mid); 
     iter != m_requestsCallbackFuncs.end()) 
   {
     iter->second(sent, received);
     m_requestsCallbackFuncs.erase(iter);
+    return COAP_RESPONSE_OK;
   }
 
+  // 表示服务器推送了订阅的消息
   auto iter = std::find_if(m_subscriptionsCallbackFuncs.begin(), m_subscriptionsCallbackFuncs.end(),
                             [token, received](const auto& pair) {
                               std::string urlPath((const char*)coap_get_uri_path(received)->s, coap_get_uri_path(received)->length);
@@ -243,7 +238,15 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
                               return destUrlPath == urlPath && destToken.length == token.length && memcmp(destToken.s, token.s, token.length) == 0;
                             });
   if (iter != m_subscriptionsCallbackFuncs.end()) {
-      iter->second(sent, received);
+    iter->second(sent, received);
+    return COAP_RESPONSE_OK;
   }
-  return COAP_RESPONSE_OK;
+
+  if(!sent && (rcv_type == COAP_MESSAGE_CON || rcv_type == COAP_MESSAGE_NON)) {
+    coap_log_info("got an unsolicited CON or NON, sending RST\n");
+    //coap_send_rst(session, received);
+    return COAP_RESPONSE_FAIL;
+  }
+  else
+    return COAP_RESPONSE_OK;
 }
