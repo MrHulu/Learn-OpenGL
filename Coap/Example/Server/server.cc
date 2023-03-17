@@ -70,7 +70,7 @@ void SimpleServer::addTextResource(std::string url)
                 coap_add_option(response,
                       COAP_OPTION_CONTENT_FORMAT,
                       coap_encode_var_safe(buf, sizeof(buf), COAP_MEDIATYPE_TEXT_PLAIN),
-                      buf); //buf 只是一个壳子?
+                      buf);
                 coap_add_data(response, 4, (const uint8_t *)"MOZA");
               };
   //coap_add_attr(resource, coap_make_str_const("ct"), coap_make_str_const("0"), 0); //不知道有什么用
