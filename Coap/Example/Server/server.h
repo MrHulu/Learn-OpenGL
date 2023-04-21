@@ -3,17 +3,21 @@
 #include <thread>
 #include <mutex>
 
+namespace Coap {
+class Resource;
+}; // namespace Coap
+
 class SimpleServer {
 
 public:
     SimpleServer();
     ~SimpleServer();
 
-    void start(int timeout_ms = COAP_IO_WAIT);
+    void start(int timeout_ms = COAP_IO_NO_WAIT);
     void stop();
 
-    // TODO: 临时做法，以后使用多态实现resource的管理、添加等
-    void addTextResource(std::string url);
+    void addTextResource(const std::string& url);
+    void addResource(std::shared_ptr<Coap::Resource> resource);
 
 private:
     std::mutex m_mutex;
@@ -26,5 +30,6 @@ private:
     coap_address_t      m_address;
     coap_context_t*     m_ctx {};
     coap_endpoint_t*    m_endpoint {};
-    std::map<std::string, coap_resource_t *> m_resources;
+    std::map<std::string, std::shared_ptr<Coap::Resource>> m_resources;
+    std::map<std::string, coap_resource_t*> m_rawResources;
 };

@@ -1,4 +1,6 @@
 #include "server.h"
+#include "Resource.h"
+
 #include <stdexcept>
 #include <iostream>
 #include <functional>
@@ -32,6 +34,7 @@ SimpleServer::~SimpleServer()
   coap_free_context(m_ctx);
   coap_cleanup();
   stop();
+
 }
 
 void SimpleServer::start(int timeout_ms)
@@ -56,7 +59,7 @@ void SimpleServer::stop()
   }
 }
 
-void SimpleServer::addTextResource(std::string url)
+void SimpleServer::addTextResource(const std::string& url)
 {
   auto resource = coap_resource_init(coap_make_str_const(url.c_str()), 0);
   auto func = [](coap_resource_t *resource,
@@ -76,7 +79,13 @@ void SimpleServer::addTextResource(std::string url)
   //coap_add_attr(resource, coap_make_str_const("ct"), coap_make_str_const("0"), 0); //不知道有什么用
   coap_register_request_handler(resource, COAP_REQUEST_GET, func);
   coap_add_resource(m_ctx, resource);
-  m_resources.insert({url, resource});
+  m_rawResources.insert({url, resource});
+}
+
+void SimpleServer::addResource(std::shared_ptr<Coap::Resource> resource)
+{
+  coap_add_resource(m_ctx, resource->getResource());
+  m_resources.insert({resource->getUriPath(), resource});
 }
 
 void SimpleServer::startCoapProcess()

@@ -3,6 +3,8 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <chrono>
+#include <iomanip>
 
 std::map<coap_mid_t, SimpleClient::CallbackFunc> SimpleClient::m_requestsCallbackFuncs;
 std::map<SimpleClient::subscriptionkey, SimpleClient::CallbackFunc, SimpleClient::SortByString> SimpleClient::m_subscriptionsCallbackFuncs;
@@ -11,6 +13,7 @@ SimpleClient::SimpleClient()
 {
   m_requestsCallbackFuncs = std::map<coap_mid_t, CallbackFunc>{};
   m_subscriptionsCallbackFuncs = std::map<subscriptionkey, CallbackFunc, SortByString>{};
+  coap_set_log_level(LOG_DEBUG);
   coap_startup();
   m_ctx = coap_new_context(nullptr);
   if(!m_ctx) {
@@ -21,7 +24,7 @@ SimpleClient::SimpleClient()
   // 网络
   coap_address_init(&m_address);
   m_address.addr.sin.sin_family = AF_INET;
-  m_address.addr.sin.sin_addr.s_addr = INADDR_ANY;
+  m_address.addr.sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
   m_address.addr.sin.sin_port = htons(5683);
 
   // UDP方式
@@ -51,7 +54,6 @@ void SimpleClient::asynchronousStartCoapProcess(int timeout_ms) noexcept
 
 void SimpleClient::synchronousStartCoapProcess(int timeout_ms) noexcept
 {
-  stopCoapProcess();
   auto wait_ms = timeout_ms;
   {
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -210,9 +212,11 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
   coap_pdu_type_t rcv_type = coap_pdu_get_type(received);
   // 获取token
   coap_bin_const_t token = coap_pdu_get_token(received);
- 
-  coap_log_debug("** process incoming %d.%02d response:\n", Coap::getResponseStatus(rcv_code), Coap::getRequestMethod(rcv_code));
-  coap_show_pdu(COAP_LOG_INFO, received);
+
+  auto time = std::time(nullptr);
+  std::cout  << "["<< std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S") << "] ";;
+  std::cout <<"receive: "<< Coap::getResponseStatus(rcv_code) <<" "<< Coap::getResponseStatusString(rcv_code)<< std::endl;
+  coap_show_pdu(COAP_LOG_DEBUG, received);
 
   // 表示服务器返回了一个RST
   if (rcv_type == COAP_MESSAGE_RST) {
@@ -247,6 +251,6 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
     //coap_send_rst(session, received);
     return COAP_RESPONSE_FAIL;
   }
-  else
-    return COAP_RESPONSE_OK;
+  
+  return COAP_RESPONSE_OK;
 }

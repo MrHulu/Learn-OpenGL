@@ -12,7 +12,7 @@ int main()
         
         /* 测试是否可以被stop */
         //std::this_thread::sleep_for(std::chrono::seconds(5));
-        //server.stop();
+        server.stop();
 
     }
     catch(std::exception& e) {
@@ -20,7 +20,7 @@ int main()
         return -1;
     }
     
-    while(1); // 阻塞
+    //while(1); // 阻塞
     std::cout << "app stop..." <<std::endl;
     return 0;
 }
