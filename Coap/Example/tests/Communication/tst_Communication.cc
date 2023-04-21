@@ -94,6 +94,7 @@ void tst_Communication::client_send_receive_test()
         client->sendRequest(pdu, foundCallback); 
         client->sendRequest(pdu1, noFoundCallback); 
     } catch(std::exception& e) { 
+        auto msg = QString("-----------throw: %1").arg(e.what());
         QFAIL( msg.toStdString().c_str()); 
     }
     
