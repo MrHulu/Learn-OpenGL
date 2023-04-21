@@ -11,7 +11,6 @@ public:
     virtual ~Resource();
     coap_resource_t* getResource() noexcept { return m_resource; }
     std::string getUriPath() const noexcept { return m_uriPath; }
-
 private:
     static void getRequestCallbackWrapper(coap_resource_t* resource, coap_session_t* session,
                                         const coap_pdu_t* request, const coap_string_t* query, coap_pdu_t* response);

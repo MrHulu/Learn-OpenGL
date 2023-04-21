@@ -13,6 +13,13 @@ public:
     SimpleServer();
     ~SimpleServer();
 
+    /**
+     * @brief 获取上下文对象
+     * 
+     * @return coap_context_t* 
+     */
+    coap_context_t* context() const { return m_ctx; }
+
     void start(int timeout_ms = COAP_IO_NO_WAIT);
     void stop();
 

@@ -1,14 +1,13 @@
 #pragma once
 
 #include "Resource.h"
-
 namespace Coap {
 
 class TextResource : public Resource 
 {
 public:
     TextResource(coap_context_t* context, const std::string& uriPath, bool observable = false) 
-        : Resource(context, uriPath, observable) { }
+        : Resource(context, uriPath, observable) {  }
 
 public:
     virtual void onUpdateTextFromClient(const std::string& text) noexcept = 0;

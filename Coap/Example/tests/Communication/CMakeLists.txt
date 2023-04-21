@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 find_package(QT
   NAMES
-    Qt6 Qt5
+    Qt6 Qt5 Core
   REQUIRED COMPONENTS
     Test)
 find_package(Qt${QT_VERSION_MAJOR}
@@ -10,7 +10,8 @@ find_package(Qt${QT_VERSION_MAJOR}
     Test)
 
 add_executable(tst_Communication
-  "tst_Communication.cc"
+  "tst_Communication.cc" 
+  "tst_textResource.h"
   )
 target_sources(tst_Communication PRIVATE
   ${CMAKE_SOURCE_DIR}/Client/Client.cc
@@ -39,6 +40,7 @@ target_include_directories(tst_Communication
 target_link_libraries(tst_Communication 
   PRIVATE
     Qt${QT_VERSION_MAJOR}::Test
+    Qt5::Core
     libcoap::coap-3
     Utils)
 
