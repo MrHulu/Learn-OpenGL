@@ -1,4 +1,24 @@
-<mxfile host="app.diagrams.net" modified="2023-05-08T06:26:05.611Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58" etag="7ow_UPU5tVDoo7AleXQe" version="21.2.1" type="github" pages="4">
+<mxfile host="app.diagrams.net" modified="2023-05-08T07:20:41.334Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58" etag="bkD4I9lCwSryGErKyN3T" version="21.2.1" type="github" pages="4">
+  <diagram id="6FfAQQvwOxP2uno2LXuZ" name="coap相关概念">
+    <mxGraphModel dx="1777" dy="3214" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="RF1OAKZzAAoj2TeaNjfg-1" value="&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;session（会话）：&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;session代表了CoAP通信中的一次会话，即客户端与服务器之间的一个单独的交互过程。每个session关联一个特定的客户端地址和服务器地址。一个session可以包含多个请求和响应消息。&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#67AB9F;strokeColor=#1A1A1A;align=left;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="-234" y="-1809" width="365" height="217" as="geometry" />
+        </mxCell>
+        <mxCell id="-QGJyr-s5vbrYOoexXds-1" value="&lt;div&gt;context（上下文）：&lt;/div&gt;&lt;div&gt;context是libcoap库的核心结构，它包含了程序运行时所需要的所有配置和状态信息。它存储了与CoAP通信相关的所有资源、回调函数、配置选项等。一个context可以关联多个endpoint。&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#FF8000;strokeColor=#b46504;align=left;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="-70" y="-2066" width="407" height="207" as="geometry" />
+        </mxCell>
+        <mxCell id="-QGJyr-s5vbrYOoexXds-2" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;endpoint（端点）：&lt;/div&gt;&lt;div&gt;endpoint是CoAP网络中的一个通信接口，它可以被视为CoAP服务器或客户端的一个网络套接字。一个endpoint可以处理多个客户端与服务器之间的会话。它包含了一个网络地址和端口，以及关联的传输协议（如UDP、DTLS等）。&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#003366;strokeColor=#1A1A1A;align=left;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="203" y="-1801" width="371" height="212" as="geometry" />
+        </mxCell>
+        <mxCell id="3y2yXjJKPlQkAqHZDgve-1" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Message（MID）：&lt;/div&gt;&lt;div&gt;MID用于标识消息，确保消息的顺序和避免重复。每个CoAP消息（请求或响应）都有一个唯一的MID。MID的主要目的是在传输层处理重复消息和消息丢失，而不是在应用层关联请求和响应&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;token（令牌）：&lt;/div&gt;&lt;div&gt;token是一个由客户端生成的透明序列，通常是一个较短的字节序列（长度在1到8字节之间）。当客户端发送一个请求时，它会生成一个token并附加到请求消息中。当服务器收到这个请求并准备响应时，它会将相同的token添加到响应消息中。这样，客户端在收到响应时可以通过比较token来确定这个响应属于哪个请求。&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;i&gt;&lt;b&gt;虽然在某些情况下，使用MID来匹配请求和响应是可行的，但建议使用token来确保更高的可靠性和准确性。与MID相比，token是客户端生成的，可以根据需要创建任意长度和复杂度的token，以确保每个请求都有一个唯一的token。&lt;/b&gt;&lt;/i&gt;&lt;br&gt;&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#f5f5f5;strokeColor=#666666;align=left;spacing=10;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="625" y="-2093" width="420" height="494" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
   <diagram name="流程图" id="YLoEeF4TIaRf_PfAuXPi">
     <mxGraphModel dx="3220" dy="2958" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -280,24 +300,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="6FfAQQvwOxP2uno2LXuZ" name="coap相关概念">
-    <mxGraphModel dx="1777" dy="3214" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
-      <root>
-        <mxCell id="0" />
-        <mxCell id="1" parent="0" />
-        <mxCell id="RF1OAKZzAAoj2TeaNjfg-1" value="&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;session（会话）：&lt;/span&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;session代表了CoAP通信中的一次会话，即客户端与服务器之间的一个单独的交互过程。每个session关联一个特定的客户端地址和服务器地址。一个session可以包含多个请求和响应消息。&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#67AB9F;strokeColor=#1A1A1A;align=left;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="-234" y="-1809" width="365" height="217" as="geometry" />
-        </mxCell>
-        <mxCell id="-QGJyr-s5vbrYOoexXds-1" value="&lt;div&gt;context（上下文）：&lt;/div&gt;&lt;div&gt;context是libcoap库的核心结构，它包含了程序运行时所需要的所有配置和状态信息。它存储了与CoAP通信相关的所有资源、回调函数、配置选项等。一个context可以关联多个endpoint。&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#FF8000;strokeColor=#b46504;align=left;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="-70" y="-2066" width="407" height="207" as="geometry" />
-        </mxCell>
-        <mxCell id="-QGJyr-s5vbrYOoexXds-2" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;endpoint（端点）：&lt;/div&gt;&lt;div&gt;endpoint是CoAP网络中的一个通信接口，它可以被视为CoAP服务器或客户端的一个网络套接字。一个endpoint可以处理多个客户端与服务器之间的会话。它包含了一个网络地址和端口，以及关联的传输协议（如UDP、DTLS等）。&lt;/div&gt;" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fontSize=16;fillColor=#003366;strokeColor=#1A1A1A;align=left;spacing=10;" vertex="1" parent="1">
-          <mxGeometry x="203" y="-1801" width="371" height="212" as="geometry" />
-        </mxCell>
-      </root>
-    </mxGraphModel>
-  </diagram>
-  <diagram id="mbnqtCpmo1BsSHc87j1z" name="coap底层封装">
+  <diagram id="mbnqtCpmo1BsSHc87j1z" name="libcoap与C++封装映射">
     <mxGraphModel dx="2177" dy="2814" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -1278,6 +1281,48 @@
             <mxRectangle width="255" height="30" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-1" value="coap_binary_t&amp;nbsp;&lt;br&gt;coap_string_t" style="shape=table;startSize=36;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="475" y="-1914" width="207" height="185" as="geometry" />
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-2" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-1">
+          <mxGeometry y="36" width="207" height="89" as="geometry" />
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-3" value="封装" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;overflow=hidden;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-2">
+          <mxGeometry width="30" height="89" as="geometry">
+            <mxRectangle width="30" height="89" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-4" value="&lt;span style=&quot;font-weight: 400;&quot;&gt;xxxx&lt;/span&gt;" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;fontStyle=5;overflow=hidden;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-2">
+          <mxGeometry x="30" width="177" height="89" as="geometry">
+            <mxRectangle width="177" height="89" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-5" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-1">
+          <mxGeometry y="125" width="207" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-6" value="" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-5">
+          <mxGeometry width="30" height="30" as="geometry">
+            <mxRectangle width="30" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-7" value="coap_free_endpoint" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-5">
+          <mxGeometry x="30" width="177" height="30" as="geometry">
+            <mxRectangle width="177" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-8" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-1">
+          <mxGeometry y="155" width="207" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-9" value="" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;editable=1;overflow=hidden;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-8">
+          <mxGeometry width="30" height="30" as="geometry">
+            <mxRectangle width="30" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="uMkqVYwPWnJRMpRx79V9-10" value="coap_address_t" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="uMkqVYwPWnJRMpRx79V9-8">
+          <mxGeometry x="30" width="177" height="30" as="geometry">
+            <mxRectangle width="177" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
@@ -1308,7 +1353,7 @@
           <mxGeometry y="112" width="408" height="36" as="geometry" />
         </mxCell>
         <mxCell id="vpPXyJovG_8V5T9FEZXq-14" value="EndPoint" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=16;" parent="1" vertex="1">
-          <mxGeometry x="-1515" y="-188" width="351" height="112" as="geometry" />
+          <mxGeometry x="-1510" y="-175" width="351" height="112" as="geometry" />
         </mxCell>
         <mxCell id="vpPXyJovG_8V5T9FEZXq-15" value="- m_ep: coap_endpoint_t*" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" parent="vpPXyJovG_8V5T9FEZXq-14" vertex="1">
           <mxGeometry y="26" width="351" height="26" as="geometry" />
@@ -1436,7 +1481,7 @@
         <mxCell id="OvQa8Dhgny5cDLYK1W3o-34" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontSize=16;" vertex="1" parent="OvQa8Dhgny5cDLYK1W3o-31">
           <mxGeometry y="58" width="385" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="bAfCBIkxzwUMLvHuhmPw-15" value="+&amp;nbsp;Session(coap_session_t*)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="OvQa8Dhgny5cDLYK1W3o-31">
+        <mxCell id="bAfCBIkxzwUMLvHuhmPw-15" value="Session(coap_session_t*)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="OvQa8Dhgny5cDLYK1W3o-31">
           <mxGeometry y="66" width="385" height="26" as="geometry" />
         </mxCell>
         <mxCell id="OvQa8Dhgny5cDLYK1W3o-35" value="+&amp;nbsp;getState(): SessionState" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="OvQa8Dhgny5cDLYK1W3o-31">
@@ -1458,7 +1503,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="liUGRnUJ33op5a_DOnuH-2" value="&lt;i style=&quot;&quot;&gt;ContextServer&lt;/i&gt;" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=37;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="1">
-          <mxGeometry x="-1059.5" y="-234" width="407" height="259" as="geometry" />
+          <mxGeometry x="-1048" y="-221" width="407" height="259" as="geometry" />
         </mxCell>
         <mxCell id="liUGRnUJ33op5a_DOnuH-4" value="- m_eps: map&amp;lt;port, EndPoint*&amp;gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="liUGRnUJ33op5a_DOnuH-2">
           <mxGeometry y="37" width="407" height="29" as="geometry" />
@@ -1520,20 +1565,17 @@
         <mxCell id="auvTAFj6Vg38eHIk5wQP-11" value="- createSession(proto)&lt;span style=&quot;background-color: initial;&quot;&gt;:&amp;nbsp;&lt;/span&gt;coap_session_t*" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="auvTAFj6Vg38eHIk5wQP-5">
           <mxGeometry y="178" width="407" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="bAfCBIkxzwUMLvHuhmPw-1" value="Information" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="1">
-          <mxGeometry x="-1437" y="-492" width="351" height="112" as="geometry" />
+        <mxCell id="axF4yK4Umfb4xWDmbSEJ-9" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="-1401" y="-630" width="519" height="337" as="geometry" />
         </mxCell>
-        <mxCell id="bAfCBIkxzwUMLvHuhmPw-2" value="+ Protocol" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="bAfCBIkxzwUMLvHuhmPw-1">
-          <mxGeometry y="26" width="351" height="26" as="geometry" />
+        <mxCell id="axF4yK4Umfb4xWDmbSEJ-4" value="Information" style="verticalAlign=top;align=left;spacingTop=8;spacingLeft=2;spacingRight=12;shape=cube;size=10;direction=south;fontStyle=4;html=1;whiteSpace=wrap;fontSize=16;fillColor=#f5f5f5;gradientColor=#b3b3b3;strokeColor=#666666;" vertex="1" parent="axF4yK4Umfb4xWDmbSEJ-9">
+          <mxGeometry x="-3" y="-3" width="519" height="337" as="geometry" />
         </mxCell>
-        <mxCell id="bAfCBIkxzwUMLvHuhmPw-19" value="+ SessionState" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="bAfCBIkxzwUMLvHuhmPw-1">
-          <mxGeometry y="52" width="351" height="26" as="geometry" />
+        <mxCell id="axF4yK4Umfb4xWDmbSEJ-3" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;text-decoration:underline;&quot;&gt;&lt;b&gt;SessionState:enum&lt;/b&gt;&lt;/p&gt;&lt;hr&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_SESSION_STATE_NONE = 0&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_SESSION_STATE_CONNECTING&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_SESSION_STATE_HANDSHAKE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_SESSION_STATE_CSM&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_SESSION_STATE_ESTABLISHED&amp;nbsp;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;fillColor=#000000;" vertex="1" parent="axF4yK4Umfb4xWDmbSEJ-9">
+          <mxGeometry x="109" y="36" width="301" height="118" as="geometry" />
         </mxCell>
-        <mxCell id="bAfCBIkxzwUMLvHuhmPw-3" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;fontSize=16;" vertex="1" parent="bAfCBIkxzwUMLvHuhmPw-1">
-          <mxGeometry y="78" width="351" height="8" as="geometry" />
-        </mxCell>
-        <mxCell id="bAfCBIkxzwUMLvHuhmPw-5" value="&amp;nbsp;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="bAfCBIkxzwUMLvHuhmPw-1">
-          <mxGeometry y="86" width="351" height="26" as="geometry" />
+        <mxCell id="axF4yK4Umfb4xWDmbSEJ-5" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;text-decoration:underline;&quot;&gt;&lt;b&gt;Protocol:enum&lt;/b&gt;&lt;/p&gt;&lt;hr&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_PROTO_NONE = 0&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_PROTO_UDP&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_PROTO_DTLS&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_PROTO_TCP&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:8px;&quot;&gt;COAP_PROTO_TLS&amp;nbsp;&lt;/p&gt;" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;whiteSpace=wrap;fillColor=#000000;" vertex="1" parent="axF4yK4Umfb4xWDmbSEJ-9">
+          <mxGeometry x="138" y="182" width="194" height="118" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
