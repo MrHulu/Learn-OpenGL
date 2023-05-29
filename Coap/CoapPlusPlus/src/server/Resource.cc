@@ -54,6 +54,8 @@ void Resource::freeResource() noexcept
 void Resource::getRequestCallbackWrapper(coap_resource_t *resource, coap_session_t *session, const coap_pdu_t *request, const coap_string_t *query, coap_pdu_t *response)
 {
     auto resourceWrapper = static_cast<Resource*>(coap_resource_get_userdata(resource));
+
+    // create a new session for this request
     resourceWrapper->getRequestCallback(session, request, query, response);
 }
 

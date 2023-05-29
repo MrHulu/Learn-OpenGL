@@ -28,8 +28,6 @@ SimpleClient::SimpleClient(Context& context) : ctx(context)
   // UDP方式
   m_session = coap_new_client_session(ctx.m_ctx, nullptr, &m_address, COAP_PROTO_UDP);
   if (!m_session) {
-    coap_free_context(ctx.m_ctx);
-    coap_cleanup();
     throw std::runtime_error("coap_new_client_session fail");
   }
 }
@@ -38,8 +36,6 @@ SimpleClient::~SimpleClient()
 {
   stopCoapProcess();
   coap_session_release(m_session);
-  coap_free_context(ctx.m_ctx);
-  coap_cleanup();
 }
 
 void SimpleClient::asynchronousStartCoapProcess(int timeout_ms) noexcept

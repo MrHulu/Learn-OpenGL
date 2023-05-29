@@ -9,7 +9,9 @@
 
 namespace Coap {
 
-SimpleServer::SimpleServer(Context& ctx) : ctx(ctx) { }
+SimpleServer::SimpleServer(Context& ctx) : ctx(ctx) { 
+  
+}
 
 SimpleServer::~SimpleServer()
 {
