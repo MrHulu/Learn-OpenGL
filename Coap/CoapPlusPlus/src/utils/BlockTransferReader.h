@@ -3,7 +3,7 @@
 #include <coap3/coap.h>
 #include "CoapException.h"
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class BlockTransferReader
 {
@@ -65,4 +65,4 @@ private:
 };
 
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

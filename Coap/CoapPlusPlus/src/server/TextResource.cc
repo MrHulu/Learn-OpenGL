@@ -1,7 +1,7 @@
 #include "TextResource.h"
 #include "coap/BlockTransferReader.h"
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 void TextResource::getRequestCallback(coap_session_t *session, 
     const coap_pdu_t *request, const coap_string_t *query, coap_pdu_t *response)
@@ -88,4 +88,4 @@ void TextResource::deleteRequestCallback(coap_session_t *session,
     coap_add_data(response, msg.length(), reinterpret_cast<const uint8_t*>(msg.c_str()));
 }
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

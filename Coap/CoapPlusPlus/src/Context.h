@@ -5,7 +5,7 @@
 #include <memory>
 #include <map>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class SimpleClient;
 class SimpleServer;
@@ -85,4 +85,4 @@ private :
 };
 
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

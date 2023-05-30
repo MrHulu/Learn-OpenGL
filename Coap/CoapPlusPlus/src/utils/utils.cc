@@ -1,6 +1,6 @@
 #include "utils.h"
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 int getResponseMasterStatus(coap_pdu_code_t code) { return COAP_RESPONSE_CLASS(code); }
 
@@ -113,4 +113,4 @@ std::string getResponseStatusString(coap_pdu_code_t code) {
 }
 
 
-} // namespace Coap
+}// namespace CoapPlusPlus 

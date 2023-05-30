@@ -3,7 +3,7 @@
 #include <string>
 #include <stdexcept>
 
-Coap::BlockTransferReader::BlockTransferReader(coap_session_t *session, const coap_pdu_t *request)
+CoapPlusPlus::BlockTransferReader::BlockTransferReader(coap_session_t *session, const coap_pdu_t *request)
     : m_session(session), m_request(request)
 {
     if(m_session == nullptr && m_request == nullptr) {
@@ -14,22 +14,22 @@ Coap::BlockTransferReader::BlockTransferReader(coap_session_t *session, const co
     handleBlockTransfer();
 }
 
-Coap::BlockTransferReader::~BlockTransferReader() noexcept
+CoapPlusPlus::BlockTransferReader::~BlockTransferReader() noexcept
 {
 
 }
 
-bool Coap::BlockTransferReader::isBlockTransfer() const noexcept
+bool CoapPlusPlus::BlockTransferReader::isBlockTransfer() const noexcept
 {
     return m_isBlockTransfer;
 }
 
-bool Coap::BlockTransferReader::isBlockTransferComplete() const noexcept
+bool CoapPlusPlus::BlockTransferReader::isBlockTransferComplete() const noexcept
 {
     return m_blockOffset + m_blockSize == m_blockTotal;
 }
 
-coap_binary_t *Coap::BlockTransferReader::read()
+coap_binary_t *CoapPlusPlus::BlockTransferReader::read()
 {
     if(m_bobyData == nullptr) {
         if(isBlockTransfer() == true) {
@@ -53,7 +53,7 @@ coap_binary_t *Coap::BlockTransferReader::read()
     return m_bobyData;
 }
 
-coap_cache_entry_t *Coap::BlockTransferReader::getCacheEntry() const noexcept
+coap_cache_entry_t *CoapPlusPlus::BlockTransferReader::getCacheEntry() const noexcept
 {
     // 尝试从缓存中获取与当前请求和会话相关的缓存条目
     auto cache_entry = coap_cache_get_by_pdu(m_session, m_request, COAP_CACHE_IS_SESSION_BASED);
@@ -79,7 +79,7 @@ coap_cache_entry_t *Coap::BlockTransferReader::getCacheEntry() const noexcept
     return cache_entry;
 }
 
-void Coap::BlockTransferReader::handleBlockTransfer() const
+void CoapPlusPlus::BlockTransferReader::handleBlockTransfer() const
 {
     auto cache_entry = getCacheEntry();
     

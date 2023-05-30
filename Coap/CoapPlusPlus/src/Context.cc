@@ -6,7 +6,7 @@
 
 #include <stdexcept>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 Context::Context() {
     m_ctx = coap_new_context(nullptr);
@@ -105,4 +105,4 @@ coap_endpoint_t *Context::createEndPoint(int port, int proto)
 //     }
 // }
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

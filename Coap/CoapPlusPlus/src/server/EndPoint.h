@@ -1,6 +1,6 @@
 #include <coap3/coap.h>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 
 class EndPoint
@@ -23,4 +23,4 @@ private:
     coap_endpoint_t* m_ep;
 };
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

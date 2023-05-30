@@ -5,7 +5,7 @@
 #include <mutex>
 #include <memory>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class Context;
 class EndPoint;
@@ -44,7 +44,7 @@ public:
      * 
      * @exception std::invalid_argument 参数为空或者已经存在相同的资源
      */
-    void addResource(std::shared_ptr<Coap::Resource> resource);
+    void addResource(std::shared_ptr<CoapPlusPlus::Resource> resource);
 
 private:
     /* 管理 */
@@ -62,4 +62,4 @@ private:
 };
 
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

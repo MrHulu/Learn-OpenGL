@@ -7,7 +7,7 @@
 #include <chrono>
 #include <iomanip>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 std::map<coap_mid_t, SimpleClient::CallbackFunc> SimpleClient::m_requestsCallbackFuncs;
 std::map<SimpleClient::subscriptionkey, SimpleClient::CallbackFunc, SimpleClient::SortByString> SimpleClient::m_subscriptionsCallbackFuncs;
@@ -211,7 +211,7 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
 
   auto time = std::time(nullptr);
   std::cout  << "["<< std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S") << "] ";;
-  std::cout <<"receive: "<< Coap::getResponseStatus(rcv_code) <<" "<< Coap::getResponseStatusString(rcv_code)<< std::endl;
+  std::cout <<"receive: "<< CoapPlusPlus::getResponseStatus(rcv_code) <<" "<< CoapPlusPlus::getResponseStatusString(rcv_code)<< std::endl;
   coap_show_pdu(COAP_LOG_DEBUG, received);
 
   // 表示服务器返回了一个RST
@@ -253,4 +253,4 @@ coap_response_t SimpleClient::defaultResponse(coap_session_t *session, const coa
 
 
 
-} // namespace Coap
+}// namespace CoapPlusPlus 

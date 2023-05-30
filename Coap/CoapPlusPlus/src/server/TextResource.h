@@ -2,7 +2,7 @@
 
 #include "Resource.h"
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class TextResource : public Resource 
 {
@@ -26,4 +26,4 @@ protected:
 };
 
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

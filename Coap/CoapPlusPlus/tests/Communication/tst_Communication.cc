@@ -8,7 +8,7 @@
 #include "coap/client/SimpleClient.h"
 #include "coap/utils.h"
 
-using namespace Coap;
+using namespace CoapPlusPlus;
 
 class tst_Communication : public QObject {
     Q_OBJECT

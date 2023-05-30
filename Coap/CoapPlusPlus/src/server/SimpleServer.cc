@@ -7,7 +7,7 @@
 #include <iostream>
 #include <functional>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 SimpleServer::SimpleServer(Context& ctx) : ctx(ctx) { 
   
@@ -69,7 +69,7 @@ void SimpleServer::addTextResource(const std::string& url)
   coap_add_resource(ctx.m_ctx, resource);
 }
 
-void SimpleServer::addResource(std::shared_ptr<Coap::Resource> resource)
+void SimpleServer::addResource(std::shared_ptr<CoapPlusPlus::Resource> resource)
 {
   if(resource == nullptr) {
     throw std::invalid_argument("Resource is nullptr");
@@ -109,4 +109,4 @@ void SimpleServer::startCoapProcess()
   }
 }
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

@@ -4,7 +4,7 @@
 #include <QString>
 #include <QDebug>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class SimpleServer;
 class Tst_TextResource : public QObject, public TextResource
@@ -77,4 +77,4 @@ private:
     QString m_text = "Tst_TextResource";   
 };
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

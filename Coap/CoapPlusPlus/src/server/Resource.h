@@ -3,7 +3,7 @@
 #include <coap3/coap.h>
 #include <string>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class SimpleServer;
 class Resource 
@@ -93,4 +93,4 @@ private:
 
 };
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

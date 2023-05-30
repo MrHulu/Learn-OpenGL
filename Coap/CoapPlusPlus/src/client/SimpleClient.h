@@ -4,7 +4,7 @@
 #include <thread>
 #include <mutex>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 class Context;
 class SimpleClient 

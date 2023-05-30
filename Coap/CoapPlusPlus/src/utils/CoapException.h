@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 /**
  * @brief Exception thrown when data is not ready to be read.
@@ -27,4 +27,15 @@ public:
     explicit CallCoapLibFuncException(const char* what) : std::runtime_error(what) { }    
 };
 
-} // namespace Coap
+/**
+ * @brief 当数据被销毁后继续访问时抛出此异常
+ * 
+ */
+class DataWasReleasedException : public std::runtime_error
+{
+public:
+    explicit DataWasReleasedException(const std::string& what) : std::runtime_error(what) { }
+    explicit DataWasReleasedException(const char* what) : std::runtime_error(what) { }    
+};
+
+}// namespace CoapPlusPlus PlusPlus

@@ -4,7 +4,7 @@
 #include <iostream>
 
 
-namespace Coap {
+namespace CoapPlusPlus {
 
 Resource::~Resource() 
 {
@@ -78,4 +78,4 @@ void Resource::deleteRequestCallbackWrapper(coap_resource_t *resource, coap_sess
 }
 
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 

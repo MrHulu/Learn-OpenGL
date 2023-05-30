@@ -2,7 +2,7 @@
 
 #include <coap3/coap.h>
 #include <string>
-namespace Coap {
+namespace CoapPlusPlus {
 
 
 enum  CoapResponse : int {
@@ -101,4 +101,4 @@ int getResponseStatus(coap_pdu_code_t code) ;
 std::string getResponseStatusString(coap_pdu_code_t code);
 
 
-}; // namespace Coap
+};// namespace CoapPlusPlus 
