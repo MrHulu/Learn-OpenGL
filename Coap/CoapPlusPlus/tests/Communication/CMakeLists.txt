@@ -12,8 +12,7 @@ find_package(libcoap REQUIRED CONFIG)
 find_package(OpenSSL REQUIRED)
 
 add_executable(tst_Communication
-  "tst_Communication.cc" 
-  "tst_textResource.h"
+  "tst_Communication.cc"
   )
 set_target_properties(tst_Communication 
   PROPERTIES
