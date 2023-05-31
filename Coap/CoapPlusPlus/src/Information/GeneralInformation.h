@@ -14,7 +14,7 @@ enum Protocol {
 
 
 enum SessionState {
-    None = 0,
+    NoneState = 0,
     Connecting = 1,
     Handshaking = 2,
     Csm = 3,
