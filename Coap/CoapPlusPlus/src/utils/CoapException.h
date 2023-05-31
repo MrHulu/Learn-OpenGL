@@ -38,4 +38,15 @@ public:
     explicit DataWasReleasedException(const char* what) : std::runtime_error(what) { }    
 };
 
-}// namespace CoapPlusPlus PlusPlus
+/**
+ * @brief 要操作或者访问的目标不存在时抛出此异常
+ * 
+ */
+class TargetNotFoundException : public std::runtime_error
+{
+public:
+    explicit TargetNotFoundException(const std::string& what) : std::runtime_error(what) { }
+    explicit TargetNotFoundException(const char* what) : std::runtime_error(what) { }
+};
+
+}// namespace CoapPlusPlus
