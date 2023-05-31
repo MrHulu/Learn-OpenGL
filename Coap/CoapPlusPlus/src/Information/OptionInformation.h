@@ -1,7 +1,8 @@
 #pragma once
 
 namespace CoapPlusPlus {
-
+namespace Information
+{
 
 enum OptionNumber {
     IfMatch = 1,
@@ -42,5 +43,5 @@ enum ContentFormatType {
     CWT = 61
 };
 
-
-};// namespace CoapPlusPlus PlusPlus
+};// namespace Information
+};// namespace CoapPlusPlus

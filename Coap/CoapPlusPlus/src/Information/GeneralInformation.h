@@ -1,6 +1,7 @@
 #pragma once
-
 namespace CoapPlusPlus
+{
+namespace Information
 {
 
 enum Protocol {
@@ -34,5 +35,6 @@ enum NAckReason {
 };
 
 
-}// namespace CoapPlusPlus PlusPlus
+}// namespace Information
+}// namespace CoapPlusPlus
 

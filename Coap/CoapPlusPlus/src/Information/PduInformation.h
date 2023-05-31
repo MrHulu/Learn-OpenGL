@@ -2,6 +2,7 @@
 
 
 namespace CoapPlusPlus {
+namespace Information {
 
 enum ResponseCode {
     Created = 65,
@@ -41,5 +42,5 @@ enum RequestCode {
 };
 
 
-
-};// namespace CoapPlusPlus PlusPlus
+};// namespace Information
+};// namespace CoapPlusPlus
