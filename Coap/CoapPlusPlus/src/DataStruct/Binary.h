@@ -1,3 +1,13 @@
+/**
+ * @file Binary.h
+ * @author Hulu
+ * @brief Binary类定义
+ * @version 0.1
+ * @date 2023-05-31
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #pragma once
 
 #include <coap3/coap.h>
