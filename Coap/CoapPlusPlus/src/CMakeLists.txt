@@ -55,7 +55,7 @@ install(
     COMPONENT lib
 )
 
-# target_include_directories(server PRIVATE ${PROJECT_SOURCE_DIR}/utils)
+# target_include_directories(server PRIVATE ${PROJECT_SOURCE_DIR}/Utils)
 # target_link_libraries(server PRIVATE libcoap::coap-3 OpenSSL::SSL Utils)
 # set_target_properties(server PROPERTIES CXX_STANDARD 14)
  
