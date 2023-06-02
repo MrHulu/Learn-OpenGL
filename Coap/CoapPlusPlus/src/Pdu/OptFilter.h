@@ -20,6 +20,7 @@ namespace CoapPlusPlus
 
 class OptFilter 
 {
+    friend class Pdu;
 public:
     /**
      * @brief 构造一个OptFilter对象
@@ -53,6 +54,9 @@ public:
      * @return 操作是否成功
      */
     bool remove(Information::OptionNumber number) noexcept;
+
+    const coap_opt_filter_t* getOptFilter() const noexcept { return &m_optFilter; }
+private: 
 
 private:
     coap_opt_filter_t m_optFilter;
