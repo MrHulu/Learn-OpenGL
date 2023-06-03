@@ -21,7 +21,7 @@ public:
     /**
      * @brief 返回一个新的二进制对象，该对象引用给定的数据。
      * 
-     * @param libcoap库的二进制数据结构指针
+     * @param raw libcoap库的二进制数据结构指针
      * @exception std::invalid_argument 当raw为空时抛出
      */
     BinaryView(const coap_binary_t* raw) 

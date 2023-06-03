@@ -67,7 +67,7 @@ public:
      * @brief 创建一个Binary
      * 
      * @param size 要分配给字节数据的大小。
-     * @param raw 要放在新的Binary对象中的数据。
+     * @param data 要放在新的Binary对象中的数据。
      * 
      * @exception std::invalid_argument 当为raw为空时抛出
      * @exception CallCoapLibFuncException 无法分配内存时抛出
