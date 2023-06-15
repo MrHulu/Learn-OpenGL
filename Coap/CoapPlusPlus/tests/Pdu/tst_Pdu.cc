@@ -17,6 +17,7 @@ class tst_Pdu : public QObject
 public:
     tst_Pdu() {
         m_context = coap_new_context(nullptr);
+        coap_set_log_level(LOG_INFO);
         QVERIFY(m_context);
         coap_address_t address;
         address.addr.sin.sin_family = AF_INET;
@@ -38,6 +39,8 @@ private slots:
     void test_Option(); // 测试Option类
 
     void test_Options(); // 测试Options类
+    void test_Options1(); // 测试Options多次添加Option或者添加顺序不一样
+    void test_Options2(); // 测试添加了payload之后再添加Option
 
     void test_OptFilter(); // 测试OptFilter类
 
@@ -161,6 +164,66 @@ void tst_Pdu::test_Options()
     coap_delete_pdu(pdu);
     coap_delete_string(query);
 }
+
+void tst_Pdu::test_Options1()
+{
+    auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
+    QVERIFY(pdu);
+
+    Options options(nullptr);
+    std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
+    QVERIFY(options.insertOsberveOption(false));
+    QVERIFY(options.insertURIOption(uri));
+    QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::Json));
+    auto optlist = options.getOptList();
+    QVERIFY(coap_add_optlist_pdu(pdu, &optlist));
+    coap_delete_optlist(optlist);
+
+    Options options1(nullptr);
+    QVERIFY(options1.insertContentFormatOption(Information::ContentFormatType::Xml));
+    auto optlist1 = options1.getOptList();
+    QVERIFY(coap_add_optlist_pdu(pdu, &optlist1));
+    coap_delete_optlist(optlist1);
+    
+    coap_opt_iterator_t oi;
+    auto opt = coap_check_option(pdu, Information::ContentFormat, &oi);
+    QVERIFY(opt);
+    Option option((Information::OptionNumber)oi.number, opt);
+    QCOMPARE(Decoder::Decode(option.getData()), Information::ContentFormatType::Json);
+
+    coap_show_pdu(LOG_INFO, pdu);
+    coap_delete_pdu(pdu);
+}
+
+void tst_Pdu::test_Options2()
+{
+    auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
+    QVERIFY(pdu);
+
+    Options options(nullptr);
+    std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
+    QVERIFY(options.insertURIOption(uri));
+    QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::TextPlain));
+    auto optlist = options.getOptList();
+    QVERIFY(coap_add_optlist_pdu(pdu, &optlist));
+    coap_delete_optlist(optlist);
+
+    QCOMPARE(coap_add_data(pdu, 7, (const uint8_t*)"coapcpp"), 1);
+    QCOMPARE(coap_add_data(pdu, 4, (const uint8_t*)"test"), 0);
+    const uint8_t* data = nullptr;
+    size_t length;
+    QCOMPARE(coap_get_data(pdu, &length, &data), 1);
+    QCOMPARE(QString::fromUtf8((const char*)data, length), "coapcpp");
+
+    Options options1(nullptr);
+    QVERIFY(options.insertOsberveOption(false));
+    auto optlist1 = options1.getOptList();
+    QVERIFY(!coap_add_optlist_pdu(pdu, &optlist1)); // 预期无法添加
+    coap_delete_optlist(optlist1);
+
+    coap_show_pdu(LOG_INFO, pdu);
+    coap_delete_pdu(pdu);
+}   
 
 void tst_Pdu::test_OptFilter()
 {
