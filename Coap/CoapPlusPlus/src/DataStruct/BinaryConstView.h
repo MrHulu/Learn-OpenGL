@@ -18,6 +18,9 @@ namespace CoapPlusPlus {
 class BinaryConstView
 {
 public:
+    BinaryConstView(const BinaryConstView& other) : BinaryConstView(other.m_rawData) { }
+    BinaryConstView(BinaryConstView&& other) noexcept 
+        : m_rawData(other.m_rawData), m_binary(BinaryConst::Reference(other.m_rawData)) { }
     /**
      * @brief 返回一个新的二进制对象，该对象引用给定的数据。
      * 

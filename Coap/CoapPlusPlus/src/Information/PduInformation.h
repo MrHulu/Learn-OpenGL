@@ -4,6 +4,13 @@
 namespace CoapPlusPlus {
 namespace Information {
 
+enum MessageType {
+    Confirmable = 0,
+    NonConfirmable = 1,
+    Acknowledgement = 2,
+    Reset = 3
+};
+
 enum ResponseCode {
     Created = 65,
     Deleted = 66,
@@ -40,7 +47,6 @@ enum RequestCode {
     Patch = 6,
     IPatch = 7
 };
-
 
 };// namespace Information
 };// namespace CoapPlusPlus
