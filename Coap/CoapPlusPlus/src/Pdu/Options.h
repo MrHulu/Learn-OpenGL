@@ -69,9 +69,9 @@ public:
      */
     bool insertContentFormatOption(Information::ContentFormatType format) noexcept;
 
-    coap_optlist_t* getOptList() const noexcept { return m_optList; }
 
 private:
+    coap_optlist_t* getOptList() const noexcept { return m_optList; }
     void deleteOptList() noexcept { coap_delete_optlist(m_optList); }
 
 private:

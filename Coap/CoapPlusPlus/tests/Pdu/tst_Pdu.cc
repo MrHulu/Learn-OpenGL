@@ -9,6 +9,9 @@
 #include "coap/Pdu/Options.h"
 #include "coap/Pdu/OptFilter.h"
 
+#include "coap/Pdu/ResponsePdu.h"
+#include "coap/Pdu/RequestPdu.h"
+
 using namespace CoapPlusPlus;
 
 class tst_Pdu : public QObject
@@ -35,17 +38,16 @@ public:
 private:
     coap_context_t* m_context = nullptr;
     coap_session_t* m_session = nullptr;
+
 private slots:
     void test_Option(); // 测试Option类
-
     void test_Options(); // 测试Options类
     void test_Options1(); // 测试Options多次添加Option或者添加顺序不一样
     void test_Options2(); // 测试添加了payload之后再添加Option
-
     void test_OptFilter(); // 测试OptFilter类
-
     void test_Encoder_Decoder(); // 测试Encoder和Decoder类
 
+    //void test_
 };
 
 void tst_Pdu::test_Option()
@@ -116,10 +118,8 @@ void tst_Pdu::test_Options()
     auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
     QVERIFY(pdu);
 
-    // TODO: getOptList()应该是私有的，需要修改，这里为了测试, 等实现了Pdu类再修改
-    auto optlist = options.getOptList();
-    QVERIFY(coap_add_optlist_pdu(pdu, &optlist));
-    coap_delete_optlist(optlist);
+    ResponsePdu respone(pdu);
+    QVERIFY(respone.addOptions(options));
     coap_opt_iterator_t opt_iter;
     coap_opt_filter_t ignore_options;
     coap_option_filter_clear(&ignore_options);
@@ -175,15 +175,12 @@ void tst_Pdu::test_Options1()
     QVERIFY(options.insertOsberveOption(false));
     QVERIFY(options.insertURIOption(uri));
     QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::Json));
-    auto optlist = options.getOptList();
-    QVERIFY(coap_add_optlist_pdu(pdu, &optlist));
-    coap_delete_optlist(optlist);
+    ResponsePdu respone(pdu);
+    QVERIFY(respone.addOptions(options));
 
     Options options1(nullptr);
     QVERIFY(options1.insertContentFormatOption(Information::ContentFormatType::Xml));
-    auto optlist1 = options1.getOptList();
-    QVERIFY(coap_add_optlist_pdu(pdu, &optlist1));
-    coap_delete_optlist(optlist1);
+    QVERIFY(respone.addOptions(options1));
     
     coap_opt_iterator_t oi;
     auto opt = coap_check_option(pdu, Information::ContentFormat, &oi);
@@ -204,9 +201,8 @@ void tst_Pdu::test_Options2()
     std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
     QVERIFY(options.insertURIOption(uri));
     QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::TextPlain));
-    auto optlist = options.getOptList();
-    QVERIFY(coap_add_optlist_pdu(pdu, &optlist));
-    coap_delete_optlist(optlist);
+    ResponsePdu respone(pdu);
+    QVERIFY(respone.addOptions(options));
 
     QCOMPARE(coap_add_data(pdu, 7, (const uint8_t*)"coapcpp"), 1);
     QCOMPARE(coap_add_data(pdu, 4, (const uint8_t*)"test"), 0);
@@ -216,10 +212,8 @@ void tst_Pdu::test_Options2()
     QCOMPARE(QString::fromUtf8((const char*)data, length), "coapcpp");
 
     Options options1(nullptr);
-    QVERIFY(options.insertOsberveOption(false));
-    auto optlist1 = options1.getOptList();
-    QVERIFY(!coap_add_optlist_pdu(pdu, &optlist1)); // 预期无法添加
-    coap_delete_optlist(optlist1);
+    QVERIFY(options1.insertOsberveOption(false));
+    QVERIFY(!respone.addOptions(options1));
 
     coap_show_pdu(LOG_INFO, pdu);
     coap_delete_pdu(pdu);
@@ -237,18 +231,17 @@ void tst_Pdu::test_OptFilter()
     auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
     QVERIFY2(coap_add_optlist_pdu(pdu, &optlist), "coap_add_optlist_pdu failed");
     coap_delete_optlist(optlist);
+    ResponsePdu respone(pdu);
 
-    // TODO: getOptFilter()应该是私有的，需要修改，这里为了测试， 等实现了Pdu类再修改
-    coap_opt_iterator_t opt_iter;
     OptFilter filter({ Information::Observe});
-    coap_option_iterator_init(pdu, &opt_iter, filter.getOptFilter());
-    QVERIFY2( coap_option_next(&opt_iter) == nullptr, "没有Observe" );
+    auto obsVec = respone.getOptions(filter);
+    QVERIFY2( obsVec.size() == 0, "没有Observe" );
+    
     filter = OptFilter({ Information::ContentFormat, Information::UriPort });
-    coap_option_iterator_init(pdu, &opt_iter, filter.getOptFilter());
-    QVERIFY(coap_option_next(&opt_iter)); QCOMPARE(opt_iter.number, Information::UriPort);
-    QVERIFY(coap_option_next(&opt_iter)); QCOMPARE(opt_iter.number, Information::ContentFormat);
-    QVERIFY( coap_option_next(&opt_iter) == nullptr );
-
+    auto vec = respone.getOptions(filter);
+    QCOMPARE(vec.size(), 2);
+    QCOMPARE(vec[0].getNumber(), Information::UriPort);
+    QCOMPARE(vec[1].getNumber(), Information::ContentFormat);
     coap_delete_pdu(pdu);
 }
 

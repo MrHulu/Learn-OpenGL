@@ -55,8 +55,8 @@ public:
      */
     bool remove(Information::OptionNumber number) noexcept;
 
-    const coap_opt_filter_t* getOptFilter() const noexcept { return &m_optFilter; }
 private: 
+    const coap_opt_filter_t* getOptFilter() const noexcept { return &m_optFilter; }
 
 private:
     coap_opt_filter_t m_optFilter;
