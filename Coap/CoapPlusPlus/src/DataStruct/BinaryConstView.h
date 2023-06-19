@@ -28,9 +28,17 @@ public:
      * @exception std::invalid_argument 当raw为空时抛出
      */
     BinaryConstView(const coap_bin_const_t* raw) 
-        : m_binary(BinaryConst::Reference(raw))
-        , m_rawData(raw) { }
+        : m_rawData(raw)
+        , m_binary(BinaryConst::Reference(raw)) { }
+    BinaryConstView(const BinaryConst& binary) 
+        : m_rawData(binary.rawData())
+        , m_binary(BinaryConst::Reference(m_rawData)) { }
+
     ~BinaryConstView() noexcept = default;
+
+    bool operator== (const BinaryConstView &other) const noexcept {
+        return coap_binary_equal(m_rawData, other.m_rawData);
+    }
 
     /**
      * @brief 转换为BinaryConst对象
@@ -58,8 +66,8 @@ public:
     std::span<uint8_t> data() const { return m_binary.data(); }
 
 private:
-    BinaryConst m_binary;
     const coap_bin_const_t* m_rawData;
+    BinaryConst m_binary;
 };
 
 

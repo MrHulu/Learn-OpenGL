@@ -13,6 +13,7 @@
 #include "coap/Information/OptionInformation.h"
 #include <stdint.h>
 #include <span>
+#include <algorithm>
 
 namespace CoapPlusPlus
 {
@@ -30,6 +31,10 @@ public:
     }
 
     ~Payload() noexcept = default;
+
+    bool operator== (const Payload &other) const noexcept {
+        return m_type == other.m_type && std::ranges::equal(m_data, other.m_data);
+    }
 
     /**
      * @brief 获得payload中的数据字节大小

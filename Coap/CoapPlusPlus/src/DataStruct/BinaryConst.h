@@ -17,6 +17,7 @@ namespace CoapPlusPlus {
 
 class BinaryConst
 {
+    friend class BinaryConstView;
     BinaryConst(coap_bin_const_t* raw, bool owned);
     BinaryConst(const BinaryConst& other) : BinaryConst(DeepCopy(other.m_rawData).m_rawData, true) {}
     BinaryConst(BinaryConst&& other) noexcept : m_rawData(other.m_rawData), m_owned(other.m_owned) {
@@ -90,6 +91,9 @@ public:
      * @return std::span<uint8_t>类型的数据 
      */
     std::span<uint8_t> data() const;
+
+private:
+    const coap_bin_const_t* rawData() const { return m_rawData; }
 
 private: 
     coap_bin_const_t* m_rawData;
