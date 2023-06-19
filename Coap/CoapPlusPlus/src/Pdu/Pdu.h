@@ -117,17 +117,6 @@ public:
      */
     bool addOptions(Options options);
 
-    /**
-     * @brief 创建一个选项列表
-     * 
-     * @param number 需要创建的选项的编号
-     * @param data 需要创建的选项的数据，不同的选项可能需要使用数据编码，可通过该类进行编码 @class Encoder
-     * @return 一个选项列表 
-     * 
-     * @exception CallCoapLibFuncException 无法创建选项时抛出此异常
-     */
-    Options createOptions(OptionNumber number, std::vector<uint8_t>data);
-
 protected:
     Pdu(coap_pdu_t* pdu);
     ~Pdu() noexcept { }

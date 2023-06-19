@@ -7,6 +7,10 @@ namespace CoapPlusPlus {
 ResponsePdu::ResponsePdu(coap_pdu_t *pdu)
     : Pdu(pdu)
 {
+    if(pdu == nullptr)
+        throw std::invalid_argument("Can't construct ResponsePdu object, pdu is nullptr");
+    
+    m_responseCode = static_cast<ResponseCode>(coap_pdu_get_code(pdu));
 }
 
 ResponsePdu::~ResponsePdu()
@@ -29,7 +33,7 @@ try{
         // 检查选项列表中是否包含该数据的格式的option， 没有就补上去
         if(isContainOption(Information::ContentFormat) == false){
             Encoder encoder(payload.type());
-            Options options(createOptions(Information::ContentFormat, encoder.getData()));
+            Options options(Options(Information::ContentFormat, encoder.getData()));
             if(addOptions(options))
                 return false;
         }

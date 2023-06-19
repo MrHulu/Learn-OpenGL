@@ -17,7 +17,13 @@
 namespace CoapPlusPlus {
 
 class ResponsePdu : public Pdu {
-public:
+public: 
+    /**
+     * @brief 构造一个响应PDU对象
+     * 
+     * @param pdu 传入非空的coap_pdu_t指针
+     * @exception std::invalid_argument 当传入的pdu为空时抛出
+     */
     ResponsePdu(coap_pdu_t* pdu);
     ~ResponsePdu();
 

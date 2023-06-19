@@ -4,10 +4,13 @@
 namespace CoapPlusPlus
 {
 
-Options::Options(coap_optlist_t *optList)
-    : m_optList(optList)
+Options::Options(Information::OptionNumber number, std::vector<uint8_t> data)
 {
-    
+    auto value = data.data();
+    auto length = data.size();
+    m_optList = coap_new_optlist(number, length, value);
+    if(m_optList == nullptr)
+        throw std::invalid_argument("Can't construct Options object, invalid option data");
 }
 
 bool Options::insert(Information::OptionNumber number, std::vector<uint8_t> data) noexcept
@@ -40,5 +43,12 @@ bool Options::insertContentFormatOption(Information::ContentFormatType format) n
     auto length = coap_encode_var_safe(buf, sizeof(buf), format);
     return coap_insert_optlist(&m_optList, coap_new_optlist(Information::ContentFormat, length, buf));
 }
+
+void Options::deleteOptList() noexcept
+{
+    coap_delete_optlist(m_optList); 
+    m_optList = nullptr; 
+}
+
 
 }; // namespace CoapPlusPlus

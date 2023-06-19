@@ -47,7 +47,8 @@ private slots:
     void test_OptFilter(); // 测试OptFilter类
     void test_Encoder_Decoder(); // 测试Encoder和Decoder类
 
-    //void test_
+    void test_token(); // 测试token
+    void test_requestPdu(); // 测试RequestPdu类
 };
 
 void tst_Pdu::test_Option()
@@ -108,7 +109,7 @@ void tst_Pdu::test_Option()
 
 void tst_Pdu::test_Options()
 {
-    Options options(nullptr);
+    Options options;
     std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
 
     QVERIFY(options.insertOsberveOption(false));
@@ -120,6 +121,7 @@ void tst_Pdu::test_Options()
 
     ResponsePdu respone(pdu);
     QVERIFY(respone.addOptions(options));
+    Pdu::LogPdu(LOG_INFO, &respone);
     coap_opt_iterator_t opt_iter;
     coap_opt_filter_t ignore_options;
     coap_option_filter_clear(&ignore_options);
@@ -130,7 +132,7 @@ void tst_Pdu::test_Options()
     QCOMPARE(coap_decode_var_bytes(option.getValue(), option.getLength()), COAP_OBSERVE_CANCEL);
     coap_option_filter_clear(&ignore_options);
     coap_option_filter_set(&ignore_options, Information::ContentFormat);
-    coap_option_iterator_init(pdu, &opt_iter, &ignore_options);
+    QVERIFY(coap_option_iterator_init(pdu, &opt_iter, &ignore_options));
     Option option1((Information::OptionNumber)opt_iter.number, coap_option_next(&opt_iter));
     QCOMPARE(option1.getNumber(), Information::ContentFormat);
     QCOMPARE(coap_decode_var_bytes(option1.getValue(), option1.getLength()), Information::TextPlain);
@@ -170,7 +172,7 @@ void tst_Pdu::test_Options1()
     auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
     QVERIFY(pdu);
 
-    Options options(nullptr);
+    Options options;
     std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
     QVERIFY(options.insertOsberveOption(false));
     QVERIFY(options.insertURIOption(uri));
@@ -178,7 +180,7 @@ void tst_Pdu::test_Options1()
     ResponsePdu respone(pdu);
     QVERIFY(respone.addOptions(options));
 
-    Options options1(nullptr);
+    Options options1;
     QVERIFY(options1.insertContentFormatOption(Information::ContentFormatType::Xml));
     QVERIFY(respone.addOptions(options1));
     
@@ -197,7 +199,7 @@ void tst_Pdu::test_Options2()
     auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
     QVERIFY(pdu);
 
-    Options options(nullptr);
+    Options options;
     std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
     QVERIFY(options.insertURIOption(uri));
     QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::TextPlain));
@@ -211,7 +213,7 @@ void tst_Pdu::test_Options2()
     QCOMPARE(coap_get_data(pdu, &length, &data), 1);
     QCOMPARE(QString::fromUtf8((const char*)data, length), "coapcpp");
 
-    Options options1(nullptr);
+    Options options1;
     QVERIFY(options1.insertOsberveOption(false));
     QVERIFY(!respone.addOptions(options1));
 
@@ -271,6 +273,55 @@ void tst_Pdu::test_Encoder_Decoder()
 
     opt = Option((Information::OptionNumber)opt_iter.number, coap_check_option(pdu, Information::UriPort, &opt_iter));
     QCOMPARE(Decoder::Decode(opt.getData()), 40288);
+}
+
+void tst_Pdu::test_token()
+{
+    int mid = 0x01;
+    auto pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, mid, 1024);
+    QVERIFY(pdu);
+    size_t size;
+    uint8_t tokenData[8];
+    uint8_t* emptyTokenData = nullptr;
+    coap_session_new_token(m_session, &size, tokenData);
+    QVERIFY(tokenData);
+
+    auto token = BinaryConst::Create(size, tokenData);
+    BinaryConstView tokenView(token);
+    QVERIFY_EXCEPTION_THROWN(BinaryConst::Create(0, emptyTokenData), std::invalid_argument);
+    
+    RequestPdu request(pdu, tokenView);
+    QCOMPARE(request.token(), tokenView);
+    QVERIFY(request.token() == tokenView);
+}
+
+void tst_Pdu::test_requestPdu()
+{
+    int mid = 0x02;
+    auto pdu = coap_pdu_init(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, mid, 1024);
+    QVERIFY(pdu);
+    size_t size;
+    uint8_t tokenData[8];
+    coap_session_new_token(m_session, &size, tokenData);
+    QVERIFY(tokenData);
+    auto token = BinaryConst::Create(size, tokenData);
+    BinaryConstView tokenView(token);
+    RequestPdu request(pdu, tokenView);
+
+    QCOMPARE(request.messageType(), Information::Confirmable);
+    QCOMPARE(request.code(), Information::Get);
+    QCOMPARE(request.messageId(), mid);
+    QCOMPARE(request.payload(), Payload());
+    QCOMPARE(request.token(), tokenView);
+
+    request.setCode(Information::Post);
+    QCOMPARE(request.code(), Information::Post);
+    request.setMessageType(Information::NonConfirmable);
+    QCOMPARE(request.messageType(), Information::NonConfirmable);
+    Pdu::LogPdu(LOG_INFO, &request);
+
+    // request.createOptions();
+    // request.addOptions(.insertUriPath("coapcpp").insertUriPath("test").insertUriPath("pdu"));
 }
 
 QTEST_MAIN(tst_Pdu)

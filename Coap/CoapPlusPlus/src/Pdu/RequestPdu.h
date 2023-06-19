@@ -21,6 +21,13 @@ namespace CoapPlusPlus
 class RequestPdu : public Pdu
 {
 public:
+    /**
+     * @brief 构造一个请求PDU对象
+     * 
+     * @param rawPdu 传入非空的coap_pdu_t指针
+     * @param token 
+     * @exception std::invalid_argument 当传入的pdu为空时抛出
+     */
     RequestPdu(coap_pdu_t* rawPdu, BinaryConstView token);
     ~RequestPdu() = default;
 

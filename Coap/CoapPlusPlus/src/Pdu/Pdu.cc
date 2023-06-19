@@ -63,16 +63,8 @@ bool Pdu::addOptions(Options options)
         throw DataWasReleasedException("data was released");
     auto optList = options.getOptList();
     auto result = coap_add_optlist_pdu(m_rawPdu, &optList);
-    options.deleteOptList();
+    //options.deleteOptList();
     return result;
-}
-
-Options Pdu::createOptions(OptionNumber number, std::vector<uint8_t> data)
-{
-    auto options = coap_new_optlist(number, data.size(), data.data());
-    if(options == nullptr)
-        throw CallCoapLibFuncException("coap_new_optlist is failed");
-    return options;
 }
 
 Pdu::Pdu(coap_pdu_t *pdu) : m_rawPdu(pdu)

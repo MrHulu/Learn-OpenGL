@@ -8,7 +8,11 @@ RequestPdu::RequestPdu(coap_pdu_t *rawPdu, BinaryConstView token)
     : Pdu(rawPdu)
     , m_token(token)
 {
-
+    if(rawPdu == nullptr)
+        throw std::invalid_argument("Can't construct RequestPdu object, pdu is nullptr");
+    
+    m_requestCode = static_cast<RequestCode>(coap_pdu_get_code(rawPdu));
+    coap_add_token(rawPdu, token.size(), token.data().data());
 }
 
 Payload RequestPdu::payload() const noexcept
@@ -27,7 +31,7 @@ try{
         // 检查选项列表中是否包含该数据的格式的option， 没有就补上去
         if(isContainOption(Information::ContentFormat) == false){
             Encoder encoder(payload.type());
-            Options options(createOptions(Information::ContentFormat, encoder.getData()));
+            Options options(Options(Information::ContentFormat, encoder.getData()));
             if(addOptions(options))
                 return false;
         }

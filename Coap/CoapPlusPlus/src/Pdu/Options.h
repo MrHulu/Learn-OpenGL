@@ -14,20 +14,48 @@
 #include "coap/Information/OptionInformation.h"
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace CoapPlusPlus
 {
 
+/**
+ * @brief coap_optlist_t的C++封装，用于存储CoAP消息的选项。
+ * 
+ */
 class Options
 {
     friend class Pdu;
 public:
     /**
      * @brief 构造一个Options对象
-     * @details coap_optlist_t的C++封装，用于存储CoAP消息的选项。
      * 
+     * @param number 需要插入的选项的编号
+     * @param data 需要插入的选项的数据
+     * 
+     * @exception std::invalid_argument 传入的参数不是一个合法的数据
      */
-    Options(coap_optlist_t* optList);
+    Options(Information::OptionNumber number, std::vector<uint8_t> data);
+
+    Options() noexcept {}
+
+    ~Options() { deleteOptList(); }
+
+    Options(const Options& other) {  
+        for(auto node = other.m_optList; node != nullptr; node = node->next) {
+            auto optlist = (coap_optlist_t*)coap_malloc(sizeof(coap_optlist_t));
+            optlist->number = node->number;
+            optlist->length = node->length;
+            optlist->data = (uint8_t*)coap_malloc(node->length);
+            memcpy(optlist->data, node->data, node->length);
+            coap_insert_optlist(&m_optList, optlist);
+        }
+    }
+
+    Options(Options&& other) noexcept { 
+        m_optList = other.m_optList;
+        other.m_optList = nullptr;
+    }
 
     /**
      * @brief 插入一个选项
@@ -72,7 +100,7 @@ public:
 
 private:
     coap_optlist_t* getOptList() const noexcept { return m_optList; }
-    void deleteOptList() noexcept { coap_delete_optlist(m_optList); }
+    void deleteOptList() noexcept;
 
 private:
     coap_optlist_t* m_optList = nullptr;
