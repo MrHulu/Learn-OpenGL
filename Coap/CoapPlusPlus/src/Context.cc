@@ -1,12 +1,28 @@
 #include "Context.h"
-#include "coap/client/SimpleClient.h"
-#include "coap/server/SimpleServer.h"
-#include "coap/server/EndPoint.h"
 #include "coap/exception.h"
-
-#include <stdexcept>
-
 namespace CoapPlusPlus {
+
+
+void Context::startIOProcess(int waitMs) noexcept
+{
+    stopIOProcess();
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_flag = true;
+    m_thread = new std::thread(&Context::startIOProcessThreadFunc, this, waitMs);
+}
+
+void Context::stopIOProcess() noexcept
+{
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_flag = false;
+    }
+    if(m_thread) {
+        m_thread->join();
+        delete m_thread;
+        m_thread = nullptr;
+    }
+}
 
 Context::Context() {
     m_ctx = coap_new_context(nullptr);
@@ -19,7 +35,6 @@ Context::Context() {
 }
 
 Context::~Context() {
-    m_endpoints.clear();
     if (m_ctx != nullptr) {
         coap_free_context(m_ctx);
         m_ctx = nullptr;
@@ -27,82 +42,35 @@ Context::~Context() {
     coap_cleanup();
 }
 
-std::shared_ptr<SimpleServer> Context::server() noexcept
+void Context::startIOProcessThreadFunc(int waitMs) noexcept
 {
-    if (m_server == nullptr) {
-        m_server = std::make_shared<SimpleServer>(*this);
+    auto wait_ms = waitMs > 0 ? waitMs : 
+    waitMs == 0 ? COAP_IO_WAIT : COAP_IO_NO_WAIT;
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        m_flag = true;
     }
-    return m_server;
-}
-
-std::shared_ptr<SimpleClient> Context::client() noexcept
-{
-    if (m_client == nullptr) {
-        m_client = std::make_shared<SimpleClient>(*this);
+    coap_context_t *temp_ctx;
+    while (true) { 
+        bool flag; 
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            flag = m_flag;
+            temp_ctx = m_ctx;
+        }
+        if (!flag) break;
+        
+        auto result = coap_io_process(temp_ctx, wait_ms);
+        if (result < 0) 
+            break; 
+        else if ((uint32_t)result && ((uint32_t)result < wait_ms))
+            wait_ms -= result; 
+        else {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            wait_ms = waitMs > 0 ? waitMs : 
+            waitMs == 0 ? COAP_IO_WAIT : COAP_IO_NO_WAIT;;
+        }
     }
-    return m_client;
 }
-
-void Context::addEndPoint(int port, int proto)
-{
-  auto it = m_endpoints.find(port);
-  if (it != m_endpoints.end()) {
-      throw std::invalid_argument("EndPoint already exists");
-  }
-  auto ep = createEndPoint(port, proto);
-  auto endpoint = std::make_shared<EndPoint>(ep);
-  m_endpoints.emplace(port, endpoint);
-}
-
-void Context::removeEndPoint(int port)
-{
-  auto it = m_endpoints.find(port);
-  if (it == m_endpoints.end()) {
-      throw std::invalid_argument("EndPoint not found");
-  }
-  m_endpoints.erase(it);
-}
-
-coap_endpoint_t *Context::createEndPoint(int port, int proto)
-{
-    coap_address_t  addr;
-    coap_address_init(&addr);
-    addr.addr.sin.sin_family = AF_INET;
-    addr.addr.sin.sin_addr.s_addr = INADDR_ANY;
-    addr.addr.sin.sin_port = htons(port);
-    auto ep = coap_new_endpoint(m_ctx, &addr, (coap_proto_t)proto);
-    if (ep == nullptr) {
-        throw CallCoapLibFuncException("Failed to call the coap_new_endpoint function!");
-    }
-    return ep;
-}
-
-// std::shared_ptr<Resource> Context::resource(const std::string& url) const {
-//     auto it = m_resources.find(url);
-//     if (it == m_resources.end()) {
-//         throw std::out_of_range("Resource not found, url: " + url + "");
-//     }
-//     return std::shared_ptr<Resource>(it->second);
-// }
-
-// void Context::addResource(std::unique_ptr<Resource> resource) {
-//     auto res = resource.get();
-//     auto it = m_resources.find(res->getUriPath());
-//     if (it != m_resources.end()) {
-//         throw std::invalid_argument("Resource already exists, url: " + res->getUriPath() + "");
-//     }
-//     m_resources[res->getUriPath()] = res;
-//     resource.release(); // ownership being taken by m_resources
-// }
-
-// void Context::deleteResource(const std::string &url)
-// {
-//     auto it = m_resources.find(url);
-//     if (it != m_resources.end()) {
-//         auto res = it->second;
-//         delete it->second;
-//         m_resources.erase(it);
-//     }
-// }
 
 };// namespace CoapPlusPlus 
