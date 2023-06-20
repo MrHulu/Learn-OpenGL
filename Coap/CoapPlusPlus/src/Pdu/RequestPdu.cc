@@ -32,7 +32,7 @@ try{
         if(isContainOption(Information::ContentFormat) == false){
             Encoder encoder(payload.type());
             Options options(Options(Information::ContentFormat, encoder.getData()));
-            if(addOptions(options))
+            if(addOptions(options) == false)
                 return false;
         }
         m_payload = payload;
@@ -40,7 +40,7 @@ try{
         return true;
     }
     else {
-        coap_log_err("[RequestPdu::setPayload]payload is empty or type is None");
+        coap_log_err("[RequestPdu::setPayload]payload is empty or type is None\n");
         return false;
     }
 }catch(std::exception &e){

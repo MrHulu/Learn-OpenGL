@@ -30,6 +30,12 @@ public:
         m_data = std::span<uint8_t>();
     }
 
+    // 默认浅拷贝就可以了
+    // Payload(const Payload &other) noexcept {
+    //     m_type = other.m_type;
+    //     m_data = other.m_data;
+    // }
+
     ~Payload() noexcept = default;
 
     bool operator== (const Payload &other) const noexcept {

@@ -57,6 +57,21 @@ std::vector<Option> Pdu::getOptions(OptFilter filter) const
     return result;
 }
 
+std::vector<Option> Pdu::getOptions() const
+{
+    if(m_rawPdu == nullptr)
+        throw DataWasReleasedException("data was released");
+    std::vector<Option> result;
+    coap_opt_iterator_t oi;
+    coap_option_iterator_init(m_rawPdu, &oi, COAP_OPT_ALL);
+    while(auto rawOpt = coap_option_next(&oi)) {
+        try{
+            result.emplace_back(Option((OptionNumber)oi.number, rawOpt));
+        }catch(const std::exception& e) {}
+    }
+    return result;
+}
+
 bool Pdu::addOptions(Options options)
 {
     if(m_rawPdu == nullptr)

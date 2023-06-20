@@ -103,12 +103,15 @@ public:
      * @exception DataWasReleasedException 当该对象的Pdu已经被释放时抛出此异常
      */
     std::vector<Option> getOptions(OptFilter filter) const;
+    std::vector<Option> getOptions() const;
 
     /**
      * @brief 为该对象的Pdu添加一个选项列表
      * 
      * @param options 选项列表
-     * @return 添加是否成功，如果Pdu添加了payload，则添无法再添加选项，返回false
+     * @return 添加是否成功
+     *      @retval true Pdu成功添加了选项
+     *      @retval false 如果Pdu添加了payload则添无法再添加选项或者options参数里面的选项列表为空
      * 
      * @exception DataWasReleasedException 当该对象的Pdu已经被释放时抛出此异常
      * @attention 如果某个选项已经存在，将不会覆盖，只会跳过

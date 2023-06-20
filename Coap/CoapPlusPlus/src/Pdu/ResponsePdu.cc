@@ -42,7 +42,7 @@ try{
         return true;
     }
     else {
-        coap_log_err("[ResponsePdu::setPayload]payload is empty or type is None");
+        coap_log_err("[ResponsePdu::setPayload]payload is empty or type is None\n");
         return false;
     }
 }catch(std::exception &e){
