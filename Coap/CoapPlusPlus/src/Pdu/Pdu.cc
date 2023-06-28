@@ -52,7 +52,7 @@ std::vector<Option> Pdu::getOptions(OptFilter filter) const
     while(auto rawOpt = coap_option_next(&oi)) {
         try{
             result.emplace_back(Option((OptionNumber)oi.number, rawOpt));
-        }catch(const std::exception& e) {}
+        }catch(...) {}
     }
     return result;
 }
@@ -67,7 +67,7 @@ std::vector<Option> Pdu::getOptions() const
     while(auto rawOpt = coap_option_next(&oi)) {
         try{
             result.emplace_back(Option((OptionNumber)oi.number, rawOpt));
-        }catch(const std::exception& e) {}
+        }catch(...) {}
     }
     return result;
 }
