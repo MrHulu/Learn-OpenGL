@@ -17,6 +17,7 @@ namespace CoapPlusPlus
 
 class EndPoint
 {
+    //friend class ContextServer;
     coap_endpoint_t* getEndPoint() const noexcept { return m_ep; }
 public:
     /**
@@ -28,6 +29,7 @@ public:
      * @param ep 
      */
     EndPoint(coap_endpoint_t *ep) noexcept : m_ep(ep) { }
+    ~EndPoint() noexcept { coap_free_endpoint(m_ep); }
 private:
     coap_endpoint_t *m_ep = nullptr;
 };
