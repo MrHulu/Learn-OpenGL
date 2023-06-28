@@ -7,9 +7,6 @@ namespace CoapPlusPlus {
 ResponsePdu::ResponsePdu(coap_pdu_t *pdu)
     : Pdu(pdu)
 {
-    if(pdu == nullptr)
-        throw std::invalid_argument("Can't construct ResponsePdu object, pdu is nullptr");
-    
     m_responseCode = static_cast<ResponseCode>(coap_pdu_get_code(pdu));
 }
 

@@ -95,7 +95,7 @@ public:
     /**
      * @brief 插入一个内容格式选项
      * 
-     * @param format @enum Information::ContentFormatType
+     * @param format 内容格式
      * @return 是否插入成功   
      */
     bool insertContentFormatOption(Information::ContentFormatType format) noexcept;

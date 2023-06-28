@@ -59,7 +59,7 @@ public:
     /**
      * @brief 获得payload中的数据类型
      * 
-     * @return Information::ContentFormatType 数据流类型 @enum Information::ContentFormatType
+     * @return Information::ContentFormatType 数据流类型
      */
     Information::ContentFormatType type() const noexcept { return m_type; }
 

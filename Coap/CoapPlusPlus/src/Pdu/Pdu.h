@@ -106,7 +106,7 @@ public:
     std::vector<Option> getOptions() const;
 
     /**
-     * @brief 为该对象的Pdu添加一个选项列表
+     * @brief 为该对象的Pdu添加一个选项列表，大多数情况下用于创建请求
      * 
      * @param options 选项列表
      * @return 添加是否成功

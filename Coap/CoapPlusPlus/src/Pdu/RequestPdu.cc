@@ -8,9 +8,6 @@ RequestPdu::RequestPdu(coap_pdu_t *rawPdu, BinaryConstView token)
     : Pdu(rawPdu)
     , m_token(token)
 {
-    if(rawPdu == nullptr)
-        throw std::invalid_argument("Can't construct RequestPdu object, pdu is nullptr");
-    
     m_requestCode = static_cast<RequestCode>(coap_pdu_get_code(rawPdu));
     coap_add_token(rawPdu, token.size(), token.data().data());
 }
