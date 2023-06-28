@@ -3,7 +3,6 @@
 #include <QDebug>
 
 #include "coap/Context.h"
-#include "coap/Utils.h"
 
 using namespace CoapPlusPlus;
 
