@@ -27,9 +27,9 @@ public:
      * @param waitMs 在做完任何处理后返回前等待新数据包的最小毫秒数。
      *               如果为0，该调用将阻塞到下一个内部动作（如数据包重传）（如果有），或阻塞到收到下一个数据包（以较早者为准），并做必要的处理。
      *               如果为-1，该函数将在处理后立即返回，而不等待任何新的输入数据包到达。
-     * @attention 该函数会阻塞当前线程
+     * @return 开始IO处理，成功返回true，否则返回false
      */
-    void startIOProcess(int waitMs = 1000) noexcept;
+    bool startIOProcess(int waitMs = 1000) noexcept;
 
     /**
      * @brief 停止阻塞当前的Coap I/O 处理
@@ -47,6 +47,14 @@ protected:
     Context();
     ~Context() noexcept;
     coap_context_t* getContext() const noexcept { return m_ctx; }
+
+    /**
+     * @brief 是否准备好一切以用于网络I/O
+     * 
+     * @return true 
+     * @return false 
+     */
+    virtual bool isReady() const noexcept = 0;
 
 protected :
     coap_context_t*     m_ctx {};

@@ -24,6 +24,7 @@ class EndPoint;
 
 class ContextServer : public Context
 {
+    friend class ResourceManager;
 public:
     /**
      * @brief 构造一个管理服务器相关信息的Context对象
@@ -54,19 +55,20 @@ public:
      * @param port 该端点使用的端口号
      * @param pro 该端点使用的协议，默认为UDP
      * 
-     * @exception CallCoapLibFuncException 创建EndPoint失败会抛出该异常
+     * @return 是否添加成功
+     *      @retval false 已经存在该端口号的端点或者内部错误
+     *      @retval true 添加成功
      */
-    void addEndPoint(uint16_t port, Information::Protocol pro = Information::Udp);
+    bool addEndPoint(uint16_t port, Information::Protocol pro = Information::Udp) noexcept;
 
     /**
      * @brief 为服务器Context移除一个端点，用于与对等体进行通信。
      * 
      * @param port 要移除的端点使用的端口号
      * 
-     * @exception CallCoapLibFuncException 移除EndPoint失败会抛出该异常
-     * @exception TargetNotFoundException 未找到对应的端点会抛出该异常
+     * @return 是否移除成功，如果不存在该端口号的端点则移除失败
      */
-    void removeEndPoint(uint16_t port);
+    bool removeEndPoint(uint16_t port) noexcept;
 
     /**
      * @brief 得到一个端点对象
@@ -76,7 +78,7 @@ public:
      * 
      * @exception TargetNotFoundException 未找到对应的端点会抛出该异常
      */
-    const EndPoint* getEndPoint(uint16_t port) const;
+    EndPoint& getEndPoint(uint16_t port) const;
 
     /**
      * @brief 得到当前Context中的所有端点数量
@@ -95,7 +97,8 @@ public:
     ResourceManager& getResourceManager() const noexcept { return *m_resourceManager; }
 
 private:
-    coap_endpoint_t* createEndPoint(uint16_t port, Information::Protocol pro) noexcept;
+    coap_endpoint_t* createEndPoint(uint16_t port, Information::Protocol pro);
+    bool isReady() const noexcept override;
 
 private:
     bool m_persistEnable = false;

@@ -3,12 +3,17 @@
 namespace CoapPlusPlus {
 
 
-void Context::startIOProcess(int waitMs) noexcept
+bool Context::startIOProcess(int waitMs) noexcept
 {
+    if(isReady() == false) {
+        coap_log_debug("没有添加endpoint或者session, 无法开始IO处理\n");
+        return false;
+    }
     stopIOProcess();
     std::lock_guard<std::mutex> lock(m_mutex);
     m_flag = true;
     m_thread = new std::thread(&Context::startIOProcessThreadFunc, this, waitMs);
+    return true;
 }
 
 void Context::stopIOProcess() noexcept
@@ -35,6 +40,7 @@ Context::Context() {
 }
 
 Context::~Context() {
+    stopIOProcess();
     if (m_ctx != nullptr) {
         coap_free_context(m_ctx);
         m_ctx = nullptr;
