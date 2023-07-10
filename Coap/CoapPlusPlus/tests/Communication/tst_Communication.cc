@@ -2,10 +2,6 @@
 #include <QSignalSpy>
 #include <QDebug>
 
-#include "coap/Context.h"
-
-using namespace CoapPlusPlus;
-
 class tst_Communication : public QObject {
     Q_OBJECT
 public:

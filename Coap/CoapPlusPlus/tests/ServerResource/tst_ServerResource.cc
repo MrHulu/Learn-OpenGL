@@ -44,7 +44,7 @@ private slots:
     void test_ContextServer();
     void test_ResourceRegister(); // 测试资源的注册和注销
     void test_Resource(); // 测试资源的基本接口
-    void test_ResourceInterface(); // 测试资源回应接口
+    //void test_ResourceInterface(); // todo: 等实现了class Session再测试资源回应接口
 };
 
 void tst_ServerResource::test_ContextServer()
