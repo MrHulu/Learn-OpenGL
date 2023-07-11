@@ -20,8 +20,8 @@ namespace CoapPlusPlus
 
 class Address {
 public:
-    Address(const sockaddr_in& address);
-    Address(const sockaddr_in6& address);
+    Address(const sockaddr_in& address) noexcept;
+    Address(const sockaddr_in6& address) noexcept;
 
     /**
      * @brief Construct a new Address object
@@ -60,9 +60,19 @@ public:
         return *this;
     }
 
-    std::string getIpAddress() const;
+    /**
+     * @brief 获得ip地址
+     * 
+     * @return std::string 
+     */
+    std::string getIpAddress() const noexcept;
 
-    uint16_t getPort() const;
+    /**
+     * @brief 获得端口号
+     * 
+     * @return uint16_t 
+     */
+    uint16_t getPort() const noexcept;
 
 private:
     coap_address_t m_rawAddr;
