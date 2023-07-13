@@ -52,10 +52,6 @@ void Context::startIOProcessThreadFunc(int waitMs) noexcept
 {
     auto wait_ms = waitMs > 0 ? waitMs : 
     waitMs == 0 ? COAP_IO_WAIT : COAP_IO_NO_WAIT;
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        m_flag = true;
-    }
     coap_context_t *temp_ctx;
     while (true) { 
         bool flag; 
@@ -72,7 +68,6 @@ void Context::startIOProcessThreadFunc(int waitMs) noexcept
         else if ((uint32_t)result && ((uint32_t)result < wait_ms))
             wait_ms -= result; 
         else {
-            std::lock_guard<std::mutex> lock(m_mutex);
             wait_ms = waitMs > 0 ? waitMs : 
             waitMs == 0 ? COAP_IO_WAIT : COAP_IO_NO_WAIT;;
         }
