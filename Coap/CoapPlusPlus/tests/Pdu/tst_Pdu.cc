@@ -298,7 +298,7 @@ void tst_Pdu::test_token()
     BinaryConstView tokenView(token);
     QVERIFY_EXCEPTION_THROWN(BinaryConst::Create(0, emptyTokenData), std::invalid_argument);
     
-    RequestPdu request(pdu, tokenView);
+    RequestPdu request(pdu, token);
     QCOMPARE(request.token(), tokenView);
     QVERIFY(request.token() == tokenView);
     coap_delete_pdu(pdu);
@@ -315,7 +315,7 @@ void tst_Pdu::test_requestPdu()
     QVERIFY(tokenData);
     auto token = BinaryConst::Create(size, tokenData);
     BinaryConstView tokenView(token);
-    RequestPdu request(pdu, tokenView);
+    RequestPdu request(pdu, token);
 
     // 测试RequestPdu初始化是否正常
     QCOMPARE(request.messageType(), Information::Confirmable);

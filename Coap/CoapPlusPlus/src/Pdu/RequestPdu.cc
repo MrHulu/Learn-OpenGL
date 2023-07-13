@@ -4,12 +4,17 @@
 
 namespace CoapPlusPlus {
 
-RequestPdu::RequestPdu(coap_pdu_t *rawPdu, BinaryConstView token)
+RequestPdu::RequestPdu(coap_pdu_t *rawPdu, BinaryConst token)
     : Pdu(rawPdu)
-    , m_token(token)
+    , m_token(std::move(token))
 {
     m_requestCode = static_cast<RequestCode>(coap_pdu_get_code(rawPdu));
-    coap_add_token(rawPdu, token.size(), token.data().data());
+    coap_add_token(rawPdu, m_token.size(), m_token.data().data());
+}
+
+RequestPdu::~RequestPdu()
+{
+
 }
 
 Payload RequestPdu::payload() const noexcept

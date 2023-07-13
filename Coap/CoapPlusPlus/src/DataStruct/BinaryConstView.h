@@ -11,6 +11,7 @@
 #pragma once
 
 #include <coap3/coap.h>
+#include "coap/exception.h"
 #include "BinaryConst.h"
 
 namespace CoapPlusPlus {
@@ -19,8 +20,7 @@ class BinaryConstView
 {
 public:
     BinaryConstView(const BinaryConstView& other) : BinaryConstView(other.m_rawData) { }
-    BinaryConstView(BinaryConstView&& other) noexcept 
-        : m_rawData(other.m_rawData), m_binary(BinaryConst::Reference(other.m_rawData)) { }
+    BinaryConstView(BinaryConstView&& other) noexcept  : m_rawData(other.m_rawData){ }
     /**
      * @brief 返回一个新的二进制对象，该对象引用给定的数据。
      * 
@@ -28,11 +28,9 @@ public:
      * @exception std::invalid_argument 当raw为空时抛出
      */
     BinaryConstView(const coap_bin_const_t* raw) 
-        : m_rawData(raw)
-        , m_binary(BinaryConst::Reference(raw)) { }
+        : m_rawData(raw)  { }
     BinaryConstView(const BinaryConst& binary) 
-        : m_rawData(binary.rawData())
-        , m_binary(BinaryConst::Reference(m_rawData)) { }
+        : m_rawData(binary.rawData())  { }
 
     ~BinaryConstView() noexcept = default;
 
@@ -55,7 +53,11 @@ public:
      * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
      * @return size_t 
      */
-    size_t size() const { return m_binary.size(); }
+    size_t size() const { 
+        if(m_rawData == nullptr)
+            throw DataWasReleasedException("");
+        return m_rawData->length; 
+    }
 
     /**
      * @brief 获得对象中引用的字节数据
@@ -63,11 +65,14 @@ public:
      * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
      * @return std::span<uint8_t>类型的数据 
      */
-    std::span<uint8_t> data() const { return m_binary.data(); }
+    std::span<uint8_t> data() const { 
+        if(m_rawData == nullptr)
+            throw DataWasReleasedException("");
+        return std::span<uint8_t>(const_cast<uint8_t*>(m_rawData->s), m_rawData->length);
+    }
 
 private:
     const coap_bin_const_t* m_rawData;
-    BinaryConst m_binary;
 };
 
 

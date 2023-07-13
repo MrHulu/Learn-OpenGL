@@ -29,8 +29,8 @@ public:
      * @param token 
      * @exception std::invalid_argument 当传入的pdu为空时抛出
      */
-    RequestPdu(coap_pdu_t* rawPdu, BinaryConstView token);
-    ~RequestPdu() = default;
+    RequestPdu(coap_pdu_t* rawPdu, BinaryConst token);
+    ~RequestPdu();
 
     Payload payload() const noexcept override;
 
@@ -65,12 +65,12 @@ public:
      * 
      * @return token
      */
-    BinaryConstView token() const noexcept { return m_token; }
+    BinaryConstView token() const noexcept { return BinaryConstView(m_token); }
 
 private:
     RequestCode m_requestCode;
     std::optional<Payload> m_payload;
-    BinaryConstView m_token;
+    BinaryConst m_token;
 };
 
 

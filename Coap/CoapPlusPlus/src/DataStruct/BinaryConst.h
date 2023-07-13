@@ -19,10 +19,19 @@ class BinaryConst
 {
     friend class BinaryConstView;
     BinaryConst(coap_bin_const_t* raw, bool owned);
-    BinaryConst(const BinaryConst& other) : BinaryConst(DeepCopy(other.m_rawData).m_rawData, true) {}
+public:
+    BinaryConst(const BinaryConst& other) {
+        if(this != &other) {
+            BinaryConst copy = DeepCopy(other.m_rawData);
+            std::swap(m_rawData, copy.m_rawData);
+            std::swap(m_owned, copy.m_owned);
+        }
+    }
     BinaryConst(BinaryConst&& other) noexcept : m_rawData(other.m_rawData), m_owned(other.m_owned) {
-        other.m_rawData = nullptr;
-        other.m_owned = false;
+        if(this != &other) {
+            other.m_rawData = nullptr;
+            other.m_owned = false;
+        }
     }
     BinaryConst& operator=(const BinaryConst& other) {
         if (this != &other) {
@@ -40,7 +49,6 @@ class BinaryConst
         }
         return *this;
     }
-public:
     
     ~BinaryConst();
     /**
@@ -96,8 +104,8 @@ private:
     const coap_bin_const_t* rawData() const { return m_rawData; }
 
 private: 
-    coap_bin_const_t* m_rawData;
-    bool m_owned;
+    coap_bin_const_t* m_rawData = nullptr;
+    bool m_owned = false;
 };
 
 

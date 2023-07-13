@@ -141,8 +141,7 @@ void Resource::logPdu(coap_pdu_t *request, coap_pdu_t *response) noexcept
     if (request && response) {
         auto raw_token = coap_pdu_get_token(request);
         if(raw_token.length > 0 && raw_token.s != nullptr) {
-            BinaryConstView token(&raw_token);
-            RequestPdu requestPdu(request, token);
+            RequestPdu requestPdu(request, BinaryConst::Create(raw_token.length, raw_token.s));
             ResponsePdu responsePdu(response);
             Pdu::LogPdu(COAP_LOG_DEBUG, &requestPdu);
             Pdu::LogPdu(COAP_LOG_DEBUG, &responsePdu);
