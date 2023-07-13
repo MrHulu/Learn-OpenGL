@@ -61,7 +61,7 @@ bool ContextServer::addEndPoint(uint16_t port, Information::Protocol pro) noexce
         EndPoint* endPointObj = new EndPoint(endpoint);
         m_endpoints.emplace(port, endPointObj);
         return true;
-    }catch(const CallCoapLibFuncException& e) {
+    }catch(const InternalException& e) {
         coap_log_debug("Create endpoint failed: %s\n", e.what());
         return false;
     }
@@ -105,7 +105,7 @@ coap_endpoint_t* ContextServer::createEndPoint(uint16_t port, Information::Proto
     // 创建端点
     auto ep = coap_new_endpoint(m_ctx, &addr, (coap_proto_t)pro);
     if (ep == nullptr) {
-        throw CallCoapLibFuncException("Failed to create CoAP endpoint");
+        throw InternalException("Failed to create CoAP endpoint");
     }
     return ep;
 }

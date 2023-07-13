@@ -28,7 +28,7 @@ public:
      * @details coap_context_t的C++封装，一个Context对应一个服务器或者一个客户端。
      *          CoAP协议栈的全局状态被存储在coap_context_t对象中。 
      * 
-     * @exception CallCoapLibFuncException 创建Context失败会抛出该异常
+     * @exception InternalException 创建Context失败会抛出该异常
      */
     ContextClient();
     ~ContextClient() noexcept;
@@ -83,7 +83,7 @@ private:
      * 
      * @return 会话对象的指针
      * 
-     * @exception CallCoapLibFuncException 创建会话失败会抛出该异常
+     * @exception InternalException 创建会话失败会抛出该异常
      */
     coap_session_t* createSession(uint16_t port, Information::Protocol pro);
 

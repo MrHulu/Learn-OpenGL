@@ -36,7 +36,7 @@ Address Session::getLocalAddress() const
 {
     auto raw_addr = coap_session_get_addr_local(m_session);
     if(raw_addr == nullptr)
-        throw CallCoapLibFuncException("Failed to call the Session::getLocalAddress()");
+        throw InternalException("Failed to call the Session::getLocalAddress()");
     return Address(*raw_addr);
 }
 
@@ -44,7 +44,7 @@ Address Session::getRemoteAddress() const
 {
     auto raw_addr = coap_session_get_addr_remote(m_session);
     if(raw_addr == nullptr)
-        throw CallCoapLibFuncException("Failed to call the Session::getRemoteAddress()");
+        throw InternalException("Failed to call the Session::getRemoteAddress()");
     return Address(*raw_addr);
 }
 

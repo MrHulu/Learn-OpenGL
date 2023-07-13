@@ -31,7 +31,7 @@ bool ContextClient::addSession(uint16_t port, Information::Protocol pro) noexcep
         auto session = new Session(raw_session);
         m_sessions.emplace(std::make_pair(port, pro), session);
         return true;
-    }catch(const CallCoapLibFuncException& e) {
+    }catch(const InternalException& e) {
         coap_log_debug("Create session failed: %s\n", e.what());
         return false;
     }
@@ -83,7 +83,7 @@ coap_session_t *ContextClient::createSession(uint16_t port, Information::Protoco
     // 创建会话
     auto raw_session = coap_new_client_session(m_ctx, nullptr, &addr, (coap_proto_t)pro);
     if (raw_session == nullptr) {
-        throw CallCoapLibFuncException("Failed to create CoAP session");
+        throw InternalException("Failed to create CoAP session");
     }
     return raw_session;
 }

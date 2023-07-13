@@ -59,7 +59,7 @@ public:
      * @param raw coap_bin_const_t结构体指针
      * 
      * @exception std::invalid_argument 当raw为空时抛出
-     * @exception CallCoapLibFuncException 无法分配内存时抛出
+     * @exception InternalException 无法分配内存时抛出
      * @return BinaryConst 
      */
     static BinaryConst DeepCopy(coap_bin_const_t* raw);
@@ -71,7 +71,7 @@ public:
      * @param data 要放在新的BinaryConst对象中的数据。
      * 
      * @exception std::invalid_argument 当为raw为空时抛出
-     * @exception CallCoapLibFuncException 无法分配内存时抛出
+     * @exception InternalException 无法分配内存时抛出
      * @return BinaryConst 
      */
     static BinaryConst Create(size_t size, const uint8_t* data);

@@ -38,7 +38,7 @@ BinaryConst BinaryConst::Create(size_t size, const uint8_t *data)
         throw std::invalid_argument("data cannot be null");
     auto raw = coap_new_bin_const(data, size);
     if(raw == nullptr)
-        throw CallCoapLibFuncException("coap_new_bin_const failed");
+        throw InternalException("coap_new_bin_const failed");
     return BinaryConst(raw, true);
 }
 

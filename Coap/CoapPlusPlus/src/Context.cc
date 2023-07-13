@@ -32,7 +32,7 @@ void Context::stopIOProcess() noexcept
 Context::Context() {
     m_ctx = coap_new_context(nullptr);
     if (m_ctx == nullptr) {
-        throw CallCoapLibFuncException("Failed to call the coap_new_context function!");
+        throw InternalException("Failed to call the coap_new_context function!");
     }
     coap_startup();
     coap_context_set_block_mode(m_ctx, COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY);

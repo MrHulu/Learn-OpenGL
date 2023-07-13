@@ -38,7 +38,7 @@ Binary Binary::Create(size_t size, uint8_t *data)
         throw std::invalid_argument("data cannot be null");
     auto raw = coap_new_binary(size);
     if(raw == nullptr)
-        throw CallCoapLibFuncException("coap_new_binary failed");
+        throw InternalException("coap_new_binary failed");
     std::copy(data, data + size, raw->s);
     return Binary(raw, true);
 }

@@ -58,7 +58,7 @@ public:
      * @param raw coap_binary_t结构体指针
      * 
      * @exception std::invalid_argument 当raw为空时抛出
-     * @exception CallCoapLibFuncException 无法分配内存时抛出
+     * @exception InternalException 无法分配内存时抛出
      * @return Binary 
      */
     static Binary DeepCopy(coap_binary_t* raw);
@@ -70,7 +70,7 @@ public:
      * @param data 要放在新的Binary对象中的数据。
      * 
      * @exception std::invalid_argument 当为raw为空时抛出
-     * @exception CallCoapLibFuncException 无法分配内存时抛出
+     * @exception InternalException 无法分配内存时抛出
      * @return Binary 
      */
     static Binary Create(size_t size, uint8_t* data);

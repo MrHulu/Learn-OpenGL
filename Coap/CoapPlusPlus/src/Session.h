@@ -62,7 +62,7 @@ public:
      * 
      * @return Address 保存了本地IP地址和端口的对象 @see Address
      * 
-     * @exception CallCoapLibFuncException 内部错误，无法获取本地地址
+     * @exception InternalException 内部错误，无法获取本地地址
      */
     Address getLocalAddress() const;
 
@@ -71,7 +71,7 @@ public:
      * 
      * @return Address 保存了本地IP地址和端口的对象 @see Addresss
      * 
-     * @exception CallCoapLibFuncException 内部错误，无法获取本地地址
+     * @exception InternalException 内部错误，无法获取本地地址
      * @note 对于客户端，当恢复组播地址时，在调用下一次coap_send()之前，这可能是组播请求的响应IP地址。
      */
     Address getRemoteAddress() const;

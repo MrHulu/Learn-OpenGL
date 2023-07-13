@@ -17,14 +17,14 @@ public:
 };
 
 /**
- * @brief 当调用libcoap库失败时抛出此异常
+ * @brief 内部错误
  * 
  */
-class CallCoapLibFuncException : public std::runtime_error
+class InternalException : public std::runtime_error
 {
 public:
-    explicit CallCoapLibFuncException(const std::string& what) : std::runtime_error(what) { }
-    explicit CallCoapLibFuncException(const char* what) : std::runtime_error(what) { }    
+    explicit InternalException(const std::string& what) : std::runtime_error(what) { }
+    explicit InternalException(const char* what) : std::runtime_error(what) { }    
 };
 
 /**
@@ -48,5 +48,6 @@ public:
     explicit TargetNotFoundException(const std::string& what) : std::runtime_error(what) { }
     explicit TargetNotFoundException(const char* what) : std::runtime_error(what) { }
 };
+
 
 }// namespace CoapPlusPlus

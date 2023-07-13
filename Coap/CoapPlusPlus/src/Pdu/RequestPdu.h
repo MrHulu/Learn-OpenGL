@@ -18,6 +18,7 @@
 namespace CoapPlusPlus
 {
 
+
 class RequestPdu : public Pdu
 {
 public:
@@ -43,6 +44,18 @@ public:
      */
     bool setPayload(Payload payload) noexcept override;
 
+    /**
+     * @brief 获取当前PDU的请求码，默认为GET
+     * 
+     * @return 请求码
+     *      @retval RequestCode::GET
+     *      @retval RequestCode::POST 
+     *      @retval RequestCode::PUT
+     *      @retval RequestCode::DELETE
+     *      @retval RequestCode::FETCH
+     *      @retval RequestCode::PATCH
+     *      @retval RequestCode::IPATCH
+     */
     RequestCode code() const noexcept { return m_requestCode; }
 
     bool setCode(RequestCode code) noexcept;

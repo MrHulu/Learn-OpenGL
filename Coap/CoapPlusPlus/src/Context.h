@@ -42,7 +42,7 @@ protected:
      * @brief coap_context_t的C++封装，一个Context对应一个服务器或者一个客户端。
      *        CoAP协议栈的全局状态被存储在coap_context_t对象中。
      * 
-     * @exception CallCoapLibFuncException 创建Context失败
+     * @exception InternalException 创建Context失败
      */
     Context();
     ~Context() noexcept;
