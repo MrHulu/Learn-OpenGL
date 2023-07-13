@@ -2,8 +2,8 @@
  * @file Address.h
  * @author Hulu
  * @brief coap_address_t的C++封装
- * @version 0.1
- * @date 2023-07-11
+ * @version 0.2
+ * @date 2023-07-13
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -58,6 +58,10 @@ public:
             other.m_rawAddr.size = 0;
         }
         return *this;
+    }
+    bool operator==(const Address& other) const noexcept {
+        return m_rawAddr.size == other.m_rawAddr.size && 
+                memcmp(&m_rawAddr.addr, &other.m_rawAddr.addr, m_rawAddr.size) == 0;
     }
 
     /**
