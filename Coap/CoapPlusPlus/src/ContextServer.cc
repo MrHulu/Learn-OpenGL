@@ -62,7 +62,7 @@ bool ContextServer::addEndPoint(uint16_t port, Information::Protocol pro) noexce
         m_endpoints.emplace(port, endPointObj);
         return true;
     }catch(const CallCoapLibFuncException& e) {
-        coap_log_debug("Create endpoint failed: %s", e.what());
+        coap_log_debug("Create endpoint failed: %s\n", e.what());
         return false;
     }
 }
