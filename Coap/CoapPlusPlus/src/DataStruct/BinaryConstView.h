@@ -27,15 +27,23 @@ public:
      * @param raw libcoap库的二进制数据结构指针
      * @exception std::invalid_argument 当raw为空时抛出
      */
-    BinaryConstView(const coap_bin_const_t* raw) 
-        : m_rawData(raw)  { }
-    BinaryConstView(const BinaryConst& binary) 
-        : m_rawData(binary.rawData())  { }
+    BinaryConstView(const coap_bin_const_t* raw) : m_rawData(raw)  { }
+    
+    BinaryConstView(const BinaryConst& binary) : m_rawData(binary.rawData())  { }
 
     ~BinaryConstView() noexcept = default;
 
     bool operator== (const BinaryConstView &other) const noexcept {
         return coap_binary_equal(m_rawData, other.m_rawData);
+    }
+
+    bool operator<(const BinaryConstView& other) const {
+        if (m_rawData->length < other.m_rawData->length) 
+            return true; 
+        else if (m_rawData->length > other.m_rawData->length)
+            return false;
+        else
+            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
     }
 
     /**

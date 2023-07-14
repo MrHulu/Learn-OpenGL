@@ -50,6 +50,16 @@ public:
         return *this;
     }
     
+    bool operator<(const BinaryConst& other) const {
+        if (m_rawData->length < other.m_rawData->length) 
+            return true; 
+        else if (m_rawData->length > other.m_rawData->length)
+            return false;
+        else
+            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+    }
+
+    
     ~BinaryConst();
     /**
      * @brief 获得一个引用coap_bin_const_t结构体的BinaryConst

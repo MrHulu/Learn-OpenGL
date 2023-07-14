@@ -11,6 +11,7 @@
 #pragma once
 
 #include <coap3/coap.h>
+#include "coap/exception.h"
 #include "coap/DataStruct/Binary.h"
 
 namespace CoapPlusPlus {
@@ -24,10 +25,18 @@ public:
      * @param raw libcoap库的二进制数据结构指针
      * @exception std::invalid_argument 当raw为空时抛出
      */
-    BinaryView(const coap_binary_t* raw) 
-        : m_binary(Binary::Reference(raw))
-        , m_rawData(raw) { }
+    BinaryView(const coap_binary_t* raw) : m_rawData(raw) { }
+
     ~BinaryView() noexcept = default;
+
+    bool operator<(const BinaryView& other) const {
+        if (m_rawData->length < other.m_rawData->length) 
+            return true; 
+        else if (m_rawData->length > other.m_rawData->length)
+            return false;
+        else
+            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+    }
 
     /**
      * @brief 转换为Binary对象
@@ -44,7 +53,11 @@ public:
      * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
      * @return size_t 
      */
-    size_t size() const { return m_binary.size(); }
+    size_t size() const { 
+        if(m_rawData == nullptr)
+            throw DataWasReleasedException("");
+        return m_rawData->length; 
+    }
 
     /**
      * @brief 获得对象中引用的字节数据
@@ -52,10 +65,13 @@ public:
      * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
      * @return std::span<uint8_t>类型的数据 
      */
-    std::span<uint8_t> data() const { return m_binary.data(); }
+    std::span<uint8_t> data() const { 
+        if(m_rawData == nullptr)
+            throw DataWasReleasedException("");
+        return std::span<uint8_t>(const_cast<uint8_t*>(m_rawData->s), m_rawData->length);
+     }
 
 private:
-    Binary m_binary;
     const coap_binary_t* m_rawData;
 };
 

@@ -9,7 +9,7 @@ namespace CoapPlusPlus {
 BinaryConst::BinaryConst(coap_bin_const_t* raw, bool owned)
 {
     if(raw == nullptr)
-        throw std::invalid_argument("raw cannot be null");
+        throw std::invalid_argument("Can't construct BinaryConst, raw cannot be null");
     m_rawData = raw;
     m_owned = owned;
 }

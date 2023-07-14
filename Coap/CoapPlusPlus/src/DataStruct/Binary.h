@@ -2,8 +2,8 @@
  * @file Binary.h
  * @author Hulu
  * @brief Binary类定义
- * @version 0.1
- * @date 2023-05-31
+ * @version 0.2
+ * @date 2023-07-14
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -18,6 +18,7 @@ namespace CoapPlusPlus {
 class Binary
 {
     Binary(coap_binary_t* raw, bool owned);
+public:
     Binary(const Binary& other) : Binary(DeepCopy(other.m_rawData).m_rawData, true) {}
     Binary(Binary&& other) noexcept : m_rawData(other.m_rawData), m_owned(other.m_owned) {
         other.m_rawData = nullptr;
@@ -39,8 +40,14 @@ class Binary
         }
         return *this;
     }
-public:
-    
+    bool operator<(const Binary& other) const {
+        if (m_rawData->length < other.m_rawData->length) 
+            return true; 
+        else if (m_rawData->length > other.m_rawData->length)
+            return false;
+        else
+            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+    }
     ~Binary();
     /**
      * @brief 获得一个引用coap_binary_t结构体的Binary
@@ -58,7 +65,7 @@ public:
      * @param raw coap_binary_t结构体指针
      * 
      * @exception std::invalid_argument 当raw为空时抛出
-     * @exception InternalException 无法分配内存时抛出
+     * @exception CallCoapLibFuncException 无法分配内存时抛出
      * @return Binary 
      */
     static Binary DeepCopy(coap_binary_t* raw);
@@ -70,7 +77,7 @@ public:
      * @param data 要放在新的Binary对象中的数据。
      * 
      * @exception std::invalid_argument 当为raw为空时抛出
-     * @exception InternalException 无法分配内存时抛出
+     * @exception CallCoapLibFuncException 无法分配内存时抛出
      * @return Binary 
      */
     static Binary Create(size_t size, uint8_t* data);
