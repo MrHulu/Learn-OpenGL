@@ -26,7 +26,7 @@ public:
         m_data = std::span<uint8_t>(const_cast<uint8_t*>(data), size);
     }
 
-    Payload() noexcept : m_type(Information::ContentFormatType::None) {
+    Payload() noexcept : m_type(Information::ContentFormatType::NoneType) {
         m_data = std::span<uint8_t>();
     }
 

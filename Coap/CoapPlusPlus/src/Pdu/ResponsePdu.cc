@@ -26,7 +26,7 @@ try{
     if(m_rawPdu == nullptr || m_payload.has_value())
         return false;
     auto data = payload.data();
-    if(data.size() > 0 && payload.type() != Information::None){
+    if(data.size() > 0 && payload.type() != Information::NoneType){
         // 检查选项列表中是否包含该数据的格式的option， 没有就补上去
         if(isContainOption(Information::ContentFormat) == false){
             Encoder encoder(payload.type());

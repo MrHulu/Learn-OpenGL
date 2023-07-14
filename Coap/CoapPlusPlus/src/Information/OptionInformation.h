@@ -32,7 +32,7 @@ enum OptionNumber {
 };
 
 enum ContentFormatType {
-    None = -1,
+    NoneType = -1,
     TextPlain = 0,
     LinkFormat = 40,
     Xml = 41,

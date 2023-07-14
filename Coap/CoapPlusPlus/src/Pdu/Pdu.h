@@ -121,6 +121,12 @@ public:
     bool addOptions(Options options);
 
 protected:
+    /**
+     * @brief Construct a new Pdu object
+     * 
+     * @param pdu 
+     * @exception invalid_argument pdu is nullptr
+     */
     Pdu(coap_pdu_t* pdu);
     ~Pdu() noexcept { }
 
