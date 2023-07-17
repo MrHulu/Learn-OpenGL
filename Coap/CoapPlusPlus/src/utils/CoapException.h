@@ -5,6 +5,7 @@
 
 namespace CoapPlusPlus {
 
+
 /**
  * @brief Exception thrown when data is not ready to be read.
  * 
@@ -49,5 +50,15 @@ public:
     explicit TargetNotFoundException(const char* what) : std::runtime_error(what) { }
 };
 
+/**
+ * @brief 目标已存在
+ * 
+ */
+class AlreadyExistException : public std::runtime_error
+{
+public:
+    explicit AlreadyExistException(const std::string& what) : std::runtime_error(what) { }
+    explicit AlreadyExistException(const char* what) : std::runtime_error(what) { }
+};
 
 }// namespace CoapPlusPlus
