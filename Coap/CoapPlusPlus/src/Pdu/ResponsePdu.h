@@ -2,8 +2,8 @@
  * @file ResponsePdu.h
  * @author Hulu
  * @brief 响应PDU
- * @version 0.1
- * @date 2023-06-15
+ * @version 0.2
+ * @date 2023-07-17
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -16,6 +16,7 @@
 
 namespace CoapPlusPlus {
 
+class BinaryConstView;
 class ResponsePdu : public Pdu {
 public: 
     /**
@@ -42,6 +43,13 @@ public:
     ResponseCode code() const noexcept { return m_responseCode; }
 
     bool setCode(ResponseCode code) noexcept;
+
+    /**
+     * @brief 获取当前PDU的token, 每个PDU都必须要有一个token，用来匹配响应PDU
+     * 
+     * @return token
+     */
+    BinaryConstView requestToken() const noexcept;
 
 private:
     ResponseCode m_responseCode;

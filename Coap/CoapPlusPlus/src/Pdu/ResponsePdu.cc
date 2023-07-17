@@ -1,4 +1,5 @@
 #include "ResponsePdu.h"
+#include "coap/DataStruct/BinaryConstView.h"
 #include "Options.h"
 #include "Encoder.h"
 
@@ -56,6 +57,14 @@ bool ResponsePdu::setCode(ResponseCode code) noexcept
         m_responseCode = code;
     }
     return true;
+}
+
+BinaryConstView ResponsePdu::requestToken() const noexcept
+{
+    if(m_rawPdu == nullptr)
+        return BinaryConstView(nullptr);
+    auto coap_token = coap_pdu_get_token(m_rawPdu);
+    return BinaryConstView(&coap_token);
 }
 
 }; // namespace CoapPlusPlus
