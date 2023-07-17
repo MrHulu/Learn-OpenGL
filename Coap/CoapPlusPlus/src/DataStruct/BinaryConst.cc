@@ -28,31 +28,31 @@ BinaryConst BinaryConst::Reference(const coap_bin_const_t* raw)
 BinaryConst BinaryConst::DeepCopy(coap_bin_const_t* raw)
 {
     if(raw == nullptr)
-        throw std::invalid_argument("raw cannot be null");
+        throw std::invalid_argument("BinaryConst::DeepCopy(coap_bin_const_t* raw): raw cannot be null");
     return Create(raw->length, raw->s);
 }
 
 BinaryConst BinaryConst::Create(size_t size, const uint8_t *data)
 {
     if(data == nullptr)
-        throw std::invalid_argument("data cannot be null");
+        throw std::invalid_argument("BinaryConst::Create: data cannot be null");
     auto raw = coap_new_bin_const(data, size);
     if(raw == nullptr)
-        throw InternalException("coap_new_bin_const failed");
+        throw InternalException("BinaryConst::Create: coap_new_bin_const failed");
     return BinaryConst(raw, true);
 }
 
 size_t BinaryConst::size() const
 {
     if(m_rawData == nullptr)
-        throw DataWasReleasedException("data was released");
+        throw DataWasReleasedException("BinaryConst::size()：data was released");
     return m_rawData->length;
 }
 
 std::span<uint8_t> BinaryConst::data() const
 {
     if(m_rawData == nullptr)
-        throw DataWasReleasedException("data was released");
+        throw DataWasReleasedException("BinaryConst::data()：data was released");
     return std::span<uint8_t>(const_cast<uint8_t*>(m_rawData->s), m_rawData->length);
 }
 

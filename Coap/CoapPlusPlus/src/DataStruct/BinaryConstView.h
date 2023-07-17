@@ -49,6 +49,9 @@ public:
      * @brief 转换为BinaryConst对象
      * 
      * @return 一个BinaryConst对象 
+     * 
+     * @exception std::invalid_argument 当raw为空时抛出
+     * @exception InternalException 无法分配内存时抛出
      */
     BinaryConst toBinaryConst() const { 
         return BinaryConst::DeepCopy(const_cast<coap_bin_const_t*>(m_rawData)); 
