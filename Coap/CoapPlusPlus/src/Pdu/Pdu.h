@@ -38,7 +38,7 @@ class Payload;
  */
 class Pdu
 {
-    friend class Session;
+    friend class SendersManager;
 public:
     /**
      * @brief 记录打印Pdu的信息。
@@ -129,6 +129,7 @@ protected:
      */
     Pdu(coap_pdu_t* pdu);
     ~Pdu() noexcept { }
+    coap_pdu_t* getPdu() const noexcept { return m_rawPdu; }
 
 protected:
     coap_pdu_t* m_rawPdu = nullptr;
