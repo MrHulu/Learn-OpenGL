@@ -17,7 +17,6 @@ SendersManager::SendersManager(coap_session_t &coap_session)
 
 SendersManager::~SendersManager()
 {
-    coap_log_debug("SendersManager::~SendersManager()\n");
     for (auto iter = m_handlings.begin(); iter != m_handlings.end(); ++iter) {
         iter->second->readyDestroyed();
         delete iter->second;
@@ -106,13 +105,12 @@ catch (std::exception &e)
     throw InternalException(e.what());
 }
 
-std::shared_ptr<Handling> SendersManager::getHandling(const BinaryConstView &token) const
+Handling* SendersManager::getHandling(const BinaryConstView &token) const
 {
     auto t = token.toBinaryConst();
     auto iter = m_handlings.find(t);
     if (iter != m_handlings.end()) {
-        Handling *handler = iter->second;
-        return std::shared_ptr<Handling>(handler);
+        return iter->second;
     }
     else
         throw TargetNotFoundException("Not found handling");
@@ -157,13 +155,13 @@ try{
     auto token = BinaryConstView(&coap_token);
     
     // 获取handling
-    std::shared_ptr<Handling> handling;
+    Handling* handling;
     bool isDefaultHandling = false;
     try { handling = s->getSendersManager()->getHandling(token); }
     catch (TargetNotFoundException &e) { 
-        handling = std::shared_ptr<Handling>(s->getSendersManager()->m_defaultHandling); 
+        handling = s->getSendersManager()->m_defaultHandling; 
         isDefaultHandling = true;
-        if (handling.get() == nullptr) {
+        if (handling == nullptr) {
             std::string message = "internal error! default handling is nullptr and " + std::string(e.what());
             throw std::runtime_error(message.c_str());
         }

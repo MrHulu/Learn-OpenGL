@@ -2,7 +2,7 @@
  * @file SendersManager.cc
  * @author Hulu
  * @brief 客户端发送器管理器
- * @version 0.3
+ * @version 0.4
  * @date 2023-07-18
  * 
  * @copyright Copyright (c) 2023
@@ -103,11 +103,11 @@ public:
      * @brief 获取一个处理器
      * 
      * @param token 
-     * @return std::shared_ptr<Handling> 
+     * @return 处理器对象，处理器的生命周期由SendersManager管理，SendersManager会在析构时销毁所有的处理器
      * 
      * @exception TargetNotFoundException 未找到对应的处理器
      */
-    std::shared_ptr<Handling> getHandling(const BinaryConstView& token) const;
+    Handling* getHandling(const BinaryConstView& token) const;
 
     /**
      * @brief 移除一个处理器
