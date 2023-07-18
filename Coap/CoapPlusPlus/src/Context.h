@@ -45,7 +45,7 @@ protected:
      * @exception InternalException 创建Context失败
      */
     Context();
-    ~Context() noexcept;
+    virtual ~Context() noexcept;
     coap_context_t* getContext() const noexcept { return m_ctx; }
 
     /**

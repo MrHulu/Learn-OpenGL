@@ -11,6 +11,7 @@ ContextClient::ContextClient() : Context()
 
 ContextClient::~ContextClient() noexcept
 {
+    stopIOProcess(); ///必须先停止IO进程，否则会导致资源已经被释放，但是IO进程的回调还在使用资源
     // 删除所有会话对象
     for (auto& pair : m_sessions) {
         delete pair.second;
