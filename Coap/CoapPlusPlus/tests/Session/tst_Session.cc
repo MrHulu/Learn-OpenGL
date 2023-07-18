@@ -25,7 +25,7 @@ public:
 
 private:
     ContextClient _test_client;
-    Session *_test_session = nullptr;
+    Session* _test_session = nullptr;
     int _port = 5683;
 
 private slots:
@@ -52,7 +52,7 @@ void tst_Session::test_ContextClient()
     QVERIFY(_test_client.addSession(_port));
     QVERIFY2(_test_client.startIOProcess(), "数据已准备好，预期可以开始IO处理返回true，实际返回false");
     QVERIFY_EXCEPTION_THROWN(_test_client.getSession(_port, Information::Dtls), TargetNotFoundException);
-    _test_session = &_test_client.getSession(_port, Information::Udp);
+    _test_session = _test_client.getSession(_port, Information::Udp);
     _test_client.stopIOProcess();
 }
 

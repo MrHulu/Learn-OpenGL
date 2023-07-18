@@ -2,8 +2,8 @@
  * @file ContextClient.h
  * @author Hulu
  * @brief 客户端Context类定义
- * @version 0.1
- * @date 2023-07-10
+ * @version 0.3
+ * @date 2023-07-18
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -62,11 +62,12 @@ public:
      * 
      * @param port 会话使用的端口号
      * @param pro 会话使用的协议
-     * @return 会话对象的引用
+     * @return 会话对象的指针，会话的生命周期由ContextClient管理
      * 
      * @exception TargetNotFoundException 未找到对应的会话会抛出该异常
+     * 
      */
-    Session& getSession(uint16_t port, Information::Protocol pro) const;
+    Session* getSession(uint16_t port, Information::Protocol pro) const;
 
     /**
      * @brief 得到当前Context中的所有会话数量

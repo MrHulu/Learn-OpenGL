@@ -51,7 +51,7 @@ bool ContextClient::removeSession(uint16_t port, Information::Protocol pro) noex
     return true;
 }
 
-Session &ContextClient::getSession(uint16_t port, Information::Protocol pro) const
+Session* ContextClient::getSession(uint16_t port, Information::Protocol pro) const
 {
     // 检查会话是否存在
     auto it = m_sessions.find({ port, pro });
@@ -60,8 +60,7 @@ Session &ContextClient::getSession(uint16_t port, Information::Protocol pro) con
                                     + "and protocol" + std::to_string(pro) + " does not exist");
     }
     
-    // 返回会话对象引用
-    return *(it->second);
+    return it->second;
 }
 
 bool ContextClient::isReady() const noexcept
