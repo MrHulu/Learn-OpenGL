@@ -23,6 +23,10 @@ class ResourceInterface;
 class Resource
 {
     friend class ResourceManager;
+    Resource& operator=(const Resource&) = delete;
+    Resource& operator=(Resource&&) = delete;
+    Resource(const Resource&) = delete;
+    Resource(Resource&&) = delete;
 public:
     Resource(const std::string& uriPath, bool observable = false) noexcept;
     ~Resource() noexcept;

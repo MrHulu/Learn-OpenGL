@@ -18,6 +18,10 @@ namespace CoapPlusPlus
 class EndPoint
 {
     coap_endpoint_t* getEndPoint() const noexcept { return m_ep; }
+    EndPoint& operator=(const EndPoint&) = delete;
+    EndPoint& operator=(EndPoint&&) = delete;
+    EndPoint(const EndPoint&) = delete;
+    EndPoint(EndPoint&&) = delete;
 public:
     /**
      * @brief 构造一个EndPoint对象

@@ -23,6 +23,10 @@ class Address;
 
 class Session 
 {
+    Session& operator=(const Session&) = delete;
+    Session& operator=(Session&&) = delete;
+    Session(const Session&) = delete;
+    Session(Session&&) = delete;
 public:
     /**
      * @brief Construct a new Session object

@@ -19,6 +19,10 @@ namespace CoapPlusPlus {
 
 class Context 
 {
+    Context& operator=(const Context&) = delete;
+    Context& operator=(Context&&) = delete;
+    Context(const Context&) = delete;
+    Context(Context&&) = delete;
 public:
     /**
      * @brief 开始悬而未决的网络I/O，然后选择性地等待下一个输入数据包。
