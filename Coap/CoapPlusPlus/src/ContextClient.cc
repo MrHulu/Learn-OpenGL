@@ -33,7 +33,7 @@ bool ContextClient::addSession(uint16_t port, Information::Protocol pro) noexcep
         m_sessions.emplace(std::make_pair(port, pro), session);
         return true;
     }catch(const InternalException& e) {
-        coap_log_debug("Create session failed: %s\n", e.what());
+        coap_log_warn("Create session failed: %s\n", e.what());
         return false;
     }
 }

@@ -25,7 +25,7 @@ Address::Address(const std::string &ip, uint16_t port)
     auto error = getaddrinfo(ip.c_str(), NULL, &hints, &res);
     if (error != 0) {
         std::string message = std::string("Invalid IP address: ") + gai_strerror(error);
-        coap_log_debug("无法构造Address(%s, %d)对象，%s\n",ip.c_str() ,port ,message.c_str());
+        coap_log_warn("无法构造Address(%s, %d)对象，%s\n",ip.c_str() ,port ,message.c_str());
         throw std::invalid_argument(message.c_str());
     }
 

@@ -6,7 +6,7 @@ namespace CoapPlusPlus {
 bool Context::startIOProcess(int waitMs) noexcept
 {
     if(isReady() == false) {
-        coap_log_debug("没有添加endpoint或者session, 无法开始IO处理\n");
+        coap_log_warn("没有添加endpoint或者session, 无法开始IO处理\n");
         return false;
     }
     stopIOProcess();
