@@ -12,6 +12,7 @@
 
 #include <coap3/coap.h>
 #include <span>
+#include <string>
 
 namespace CoapPlusPlus {
 
@@ -57,6 +58,10 @@ public:
             return false;
         else
             return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+    }
+
+    bool operator== (const BinaryConst &other) const noexcept {
+        return coap_binary_equal(m_rawData, other.m_rawData);
     }
 
     
@@ -109,6 +114,22 @@ public:
      * @return std::span<uint8_t>类型的数据 
      */
     std::span<uint8_t> data() const;
+
+        /**
+     * @brief 获得对象中引用的字节数据
+     * 
+     * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
+     * @return uint64_t 
+     */
+    uint64_t toUInt64() const;
+
+    /**
+     * @brief 获得对象中引用的字节数据
+     * 
+     * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
+     * @return 十六进制字符串 
+     */
+    std::string toHexString() const;
 
 private:
     const coap_bin_const_t* rawData() const { return m_rawData; }

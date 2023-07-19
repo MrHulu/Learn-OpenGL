@@ -56,4 +56,28 @@ std::span<uint8_t> BinaryConst::data() const
     return std::span<uint8_t>(const_cast<uint8_t*>(m_rawData->s), m_rawData->length);
 }
 
+uint64_t BinaryConst::toUInt64() const
+ {
+    if(m_rawData == nullptr)
+        throw DataWasReleasedException("");
+    uint64_t result = 0;
+    auto len = size();
+    for (size_t i = 0; i < len; ++i)
+        result |= static_cast<uint64_t>(m_rawData->s[i]) << (8 * (len - i - 1));
+    return result;
+}
+
+std::string BinaryConst::toHexString() const 
+{
+    if(m_rawData == nullptr)
+        throw DataWasReleasedException("");
+    std::string result;
+    for (size_t i = 0; i < size(); ++i) {
+        char buf[4];
+        sprintf(buf, "%02X", m_rawData->s[i]); 
+        result += buf;
+    }
+    return result;
+}
+
 };// namespace CoapPlusPlus PlusPlus

@@ -81,6 +81,40 @@ public:
         return std::span<uint8_t>(const_cast<uint8_t*>(m_rawData->s), m_rawData->length);
     }
 
+    /**
+     * @brief 获得对象中引用的字节数据
+     * 
+     * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
+     * @return uint64_t 
+     */
+    uint64_t toUInt64() const {
+        if(m_rawData == nullptr)
+            throw DataWasReleasedException("");
+        uint64_t result = 0;
+        auto len = size();
+        for (size_t i = 0; i < len; ++i)
+            result |= static_cast<uint64_t>(m_rawData->s[i]) << (8 * (len - i - 1));
+        return result;
+    }
+
+    /**
+     * @brief 获得对象中引用的字节数据
+     * 
+     * @exception DataWasReleasedException 当对象中的字节数据已经被释放时抛出
+     * @return 十六进制字符串 
+     */
+    std::string toHexString() const {
+        if(m_rawData == nullptr)
+            throw DataWasReleasedException("");
+        std::string result;
+        for (size_t i = 0; i < size(); ++i) {
+            char buf[4];
+            sprintf_s(buf, "%02X", m_rawData->s[i]); 
+            result += buf;
+        }
+        return result;
+    }
+
 private:
     const coap_bin_const_t* m_rawData;
 };
