@@ -9,7 +9,8 @@ RequestPdu::RequestPdu(coap_pdu_t *rawPdu, BinaryConst token)
     , m_token(std::move(token))
 {
     m_requestCode = static_cast<RequestCode>(coap_pdu_get_code(rawPdu));
-    coap_add_token(rawPdu, m_token.size(), m_token.data().data());
+    if(coap_pdu_get_token(rawPdu).length == 0)
+        coap_add_token(rawPdu, m_token.size(), m_token.data().data());
 }
 
 RequestPdu::~RequestPdu()
