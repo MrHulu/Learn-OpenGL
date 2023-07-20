@@ -52,12 +52,16 @@ public:
     }
     
     bool operator<(const BinaryConst& other) const {
-        if (m_rawData->length < other.m_rawData->length) 
-            return true; 
-        else if (m_rawData->length > other.m_rawData->length)
+        if(m_rawData != nullptr && other.m_rawData != nullptr) {
+            if (m_rawData->length < other.m_rawData->length) 
+                return true; 
+            else if (m_rawData->length > other.m_rawData->length)
+                return false;
+            else
+                return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+        }else{
             return false;
-        else
-            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+        }
     }
 
     bool operator== (const BinaryConst &other) const noexcept {

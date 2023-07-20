@@ -37,12 +37,16 @@ public:
     }
 
     bool operator<(const BinaryConstView& other) const {
-        if (m_rawData->length < other.m_rawData->length) 
-            return true; 
-        else if (m_rawData->length > other.m_rawData->length)
-            return false;
+        if (m_rawData != nullptr && other.m_rawData != nullptr) {
+            if (m_rawData->length < other.m_rawData->length) 
+                return true; 
+            else if (m_rawData->length > other.m_rawData->length)
+                return false;
+            else
+                return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+        }
         else
-            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+            return false;
     }
 
     /**
