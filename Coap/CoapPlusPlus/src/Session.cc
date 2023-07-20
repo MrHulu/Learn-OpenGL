@@ -15,9 +15,11 @@ Session::Session(coap_session_t *raw_session) : m_session(raw_session)
 
 Session::~Session()
 {
-    delete m_senderManager;
-    if(m_session)
+    if(m_session) {
+        coap_session_set_app_data(m_session, nullptr);
         coap_session_release(m_session);
+    }
+    delete m_senderManager;
 }
 
 Information::Protocol Session::getProtocol() const noexcept
@@ -69,6 +71,8 @@ uint16_t Session::getMaxRetransmit() const noexcept
 
 void Session::setMaxRetransmit(uint16_t value) noexcept
 {
+    if(value == 0)
+        return ;
     coap_session_set_max_retransmit(m_session, value);
 }
 

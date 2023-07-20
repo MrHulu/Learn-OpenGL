@@ -2,8 +2,8 @@
  * @file Session.h
  * @author Hulu
  * @brief coap_session_t 的C++封装
- * @version 0.3
- * @date 2023-07-18
+ * @version 0.4
+ * @date 2023-07-20
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -82,11 +82,11 @@ public:
     Address getRemoteAddress() const;
 
     /**
-     * @brief 得到一个SendersManager对象。
+     * @brief 得到一个SendersManager对象的引用。
      * 
      * @return SendersManager，SendersManager的生命周期由Session管理 @see SendersManager
      */
-    SendersManager* getSendersManager() noexcept { return m_senderManager; } 
+    SendersManager& getSendersManager() noexcept { return *m_senderManager; } 
 
     /**
      * @brief 获取下一次重发前CoAP初始ACK响应超时。

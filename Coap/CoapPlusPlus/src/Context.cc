@@ -42,6 +42,7 @@ Context::Context() {
 Context::~Context() {
     stopIOProcess();
     if (m_ctx != nullptr) {
+        coap_set_app_data(m_ctx, nullptr);
         coap_free_context(m_ctx);
         m_ctx = nullptr;
     }

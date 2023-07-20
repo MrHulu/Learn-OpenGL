@@ -25,6 +25,10 @@ class BinaryConst;
 class Handling;
 class SendersManager
 {
+    SendersManager& operator=(const SendersManager&) = delete;
+    SendersManager& operator=(SendersManager&&) = delete;
+    SendersManager(const SendersManager&) = delete;
+    SendersManager(SendersManager&&) = delete;
 public:
     SendersManager(coap_session_t& coap_session);
     ~SendersManager();
@@ -43,6 +47,7 @@ public:
      * @exception AlreadyExistException 已经存在相同token的处理器。
      *            如果更新处理器请使用removeHandling()函数删除旧的处理器，
      *            如果使用旧的处理器，传入nullptr即可。
+     * @exception std::invalid_argument handling中的token与pdu中的token不一致
      */
     bool send(RequestPdu pdu, std::unique_ptr<Handling> handling);
 

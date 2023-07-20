@@ -21,6 +21,7 @@ SendersManager::~SendersManager()
         iter->second->readyDestroyed();
         delete iter->second;
     }
+    m_handlings.clear();
     if (m_defaultHandling) {
         m_defaultHandling->readyDestroyed();
         delete m_defaultHandling;
@@ -46,15 +47,19 @@ bool SendersManager::send(RequestPdu pdu, std::unique_ptr<Handling> handling)
     }   
     
     if (handling.get() != nullptr) {
+        if (handling->token() != pdu.token()) {
+            handling->readyDestroyed();
+            handling.reset();
+            //coap_log_warn("send: handling token is not equal to pdu token\n");
+            throw std::invalid_argument("handling token is not equal to pdu token");
+        }
         auto iter = m_handlings.find(*token);
         if (iter != m_handlings.end()) {
             std::string error = std::string("The Handling for this token(")
                                 + std::string(token->data().begin(), token->data().end()) 
                                 + std::string(") already exists");
-            if (handling.get() != nullptr) {
-                handling->readyDestroyed();
-                handling.reset();
-            }
+            handling->readyDestroyed();
+            handling.reset();
             //coap_log_warn("send: %s\n", error.c_str());
             throw AlreadyExistException(error.c_str());
         }
@@ -153,13 +158,12 @@ try{
         throw std::runtime_error("internal error! session doesn't save data to the app.");
     auto coap_token = coap_pdu_get_token(sent);
     auto token = BinaryConstView(&coap_token);
-    
     // 获取handling
     Handling* handling;
     bool isDefaultHandling = false;
-    try { handling = s->getSendersManager()->getHandling(token); }
+    try { handling = s->getSendersManager().getHandling(token); }
     catch (TargetNotFoundException &e) { 
-        handling = s->getSendersManager()->m_defaultHandling; 
+        handling = s->getSendersManager().m_defaultHandling; 
         isDefaultHandling = true;
         if (handling == nullptr) {
             std::string message = "internal error! default handling is nullptr and " + std::string(e.what());
@@ -170,12 +174,12 @@ try{
     auto pdu = RequestPdu(const_cast<coap_pdu_t*>(sent), BinaryConst::DeepCopy(&coap_token));
     handling->onNAck(*s, std::move(pdu), static_cast<Handling::NAckReason>(reason));
     if (handling->isFinished() && isDefaultHandling == false) {
-        s->getSendersManager()->removeHandling(token);
+        s->getSendersManager().removeHandling(token);
     }
     
 }catch(std::exception &e)
 {
-    coap_log_warn("NackHandler: %s\n", e.what());
+    coap_log_warn("NackHandler Error: %s\n", e.what());
 }
 
 coap_response_t SendersManager::AckHandler(coap_session_t *session, const coap_pdu_t *sent, const coap_pdu_t *received, const coap_mid_t mid)
@@ -190,7 +194,7 @@ try{
     auto response = ResponsePdu(const_cast<coap_pdu_t*>(received));
     auto coap_response_token = coap_pdu_get_token(received);
     auto response_token = BinaryConstView(&coap_response_token);
-    auto handling = s->getSendersManager()->getHandling(response_token);
+    auto handling = s->getSendersManager().getHandling(response_token);
 
     // 如果sent == nullptr，说明是一个非confirmable的请求，那么就不需要查找对应的request
     // 如果sent == nullptr, 说明是一个观察推送的消息
@@ -215,12 +219,12 @@ try{
     }
     // 完成处理
     if (handling->isFinished()) {
-        s->getSendersManager()->removeHandling(response_token);
+        s->getSendersManager().removeHandling(response_token);
     }
     return COAP_RESPONSE_OK;
 }catch(std::exception &e)
 {
-    coap_log_warn("AckHandler: %s\n", e.what());
+    coap_log_warn("AckHandler Error: %s\n", e.what());
     return COAP_RESPONSE_FAIL;
 }
 
