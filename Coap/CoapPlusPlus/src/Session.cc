@@ -76,6 +76,18 @@ void Session::setMaxRetransmit(uint16_t value) noexcept
     coap_session_set_max_retransmit(m_session, value);
 }
 
+uint16_t Session::getNSTART() const noexcept
+{
+    return coap_session_get_nstart(m_session);
+}
+
+void Session::setNSTART(uint16_t count) noexcept
+{
+    if(count == 0)
+        return ;
+    coap_session_set_nstart(m_session, count);
+}
+
 const Context *Session::GetContext(const Session *session)
 {
     if(session == nullptr)

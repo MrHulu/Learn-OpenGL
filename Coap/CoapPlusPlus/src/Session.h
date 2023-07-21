@@ -124,6 +124,22 @@ public:
      */
     void setMaxRetransmit(uint16_t value) noexcept;
 
+    /**
+     * @brief 获取会话与指定的服务器（包括代理）维持的未完成交互的数量，参见拥塞控制
+     * @see https://www.rfc-editor.org/rfc/rfc7252.html#section-4.7
+     * 
+     * @return 返回数量，默认值为1个
+     */
+    uint16_t getNSTART() const noexcept;
+
+    /**
+     * @brief 设置会话与指定的服务器（包括代理）维持的未完成交互的数量，参见拥塞控制
+     * @see https://www.rfc-editor.org/rfc/rfc7252.html#section-4.7
+     * 
+     * @param count 数量，默认值为1个
+     */
+    void setNSTART(uint16_t count) noexcept;
+
 public:
     /**
      * @brief 从Session得到一个Context对象的引用。
