@@ -194,7 +194,18 @@ try{
     auto response = ResponsePdu(const_cast<coap_pdu_t*>(received));
     auto coap_response_token = coap_pdu_get_token(received);
     auto response_token = BinaryConstView(&coap_response_token);
-    auto handling = s->getSendersManager().getHandling(response_token);
+    // 获取handling
+    Handling* handling;
+    bool isDefaultHandling = false;
+    try { handling = s->getSendersManager().getHandling(response_token); }
+    catch (TargetNotFoundException &e) { 
+        handling = s->getSendersManager().m_defaultHandling; 
+        isDefaultHandling = true;
+        if (handling == nullptr) {
+            std::string message = "internal error! default handling is nullptr and " + std::string(e.what());
+            throw std::runtime_error(message.c_str());
+        }
+    }
 
     // 如果sent == nullptr，说明是一个非confirmable的请求，那么就不需要查找对应的request
     // 如果sent == nullptr, 说明是一个观察推送的消息
