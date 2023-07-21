@@ -17,7 +17,7 @@ bool SendersManager::DefaultHandling::onAck(Session &session, const RequestPdu *
 
 void SendersManager::DefaultHandling::onNAck(Session &session, RequestPdu request, NAckReason reason) noexcept
 {
-
+    Pdu::LogPdu(COAP_LOG_INFO, &request);
 }
 
 }; // namespace CoapPlusPlus
