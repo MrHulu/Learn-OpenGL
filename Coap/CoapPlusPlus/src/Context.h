@@ -24,22 +24,50 @@ class Context
     Context(const Context&) = delete;
     Context(Context&&) = delete;
 public:
+    // /**
+    //  * @brief 开始悬而未决的网络I/O，然后选择性地等待下一个输入数据包。
+    //  * 
+    //  * 
+    //  * @param waitMs 在做完任何处理后返回前等待新数据包的最小毫秒数。
+    //  *               如果为0，该调用将阻塞到下一个内部动作（如数据包重传）（如果有），或阻塞到收到下一个数据包（以较早者为准），并做必要的处理。
+    //  *               如果为-1，该函数将在处理后立即返回，而不等待任何新的输入数据包到达。
+    //  * @return 开始IO处理，成功返回true，否则返回false
+    //  */
+    // bool startIOProcess(int waitMs = 1000) noexcept;
+
+    // /**
+    //  * @brief 停止阻塞当前的Coap I/O 处理
+    //  * 
+    //  */
+    // void stopIOProcess() noexcept;
+
     /**
-     * @brief 开始悬而未决的网络I/O，然后选择性地等待下一个输入数据包。
-     * 
+     * @brief 进行一次网络I/O的处理
      * 
      * @param waitMs 在做完任何处理后返回前等待新数据包的最小毫秒数。
      *               如果为0，该调用将阻塞到下一个内部动作（如数据包重传）（如果有），或阻塞到收到下一个数据包（以较早者为准），并做必要的处理。
      *               如果为-1，该函数将在处理后立即返回，而不等待任何新的输入数据包到达。
-     * @return 开始IO处理，成功返回true，否则返回false
+     * @return 返回在函数中花费的毫秒数；如果出现错误，则返回 -1。 
+     * 
+     * @exception DataNotReadyException 数据未准备好，无法进行网络I
      */
-    bool startIOProcess(int waitMs = 1000) noexcept;
+    uint16_t ioProcess(int waitMs = 1000);
 
     /**
-     * @brief 停止阻塞当前的Coap I/O 处理
+     * @brief 检查是否有任何 I/O 待处理。
      * 
+     * @return true io有待处理
+     * @return false 没有io待处理
      */
-    void stopIOProcess() noexcept;
+    bool isioPending() const noexcept;
+
+    /**
+     * @brief 是否正在进行网络I/O
+     * 
+     * @return true 正在进行网络I/O
+     * @return false 没有进行网络I/O
+     */
+    bool isBusy() const noexcept { return m_isBusy; }
 
 protected:
     /**
@@ -66,10 +94,11 @@ protected :
 private:
     std::thread* m_thread {};
     std::mutex m_mutex;
-    bool m_flag = true;
+    //bool m_flag = true;
+    bool m_isBusy = false;
 
 private: 
-    void startIOProcessThreadFunc(int waitMs) noexcept;
+    //void startIOProcessThreadFunc(int waitMs) noexcept;
 };
 
 

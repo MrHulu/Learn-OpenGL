@@ -7,6 +7,7 @@
 #include "coap/ContextServer.h"
 #include "coap/ResourceManager.h"
 #include "coap/Resource.h"
+#include "coap/exception.h"
 #include "coap/ResourceInterface.h"
 
 using namespace CoapPlusPlus;
@@ -50,7 +51,7 @@ private slots:
 void tst_ServerResource::test_ContextServer()
 {
     // 测试ContextServer的EndPoint相关接口
-    QVERIFY2(!_server.startIOProcess(), "数据未准备好，预期无法开始IO处理返回false，实际返回true");
+    QVERIFY_EXCEPTION_THROWN(_server.ioProcess(), DataNotReadyException);
     QVERIFY2(!_server.removeEndPoint(1234), "移除不存在的端点, 预期返回false，实际返回true");
     QVERIFY2(_server.addEndPoint(1234), "添加端点失败");
     QCOMPARE(_server.getEndPointCount(), 1);
@@ -58,7 +59,7 @@ void tst_ServerResource::test_ContextServer()
     QCOMPARE(_server.getEndPointCount(), 0);
 
     QVERIFY(_server.addEndPoint(_port));
-    QVERIFY2(_server.startIOProcess(), "数据已准备好，预期可以开始IO处理返回true，实际返回false");
+    QVERIFY2(_server.ioProcess() >= 0, "数据已准备好，预期可以开始IO处理返回true，实际返回false");
 }
 
 void tst_ServerResource::test_ResourceRegister()

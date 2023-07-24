@@ -42,7 +42,7 @@ QTEST_MAIN(tst_Session)
 void tst_Session::test_ContextClient()
 {
     // 测试ContextClient的Session相关接口
-    QVERIFY2(!_test_client.startIOProcess(), "数据未准备好，预期无法开始IO处理返回false，实际返回true");
+    QVERIFY_EXCEPTION_THROWN(_test_client.ioProcess(), DataNotReadyException);
     QVERIFY2(!_test_client.removeSession(_port, Information::Udp), "移除不存在的会话, 预期返回false，实际返回true");
     QVERIFY2(_test_client.addSession(_port), "添加端点失败");
     QCOMPARE(_test_client.getSessionCount(), 1);
@@ -50,10 +50,9 @@ void tst_Session::test_ContextClient()
     QCOMPARE(_test_client.getSessionCount(), 0);
 
     QVERIFY(_test_client.addSession(_port));
-    QVERIFY2(_test_client.startIOProcess(), "数据已准备好，预期可以开始IO处理返回true，实际返回false");
+    QVERIFY2(_test_client.ioProcess() >= 0, "数据已准备好，预期可以开始IO处理返回true，实际返回false");
     QVERIFY_EXCEPTION_THROWN(_test_client.getSession(_port, Information::Dtls), TargetNotFoundException);
     _test_session = _test_client.getSession(_port, Information::Udp);
-    _test_client.stopIOProcess();
 }
 
 void tst_Session::test_Session()

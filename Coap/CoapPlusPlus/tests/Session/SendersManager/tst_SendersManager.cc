@@ -23,7 +23,7 @@ public:
     {
         coap_set_log_level(LOG_INFO);
         QVERIFY2(_test_client.addSession(_port), "添加会话失败");
-        QVERIFY2(_test_client.startIOProcess(), "数据已准备好，预期可以开始IO处理返回true，实际返回false");
+        QVERIFY2(_test_client.ioProcess() >= 0 , "数据已准备好，预期可以开始IO处理返回true，实际返回false");
 
         _test_server = coap_new_context(nullptr);
         QVERIFY2(_test_server, "创建coap_context_t失败");
@@ -31,7 +31,6 @@ public:
     }
     ~tst_SendersManager()
     {
-        stopServer();
         if(_test_ep) {
             coap_free_endpoint(_test_ep);
             _test_ep = nullptr;
@@ -45,10 +44,7 @@ private:
     // server
     coap_context_t* _test_server = nullptr;
     coap_endpoint_t *_test_ep = nullptr;
-    std::thread* _test_server_io_thread = nullptr;
-    bool _server_flag = false;
-    std::mutex _server_mutex;
-    void startServer(int time_ms);
+    void startServer();
     void stopServer();
     
     // client
@@ -67,7 +63,7 @@ private slots:
 
 };
 
-void tst_SendersManager::startServer(int time_ms)
+void tst_SendersManager::startServer()
 {
     stopServer();
     coap_address_t  addr;
@@ -77,38 +73,13 @@ void tst_SendersManager::startServer(int time_ms)
     addr.addr.sin.sin_port = htons(_port);
     _test_ep = coap_new_endpoint(_test_server, &addr, COAP_PROTO_UDP);
     QVERIFY2(_test_ep, "创建端点失败");
-
-    std::lock_guard<std::mutex> lock(_server_mutex);
-    _server_flag = true;
-    _test_server_io_thread = new std::thread([this](int time){
-        coap_context_t *temp_ctx;
-        while (true) { 
-            bool flag; 
-            {
-                std::lock_guard<std::mutex> lock(_server_mutex);
-                flag = _server_flag;
-                temp_ctx = _test_server;
-            }
-            if (!flag) break;
-            coap_io_process(temp_ctx, time);
-        }
-    }, time_ms);
 }
 
 void tst_SendersManager::stopServer()
 {
-    if(_test_ep) {
+     if(_test_ep) {
         coap_free_endpoint(_test_ep);
         _test_ep = nullptr; 
-    }
-    {
-        std::lock_guard<std::mutex> lock(_server_mutex);
-        _server_flag = false;
-    }
-    if(_test_server_io_thread) {
-        _test_server_io_thread->join();
-        delete _test_server_io_thread;
-        _test_server_io_thread = nullptr;
     }
 }
 
@@ -168,7 +139,7 @@ void tst_SendersManager::test_sendAndHandling_case1()
     handling_c_d->setFinished(true);
     QVERIFY(_test_sendersManager->send(pdu_c_d, std::move(handling_c_d)));
 
-    QTest::qSleep(16000);
+    while(_test_client.isioPending());
 
     // getHandling(6) 没有被发送
     QCOMPARE(data_n_p->number(), 6);
@@ -179,7 +150,7 @@ void tst_SendersManager::test_sendAndHandling_case1()
     QVERIFY(handling);
     QCOMPARE(handling->data(), data_c_p);
     QCOMPARE(handling->isFinished(), false);
-    QVERIFY(data_c_p->number() <= 63); //TODO: 明明设置了最大重传次数为1，NAck回调应该触发三次的，应该是QCOMPARE(data_c_p->number(), 63)，但偶尔是四次？
+    QCOMPARE(data_c_p->number(), 66-4); //TODO: 最大重传次数为1，NAck回调应该触发三次 + 1次send nullptr-NonConfirmable
     QCOMPARE(data_c_p->isDestroy(), false);
 
     // handling(666) isFinished = true， 被销毁了
@@ -200,7 +171,7 @@ void tst_SendersManager::test_sendAndHandling_case1()
 
 void tst_SendersManager::test_sendAndHandling_case2()
 {
-    startServer(1000);
+    startServer();
 
     // send nullptr
     RequestPdu pdu = _test_sendersManager->createRequest(MessageType::NonConfirmable, RequestCode::Get);
@@ -225,7 +196,12 @@ void tst_SendersManager::test_sendAndHandling_case2()
     handling_c_d->setFinished(true);
     QVERIFY(_test_sendersManager->send(pdu_c_d, std::move(handling_c_d)));
 
-    QTest::qSleep(3000);
+    while(1) {
+        auto server_result = coap_io_pending(_test_server);
+        auto client_result = _test_client.isioPending();
+        if(!client_result && !server_result)
+            break;
+    }
 
     // getHandling(8) 没有被发送
     QCOMPARE(data_n_p->number(), 8);
@@ -258,6 +234,7 @@ void tst_SendersManager::test_sendAndHandling_case2()
 void tst_SendersManager::test_sendAndUpdateDefaultHandling() 
 {
     stopServer();
+
     auto number = 40288;
     auto handlingData = new TestHandlingData(number);
     auto defaultHandling = std::make_unique<TestHandling>(handlingData, _test_sendersManager->createToken());
@@ -270,16 +247,22 @@ void tst_SendersManager::test_sendAndUpdateDefaultHandling()
 
     pdu = _test_sendersManager->createRequest(MessageType::Confirmable, RequestCode::Post);
     QVERIFY(_test_sendersManager->send(pdu, std::unique_ptr<Handling>()));
-    QTest::qSleep(10000);
+
+    while(_test_client.isioPending());
+
     auto n = handlingData->number();
     QVERIFY(n <= number - 3);
     QCOMPARE(handlingData->isDestroy(), false);
 
-    startServer(1000);
-
+    startServer();
     pdu = _test_sendersManager->createRequest(MessageType::Confirmable, RequestCode::Get);
     QVERIFY(_test_sendersManager->send(pdu, std::unique_ptr<Handling>()));
-    QTest::qSleep(2000);
+    while(1) {
+        auto server_result = coap_io_pending(_test_server);
+        auto client_result = _test_client.isioPending();
+        if(!client_result && !server_result)
+            break;
+    }
     QCOMPARE(handlingData->number(), n + 1);
     QCOMPARE(handlingData->isDestroy(), false);
 
