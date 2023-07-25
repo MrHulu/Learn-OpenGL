@@ -10,11 +10,11 @@
  */
 #pragma once
 
-
-#include <coap3/coap.h>
 #include "coap/Information/PduInformation.h"
 #include <map>
 #include <memory>
+
+struct coap_session_t;
 
 namespace CoapPlusPlus
 {
@@ -62,8 +62,8 @@ public:
      *  ... other code ...
      * 
      * bool onAck(Session& session, const RequestPdu* request, const ResponsePdu* response) noexcept override {
-     *  Pdu::LogPdu(COAP_LOG_INFO, request);
-     *  Pdu::LogPdu(COAP_LOG_INFO, response);
+     *  Pdu::LogPdu(LOG_LEVEL::INFO, request);
+     *  Pdu::LogPdu(LOG_LEVEL::INFO, response);
      *  return true;
      * }
      * 
@@ -125,10 +125,10 @@ public:
 
 private:
     void registerHandlerInit() noexcept;
-    static void NackHandler(coap_session_t *session, const coap_pdu_t *sent, coap_nack_reason_t reason, const coap_mid_t mid);
-    static coap_response_t AckHandler(coap_session_t *session, const coap_pdu_t *sent, const coap_pdu_t *received, const coap_mid_t mid);
 
 private:
+    class SendersManagerHandlerWrapper;
+
     coap_session_t *m_coap_session = nullptr;
     std::map<BinaryConst, Handling*> m_handlings; 
     class DefaultHandling;

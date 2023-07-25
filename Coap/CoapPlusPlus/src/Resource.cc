@@ -1,3 +1,4 @@
+#include <coap3/coap.h> 
 #include "Resource.h"
 #include "ResourceInterface.h"
 #include "coap/exception.h"
@@ -39,6 +40,8 @@ void Resource::notifyObserver() noexcept
 
 void Resource::registerInterface(std::unique_ptr<ResourceInterface> resourceInterface) noexcept
 { 
+    if(!resourceInterface)
+        return;
     // 注册资源接口
     m_resourceInterface[resourceInterface->code()] = resourceInterface.release();
 }
@@ -147,8 +150,8 @@ void Resource::logPdu(coap_pdu_t *request, coap_pdu_t *response) noexcept
         if(raw_token.length > 0 && raw_token.s != nullptr) {
             RequestPdu requestPdu(request, BinaryConst::Create(raw_token.length, raw_token.s));
             ResponsePdu responsePdu(response);
-            Pdu::LogPdu(COAP_LOG_DEBUG, &requestPdu);
-            Pdu::LogPdu(COAP_LOG_DEBUG, &responsePdu);
+            Pdu::LogPdu(LOG_LEVEL::DEBUG, &requestPdu);
+            Pdu::LogPdu(LOG_LEVEL::DEBUG, &responsePdu);
         }
     }
 }

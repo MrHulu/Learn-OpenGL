@@ -1,6 +1,7 @@
 #include "BinaryConst.h"
 #include "coap/exception.h"
 
+#include <coap3/coap.h>
 #include <stdexcept>
 
 namespace CoapPlusPlus {
@@ -12,6 +13,25 @@ BinaryConst::BinaryConst(coap_bin_const_t* raw, bool owned)
         throw std::invalid_argument("Can't construct BinaryConst, raw cannot be null");
     m_rawData = raw;
     m_owned = owned;
+}
+
+bool BinaryConst::operator<(const BinaryConst &other) const
+{
+    if(m_rawData != nullptr && other.m_rawData != nullptr) {
+        if (m_rawData->length < other.m_rawData->length) 
+            return true; 
+        else if (m_rawData->length > other.m_rawData->length)
+            return false;
+        else
+            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
+    }else{
+        return false;
+    }
+}
+
+bool BinaryConst::operator==(const BinaryConst &other) const noexcept
+{
+    return coap_binary_equal(m_rawData, other.m_rawData);
 }
 
 BinaryConst::~BinaryConst()
@@ -74,7 +94,7 @@ std::string BinaryConst::toHexString() const
     std::string result;
     for (size_t i = 0; i < size(); ++i) {
         char buf[4];
-        sprintf(buf, "%02X", m_rawData->s[i]); 
+        sprintf_s(buf, "%02X", m_rawData->s[i]); 
         result += buf;
     }
     return result;

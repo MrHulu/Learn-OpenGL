@@ -13,9 +13,9 @@
 
 #include "Context.h"
 #include "coap/Information/GeneralInformation.h"
-
 #include <map>
 
+struct coap_endpoint_t;
 namespace CoapPlusPlus
 {
 

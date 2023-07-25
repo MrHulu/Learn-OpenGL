@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QString>
 
+#include <coap3/coap.h>
 #include "coap/ContextClient.h"
 #include "coap/Session.h"
 #include "coap/exception.h"

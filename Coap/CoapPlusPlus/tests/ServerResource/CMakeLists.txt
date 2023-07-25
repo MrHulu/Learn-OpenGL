@@ -35,3 +35,4 @@ target_link_libraries(tst_ServerResource
     ${PROJECT_NAME}-objs)
 
 add_test(NAME tst_ServerResource COMMAND  tst_ServerResource)
+add_subdirectory(ResourceInterface) 

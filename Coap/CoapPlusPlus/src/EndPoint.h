@@ -10,7 +10,7 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
+struct coap_endpoint_t;
 
 namespace CoapPlusPlus
 {
@@ -32,7 +32,7 @@ public:
      * @param ep 
      */
     EndPoint(coap_endpoint_t *ep) noexcept : m_ep(ep) { }
-    ~EndPoint() noexcept { coap_free_endpoint(m_ep); }
+    ~EndPoint() noexcept;
 private:
     coap_endpoint_t *m_ep = nullptr;
 };

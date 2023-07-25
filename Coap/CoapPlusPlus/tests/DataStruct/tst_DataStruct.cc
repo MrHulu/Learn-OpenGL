@@ -2,6 +2,7 @@
 #include <QSignalSpy>
 #include <QDebug>
 
+#include <coap3/coap.h>
 #include "Coap/DataStruct/Binary.h"
 #include "Coap/DataStruct/BinaryView.h"
 #include "Coap/DataStruct/BinaryConst.h"

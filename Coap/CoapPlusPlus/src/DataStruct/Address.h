@@ -10,10 +10,13 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <stdexcept>
 #include <string>
+#include <variant>
 
+struct coap_address_t;
+struct sockaddr_in;
+struct sockaddr_in6;
 namespace CoapPlusPlus
 {
 
@@ -43,26 +46,12 @@ public:
     Address(const coap_address_t& address);
 
     Address(const Address& other) : m_rawAddr(other.m_rawAddr) {}
-    Address(Address&& other) : m_rawAddr(std::move(other.m_rawAddr)) { other.m_rawAddr.size = 0; }
+    Address(Address&& other);
     ~Address() = default;
 
-    Address& operator=(const Address& other) {
-        if (this != &other) {
-            m_rawAddr = other.m_rawAddr;
-        }
-        return *this;
-    }
-    Address& operator=(Address&& other) {
-        if (this != &other) {
-            m_rawAddr = std::move(other.m_rawAddr);
-            other.m_rawAddr.size = 0;
-        }
-        return *this;
-    }
-    bool operator==(const Address& other) const noexcept {
-        return m_rawAddr.size == other.m_rawAddr.size && 
-                memcmp(&m_rawAddr.addr, &other.m_rawAddr.addr, m_rawAddr.size) == 0;
-    }
+    Address& operator=(const Address& other);
+    Address& operator=(Address&& other);
+    bool operator==(const Address& other) const noexcept;
 
     /**
      * @brief 获得ip地址
@@ -79,7 +68,7 @@ public:
     uint16_t getPort() const noexcept;
 
 private:
-    coap_address_t m_rawAddr;
+    std::variant<coap_address_t> m_rawAddr;
 };
 
 

@@ -10,7 +10,6 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <vector>
 namespace CoapPlusPlus
 {
@@ -31,11 +30,7 @@ public:
      * @param data 需要解码的数据
      * @return uint32_t 解码后的值
      */
-    static uint32_t Decode(std::vector<uint8_t> data) noexcept { 
-        auto value = data.data();
-        auto length = data.size();
-        return coap_decode_var_bytes(value, length);
-    }
+    static uint32_t Decode(std::vector<uint8_t> data) noexcept;
     
     /**
      * @brief 对多长度的字节序列进行解码，返回最多8字节的解码值
@@ -43,11 +38,7 @@ public:
      * @param data 需要解码的数据
      * @return uint64_t 解码后的值
      */
-    static uint64_t Decode8(std::vector<uint8_t> data) noexcept {
-        auto value = data.data();
-        auto length = data.size();
-        return coap_decode_var_bytes8(value, length);
-    }
+    static uint64_t Decode8(std::vector<uint8_t> data) noexcept;
 
 };
 

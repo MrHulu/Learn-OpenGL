@@ -10,11 +10,11 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <thread>
 #include <mutex>
 #include <memory>
 
+struct coap_context_t;
 namespace CoapPlusPlus {
 
 class Context 

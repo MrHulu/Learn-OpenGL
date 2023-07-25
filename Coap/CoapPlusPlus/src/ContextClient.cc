@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "ContextClient.h"
 #include "coap/Session.h"
 #include "coap/exception.h"

@@ -10,11 +10,13 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include "coap/Information/PduInformation.h"
 #include "coap/Information/OptionInformation.h"
+#include "coap/Log.h"
 #include <vector>
 
+typedef int coap_mid_t;
+struct coap_pdu_t;
 namespace CoapPlusPlus {
 using namespace Information;
 using Mid = coap_mid_t;
@@ -47,7 +49,7 @@ public:
      * @param level log的级别
      * @param pdu pdu对象
      */
-    static void LogPdu(coap_log_t level, const Pdu* pdu) noexcept;
+    static void LogPdu(LOG_LEVEL level, const Pdu* pdu) noexcept;
 
     virtual Payload payload() const noexcept = 0;
 

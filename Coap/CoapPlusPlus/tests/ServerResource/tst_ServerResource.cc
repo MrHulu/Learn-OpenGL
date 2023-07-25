@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QString>
 
+#include <coap3/coap.h>
 #include "coap/ContextServer.h"
 #include "coap/ResourceManager.h"
 #include "coap/Resource.h"

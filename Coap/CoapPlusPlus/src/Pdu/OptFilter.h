@@ -10,11 +10,11 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include "coap/Information/OptionInformation.h"
 
 #include <vector>
 
+struct coap_opt_filter_t;
 namespace CoapPlusPlus
 {
 

@@ -10,7 +10,6 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include "coap/Information/PduInformation.h"
 #include <string>
 

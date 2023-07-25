@@ -10,13 +10,15 @@
  */
 #pragma once
 
-
-#include <coap3/coap.h> 
 #include "coap/Information/PduInformation.h"
 #include <string>
 #include <memory>
 #include <map>
 
+struct coap_resource_t;
+struct coap_session_t;
+struct coap_pdu_t;
+struct coap_string_t;
 namespace CoapPlusPlus
 {
 class ResourceInterface;

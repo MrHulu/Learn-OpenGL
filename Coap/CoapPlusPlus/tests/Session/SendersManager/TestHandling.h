@@ -38,15 +38,15 @@ public:
     bool onAck(Session& session, const RequestPdu* request, const ResponsePdu* response) noexcept override {
         m_data->m_number++;
         coap_log_info("TestHandling::onAck(): number[%d]\n", m_data->number());
-        // Pdu::LogPdu(COAP_LOG_INFO, request);
-        // Pdu::LogPdu(COAP_LOG_INFO, response);
+        // Pdu::LogPdu(LOG_LEVEL::INFO, request);
+        // Pdu::LogPdu(LOG_LEVEL::INFO, response);
         return true;
     }
 
     void onNAck(Session& session, RequestPdu request, NAckReason reason) noexcept override {
         m_data->m_number--;
         coap_log_warn("TestHandling::onNAck(): number[%d], reason[%d] ", m_data->number(), reason);
-        Pdu::LogPdu(COAP_LOG_INFO, &request);
+        Pdu::LogPdu(LOG_LEVEL::INFO, &request);
     }
 
     void readyDestroyed() noexcept override { 

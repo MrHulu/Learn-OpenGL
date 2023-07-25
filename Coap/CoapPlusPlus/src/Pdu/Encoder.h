@@ -10,7 +10,6 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <vector>
 #include <stdexcept>
 
@@ -27,19 +26,7 @@ public:
      * 
      * @exception invalid_argument 如果value非法，会抛出该异常
      */
-    Encoder(uint32_t value) {
-        uint8_t buf[4] = {0};
-        m_data.clear();
-        m_length = coap_encode_var_safe(buf, sizeof(buf), value);
-        if(m_length != 0 && m_length <= sizeof(buf)) {
-            m_data.reserve(m_length);
-            m_data.insert(m_data.end(), buf, buf + m_length);
-        }else if(m_length == 0 && m_length <= sizeof(buf)) {
-
-        }else {
-            throw std::invalid_argument("Invalid value for encoding.");
-        }
-    }
+    Encoder(uint32_t value);
     
     /**
      * @brief 构造一个Encoder对象，用于编码CoAP选项的值
@@ -57,19 +44,7 @@ public:
      * 
      * @exception invalid_argument 如果value非法，会抛出该异常
      */
-    Encoder(uint64_t value) {
-        uint8_t buf[8] = {0};
-        m_data.clear();
-        m_length = coap_encode_var_safe8(buf, sizeof(buf), value);
-        if(m_length != 0 && m_length <= sizeof(buf)) {
-            m_data.reserve(m_length);
-            m_data.insert(m_data.end(), buf, buf + m_length);
-        }else if(m_length == 0 && m_length <= sizeof(buf)) {
-
-        }else {
-            throw std::invalid_argument("Invalid value for encoding.");
-        }
-    }
+    Encoder(uint64_t value);
     
     ~Encoder() noexcept = default;
 

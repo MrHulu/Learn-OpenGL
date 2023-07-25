@@ -10,9 +10,9 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <span>
 
+struct coap_binary_t;
 namespace CoapPlusPlus {
 
 class Binary
@@ -40,14 +40,8 @@ public:
         }
         return *this;
     }
-    bool operator<(const Binary& other) const {
-        if (m_rawData->length < other.m_rawData->length) 
-            return true; 
-        else if (m_rawData->length > other.m_rawData->length)
-            return false;
-        else
-            return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
-    }
+    bool operator<(const Binary& other) const;
+    
     ~Binary();
     /**
      * @brief 获得一个引用coap_binary_t结构体的Binary

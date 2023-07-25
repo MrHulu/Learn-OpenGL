@@ -10,10 +10,10 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <span>
 #include <string>
 
+struct coap_bin_const_t;
 namespace CoapPlusPlus {
 
 class BinaryConst
@@ -51,22 +51,9 @@ public:
         return *this;
     }
     
-    bool operator<(const BinaryConst& other) const {
-        if(m_rawData != nullptr && other.m_rawData != nullptr) {
-            if (m_rawData->length < other.m_rawData->length) 
-                return true; 
-            else if (m_rawData->length > other.m_rawData->length)
-                return false;
-            else
-                return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
-        }else{
-            return false;
-        }
-    }
+    bool operator<(const BinaryConst& other) const;
 
-    bool operator== (const BinaryConst &other) const noexcept {
-        return coap_binary_equal(m_rawData, other.m_rawData);
-    }
+    bool operator== (const BinaryConst &other) const noexcept;
 
     
     ~BinaryConst();

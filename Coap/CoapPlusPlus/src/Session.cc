@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "Session.h"
 #include "coap/exception.h"
 #include "coap/DataStruct/Address.h"

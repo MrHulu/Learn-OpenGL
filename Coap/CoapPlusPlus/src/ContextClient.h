@@ -16,6 +16,7 @@
 
 #include <map>
 
+struct coap_session_t;
 namespace CoapPlusPlus
 {
 

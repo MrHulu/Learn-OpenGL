@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "RequestPdu.h"
 #include "Options.h"
 #include "Encoder.h"

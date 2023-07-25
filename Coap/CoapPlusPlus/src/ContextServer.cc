@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2023
  * 
  */
-
+#include <coap3/coap.h>
 #include "ContextServer.h"
 #include "ResourceManager.h"
 #include "EndPoint.h"

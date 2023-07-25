@@ -10,12 +10,12 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include "coap/Information/OptionInformation.h"
 #include <vector>
 #include <string>
 #include <iostream>
 
+struct coap_optlist_t;
 namespace CoapPlusPlus
 {
 
@@ -41,16 +41,7 @@ public:
 
     ~Options() { deleteOptList(); }
 
-    Options(const Options& other) {  
-        for(auto node = other.m_optList; node != nullptr; node = node->next) {
-            auto optlist = (coap_optlist_t*)coap_malloc(sizeof(coap_optlist_t));
-            optlist->number = node->number;
-            optlist->length = node->length;
-            optlist->data = (uint8_t*)coap_malloc(node->length);
-            memcpy(optlist->data, node->data, node->length);
-            coap_insert_optlist(&m_optList, optlist);
-        }
-    }
+    Options(const Options& other);
 
     Options(Options&& other) noexcept { 
         m_optList = other.m_optList;

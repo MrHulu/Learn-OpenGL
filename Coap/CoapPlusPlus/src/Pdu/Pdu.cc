@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "Pdu.h"
 #include "coap/exception.h"
 #include "coap/Pdu/Option.h"
@@ -7,13 +8,13 @@
 namespace CoapPlusPlus
 {
 
-void Pdu::LogPdu(coap_log_t level, const Pdu* pdu) noexcept
+void Pdu::LogPdu(LOG_LEVEL level, const Pdu* pdu) noexcept
 {
     if(pdu == nullptr)
         return;
     if(pdu->m_rawPdu == nullptr)
         return;
-    coap_show_pdu(level, pdu->m_rawPdu);
+    coap_show_pdu(static_cast<coap_log_t>(level), pdu->m_rawPdu);
 }
 
 bool Pdu::setMessageType(MessageType type) noexcept

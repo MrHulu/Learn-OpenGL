@@ -1,6 +1,7 @@
 #include "Binary.h"
 #include "coap/exception.h"
 
+#include <coap3/coap.h>
 #include <stdexcept>
 
 namespace CoapPlusPlus {
@@ -12,6 +13,16 @@ Binary::Binary(coap_binary_t* raw, bool owned)
         throw std::invalid_argument("raw cannot be null");
     m_rawData = raw;
     m_owned = owned;
+}
+
+bool Binary::operator<(const Binary &other) const
+{
+    if (m_rawData->length < other.m_rawData->length) 
+        return true; 
+    else if (m_rawData->length > other.m_rawData->length)
+        return false;
+    else
+        return std::memcmp(m_rawData->s, other.m_rawData->s, m_rawData->length) < 0;
 }
 
 Binary::~Binary()

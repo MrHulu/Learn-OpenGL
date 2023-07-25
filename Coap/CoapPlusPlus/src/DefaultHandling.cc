@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "DefaultHandling.h"
 #include "coap/DataStruct/BinaryConst.h"
 #include "coap/Pdu/RequestPdu.h"
@@ -10,14 +11,14 @@ SendersManager::DefaultHandling::DefaultHandling(BinaryConst token) noexcept
 
 bool SendersManager::DefaultHandling::onAck(Session &session, const RequestPdu *request, const ResponsePdu *response) noexcept
 {
-    Pdu::LogPdu(COAP_LOG_INFO, request);
-    Pdu::LogPdu(COAP_LOG_INFO, response);
+    Pdu::LogPdu(LOG_LEVEL::INFO, request);
+    Pdu::LogPdu(LOG_LEVEL::INFO, response);
     return true;
 }
 
 void SendersManager::DefaultHandling::onNAck(Session &session, RequestPdu request, NAckReason reason) noexcept
 {
-    Pdu::LogPdu(COAP_LOG_INFO, &request);
+    Pdu::LogPdu(LOG_LEVEL::INFO, &request);
 }
 
 }; // namespace CoapPlusPlus

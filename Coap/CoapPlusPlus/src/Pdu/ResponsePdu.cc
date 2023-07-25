@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "ResponsePdu.h"
 #include "coap/DataStruct/BinaryConstView.h"
 #include "Options.h"

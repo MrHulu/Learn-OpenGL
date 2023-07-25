@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QString>
 
+#include <coap3/coap.h>
 #include "coap/Pdu/Encoder.h"
 #include "coap/Pdu/Decoder.h"
 #include "coap/Pdu/Option.h"
@@ -123,7 +124,7 @@ void tst_Pdu::test_Options()
 
     ResponsePdu respone(pdu);
     QVERIFY(respone.addOptions(options));
-    Pdu::LogPdu(LOG_INFO, &respone);
+    Pdu::LogPdu(LOG_LEVEL::INFO, &respone);
     coap_opt_iterator_t opt_iter;
     coap_opt_filter_t ignore_options;
     coap_option_filter_clear(&ignore_options);
@@ -373,7 +374,7 @@ void tst_Pdu::test_requestPdu()
     auto payloadData = QByteArray((const char*)request.payload().data().data(), request.payload().size());
     QCOMPARE(payloadData.toInt(), 1234);
 
-    Pdu::LogPdu(LOG_INFO, &request);
+    Pdu::LogPdu(LOG_LEVEL::INFO, &request);
     coap_delete_pdu(pdu);
 }
 
@@ -449,7 +450,7 @@ void tst_Pdu::test_responsePdu()
     QVERIFY(QJsonDocument::fromJson(payloadData).object().value("test").toString() == "response");
     QVERIFY(QJsonDocument::fromJson(payloadData).object().value("ContentFormat").toString() == "Json");
 
-    Pdu::LogPdu(LOG_INFO, &response);
+    Pdu::LogPdu(LOG_LEVEL::INFO, &response);
     coap_delete_pdu(pdu);
 }
 

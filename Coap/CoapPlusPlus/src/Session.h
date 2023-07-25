@@ -10,10 +10,10 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include <memory>
 #include "coap/Information/GeneralInformation.h"
 
+struct coap_session_t;
 namespace CoapPlusPlus
 {
 

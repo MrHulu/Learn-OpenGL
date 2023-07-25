@@ -1,4 +1,5 @@
 #include "Options.h"
+#include <coap3/coap.h>
 #include "coap/exception.h"
 #include <iostream>
 namespace CoapPlusPlus
@@ -11,6 +12,18 @@ Options::Options(Information::OptionNumber number, std::vector<uint8_t> data)
     m_optList = coap_new_optlist(number, length, value);
     if(m_optList == nullptr)
         throw std::invalid_argument("Can't construct Options object, invalid option data");
+}
+
+Options::Options(const Options &other)
+{  
+    for(auto node = other.m_optList; node != nullptr; node = node->next) {
+        auto optlist = (coap_optlist_t*)coap_malloc(sizeof(coap_optlist_t));
+        optlist->number = node->number;
+        optlist->length = node->length;
+        optlist->data = (uint8_t*)coap_malloc(node->length);
+        memcpy(optlist->data, node->data, node->length);
+        coap_insert_optlist(&m_optList, optlist);
+    }
 }
 
 bool Options::insert(Information::OptionNumber number, std::vector<uint8_t> data) noexcept

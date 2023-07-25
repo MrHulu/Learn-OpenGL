@@ -10,9 +10,10 @@
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include "coap/Information/OptionInformation.h"
 #include <vector>
+
+typedef uint8_t coap_opt_t;
 namespace CoapPlusPlus
 {
 
@@ -39,21 +40,21 @@ public:
      * 
      * @return 从opt开始到选项结束之间的字节数。如果出现错误，该函数返回0，因为选项至少需要一个字节的存储空间。
     */
-    size_t getSize() const noexcept { return coap_opt_size(m_opt); }
+    size_t getSize() const noexcept;
 
     /**
      * @brief 获取该选项数据的长度
      * 
      * @return 选项数据长度，当前对象不是一个选项时返回0
      */
-    size_t getLength() const noexcept { return coap_opt_length(m_opt); }
+    size_t getLength() const noexcept;
 
     /**
      * @brief 获取该选项的值
      * 
      * @return 选择的值，当前对象不是一个选项时返回nullptr
      */
-    const uint8_t* getValue() const noexcept { return coap_opt_value(m_opt); }
+    const uint8_t* getValue() const noexcept;
 
     std::vector<uint8_t> getData() const noexcept {
         return std::vector<uint8_t>(getValue(), getValue() + getLength());

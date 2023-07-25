@@ -1,4 +1,5 @@
 #include "Context.h"
+#include <coap3/coap.h>
 #include "coap/exception.h"
 namespace CoapPlusPlus {
 
