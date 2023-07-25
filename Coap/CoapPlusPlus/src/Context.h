@@ -51,7 +51,7 @@ public:
      * 
      * @exception DataNotReadyException 数据未准备好，无法进行网络I
      */
-    uint16_t ioProcess(int waitMs = 1000);
+    int ioProcess(int waitMs = 1000);
 
     /**
      * @brief 检查是否有任何 I/O 待处理。

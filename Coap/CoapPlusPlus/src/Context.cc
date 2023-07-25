@@ -29,7 +29,7 @@ namespace CoapPlusPlus {
 //     }
 // }
 
-uint16_t Context::ioProcess(int waitMs)
+int Context::ioProcess(int waitMs)
 {
     if(isReady() == false) {
         throw DataNotReadyException("No endpoint or session added, no network I/O possible.");
