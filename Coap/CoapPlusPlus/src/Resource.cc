@@ -100,13 +100,16 @@ void Resource::deleteRequestCallback(coap_resource_t* resource, coap_session_t* 
     logPdu(const_cast<coap_pdu_t*>(request), response);
 }
 
-void Resource::initResource() noexcept
+bool Resource::initResource() noexcept
 {
     if(m_isInit == true) {
-        return;
+        return true;
     }
     // 创建 coap_resource_t
     m_resource = coap_resource_init(coap_make_str_const(m_uriPath.c_str()), 0);
+    if(!m_resource) {
+        return false;
+    }
 
     // 设置回调函数
     coap_register_handler(m_resource, COAP_REQUEST_GET, Resource::getRequestCallback);
@@ -117,6 +120,7 @@ void Resource::initResource() noexcept
     coap_resource_set_userdata(m_resource, this);
     coap_resource_set_get_observable(m_resource, m_observable ? 1 : 0);
     m_isInit = true;
+    return true;
 }
 
 void Resource::freeResource() noexcept

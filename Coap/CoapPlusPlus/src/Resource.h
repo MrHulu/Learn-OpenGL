@@ -82,7 +82,7 @@ private:
     static void deleteRequestCallback(coap_resource_t* resource, coap_session_t* session,
         const coap_pdu_t* request, const coap_string_t* query, coap_pdu_t* response);
 
-    void initResource() noexcept; // ResourceManager调用
+    bool initResource() noexcept; // ResourceManager调用
     coap_resource_t* getResource() const noexcept { return m_resource; }  
     void freeResource() noexcept; // ResourceManager调用
 

@@ -24,10 +24,12 @@ bool ResourceManager::registerResource(std::unique_ptr<Resource> resource) noexc
     if (resource) {
         auto uriPath = resource->getUriPath();
         if (m_resources.find(uriPath) == m_resources.end()) {
-            resource->initResource();
-            coap_add_resource(_context.getContext(), resource->getResource());
-            m_resources[uriPath] = resource.release();
-            return true;
+            if (resource->initResource() ) {
+                coap_add_resource(_context.getContext(), resource->getResource());
+                m_resources[uriPath] = resource.release();
+                return true;
+            }else
+                return false;
         }
     }
     return false;
