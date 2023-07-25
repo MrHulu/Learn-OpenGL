@@ -2,23 +2,31 @@
  * @file ResourceManager.h
  * @author Hulu
  * @brief coap_resource_t 的资源管理器类定义
- * @version 0.1
- * @date 2023-06-26
+ * @version 0.2
+ * @date 2023-07-25
  * 
  * @copyright Copyright (c) 2023
  * 
  */
 #pragma once
 
-#include <coap3/coap.h>
 #include "ContextServer.h"
 
 namespace CoapPlusPlus
 {
 
 class Resource;
+
+/**
+ * @brief 的资源管理器类
+ * 
+ */
 class ResourceManager
 {
+    ResourceManager(const ResourceManager&) = delete;
+    ResourceManager(ResourceManager&&) = delete;
+    ResourceManager& operator=(const ResourceManager&) = delete;
+    ResourceManager& operator=(ResourceManager&&) = delete;
 public:
     ResourceManager(ContextServer& context);
     ~ResourceManager() noexcept;

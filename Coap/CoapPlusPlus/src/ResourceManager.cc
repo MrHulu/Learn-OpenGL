@@ -1,3 +1,4 @@
+#include <coap3/coap.h>
 #include "ResourceManager.h"
 #include "Resource.h"
 #include "coap/exception.h"

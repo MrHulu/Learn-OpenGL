@@ -66,7 +66,7 @@ void tst_ServerResource::test_ResourceRegister()
 {
     const char *uri1 = "coap://[::1]:40288/coapcpp/test/resource?isObs=true";
     const char *uri2 = "coap://[::1]:40288/coapcpp/test/resource?isObs=false";
-    auto manager = _server.getResourceManager();
+    auto& manager = _server.getResourceManager();
     QVERIFY2(!manager.unregisterResource(uri1), "资源还没注册，预期返回false，实际返回true");
     QVERIFY2(manager.registerResource(std::make_unique<Resource>(uri1, true)), "无法注册resource_obs_on");
     QVERIFY2(manager.registerResource(std::make_unique<Resource>(uri2, false)), "无法注册resource_obs_off");
