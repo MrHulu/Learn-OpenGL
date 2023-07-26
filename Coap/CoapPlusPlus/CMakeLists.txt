@@ -5,6 +5,9 @@ project(libcoapcpp
   DESCRIPTION "基于libcoap的C++封装库"
   HOMEPAGE_URL "http://git.gudsen-rd.com/rs21/rs21-pc/module/libcoapcpp"
   LANGUAGES CXX)
+set(PACKAGE_VERSION ${PROJECT_VERSION})
+set(PACKAGE_BUILD_TYPE ${CMAKE_BUILD_TYPE})
+set(PACKAGE_URL ${PROJECT_HOMEPAGE_URL})
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "编译类型，默认是RelWithDebInfo" FORCE)
@@ -24,10 +27,15 @@ include(CMakeDependentOption) # CMakeDependentOption模块 参见 https://cmake.
 cmake_dependent_option(
   MAKE_STATIC_LIBRARY "将${PROJECT_NAME}模块编译成静态库" ON
   "MAKE_LIBRARY" ON)
- 
+
+# Config
+configure_file(${CMAKE_CURRENT_LIST_DIR}/config.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 # 源代码、头文件、QML文件
-file(GLOB_RECURSE source_files "src/*.cc" "src/*.h")
-file(GLOB_RECURSE header_files "include/*.h")
+file(GLOB_RECURSE source_files "src/*.cc" "src/*.h" ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+file(GLOB_RECURSE header_files "include/*.h" )
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "库的安装目录")
 set(INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR} CACHE PATH "可执行文件的安装目录")
@@ -44,8 +52,10 @@ foreach(p LIB BIN INCLUDE CMAKE)
   unset(_path)
 endforeach()
 
+# add_sub
 add_subdirectory(src)
 
+# Enable
 if (ENABLE_TESTS)
   enable_testing()
   add_subdirectory(tests)

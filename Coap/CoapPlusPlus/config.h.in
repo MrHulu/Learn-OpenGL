@@ -1,0 +1,17 @@
+/**
+ * @file config.h.in
+ * @author Hulu
+ * @brief cmake配置文件
+ * @version 1.0
+ * @date 2023-07-26
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+#pragma once
+
+#cmakedefine PACKAGE_VERSION "@PACKAGE_VERSION@"
+
+#cmakedefine PACKAGE_BUILD_TYPE "@PACKAGE_BUILD_TYPE@"
+
+#cmakedefine PACKAGE_URL "@PACKAGE_URL@"
