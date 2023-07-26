@@ -1,5 +1,6 @@
 #include <coap3/coap.h>
 #include "Log.h"
+#include "config.h"
 
 namespace CoapPlusPlus
 {
@@ -30,6 +31,11 @@ void Log::Logging(LOG_LEVEL level, const char* fmt, ...) noexcept
         std::lock_guard<std::mutex> lock(logMutex);
         coap_log(static_cast<coap_log_t>(level), buffer);
     }
+}
+
+std::string Log::GetCurrentVersion() noexcept
+{
+    return std::string(PACKAGE_VERSION);
 }
 
 LOG_LEVEL Log::GetLevel() noexcept

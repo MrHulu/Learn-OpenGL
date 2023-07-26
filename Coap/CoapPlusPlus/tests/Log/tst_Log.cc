@@ -6,6 +6,7 @@
 #include <QDateTime>
 
 #include "coap/Log.h"
+#include "config.h"
 
 using namespace CoapPlusPlus;
 class tst_Log : public QObject {
@@ -38,6 +39,8 @@ private:
     QString read();
 
 private slots:
+    void test_case1();
+
     void test_LevelToString();
 
     void test_set_get_level();
@@ -61,6 +64,12 @@ QString tst_Log::read()
 QTEST_MAIN(tst_Log)
 
 #include "tst_Log.moc"
+
+void tst_Log::test_case1()
+{
+    qDebug() << "test_case1: " << QString::fromStdString(Log::GetCurrentVersion());
+    QCOMPARE(Log::GetCurrentVersion(), PACKAGE_VERSION);
+}
 
 void tst_Log::test_LevelToString()
 {

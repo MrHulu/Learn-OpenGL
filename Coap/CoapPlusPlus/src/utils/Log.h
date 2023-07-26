@@ -2,8 +2,8 @@
  * @file Log.h
  * @author Hulu
  * @brief coap中的日志系统
- * @version 0.1
- * @date 2023-07-21
+ * @version 0.2
+ * @date 2023-07-26
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -57,6 +57,13 @@ public:
      * @param fmt 格式化字符串
      */
     static void Logging(LOG_LEVEL level, const char* fmt, ...) noexcept;
+
+    /**
+     * @brief 获取当前版本号
+     * 
+     * @return std::string 如 1.0.0
+     */
+    static std::string GetCurrentVersion() noexcept;
 
     /**
      * @brief 获取当前日志等级
