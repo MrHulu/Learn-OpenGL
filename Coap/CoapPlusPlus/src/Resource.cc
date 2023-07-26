@@ -1,10 +1,12 @@
 #include <coap3/coap.h> 
 #include "Resource.h"
+#include "coap/Session.h"
 #include "ResourceInterface.h"
 #include "coap/exception.h"
 #include "coap/Pdu/RequestPdu.h"
 #include "coap/Pdu/ResponsePdu.h"
 
+#include <string>
 namespace CoapPlusPlus
 {
 
@@ -20,6 +22,13 @@ Resource::~Resource() noexcept
     for(auto iter = m_resourceInterface.begin(); iter != m_resourceInterface.end(); ++iter) {
         delete iter->second;
     }
+    
+}
+
+std::string Resource::getUriPath() const noexcept
+{
+    auto str = coap_resource_get_uri_path(m_resource);
+    return m_uriPath;
 }
 
 bool Resource::enableNotificationMessageConfirmable(bool enable) noexcept
@@ -38,27 +47,36 @@ void Resource::notifyObserver() noexcept
         coap_resource_notify_observers(m_resource, nullptr);
 }
 
-void Resource::registerInterface(std::unique_ptr<ResourceInterface> resourceInterface) noexcept
+void Resource::registerInterface(std::unique_ptr<ResourceInterface> resourceInterface)
 { 
     if(!resourceInterface)
-        return;
-    // 注册资源接口
-    m_resourceInterface[resourceInterface->code()] = resourceInterface.release();
+        throw std::invalid_argument("resourceInterface is nullptr");
+    if(m_resourceInterface.find(resourceInterface->code()) != m_resourceInterface.end())
+        throw AlreadyExistException("resourceInterface already exist");
+    auto code = resourceInterface->code();
+    m_resourceInterface.insert(std::make_pair(code, resourceInterface.release()));
 }
+
 
 void Resource::getRequestCallback(coap_resource_t* resource, coap_session_t* session,
     const coap_pdu_t* request, const coap_string_t* query, coap_pdu_t* response)
 {
     // 处理 GET 请求
     auto resourceWrapper = static_cast<Resource*>(coap_resource_get_userdata(resource));
-    try {
-        auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Get);
-        
-        //imp->onRequest(session, request, query, response);
-    } catch(...) {
-        coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+    if(resourceWrapper != nullptr) {
+        try {
+            auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Get);
+            
+            auto string = query == nullptr ? "" : std::string((const char*)query->s, query->length);
+            auto token = coap_pdu_get_token(request); // 如果请求没有token，虽然长度为0的，data是null但是token不为空，所以BinaryConst::Create不会抛出异常
+            imp->onRequest(session, string, response, RequestPdu(const_cast<coap_pdu_t*>(request), BinaryConst::Create(token.length, token.s)));
+        } catch(std::exception& e) {
+            coap_log_warn("Resource::getRequestCallback error: %s, path:%s\n", e.what(), resourceWrapper->getUriPath().c_str());
+            coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+        }
     }
-    logPdu(const_cast<coap_pdu_t*>(request), response);
+    coap_show_pdu(LOG_DEBUG, request);
+    coap_show_pdu(LOG_DEBUG, response);
 }
 
 void Resource::putRequestCallback(coap_resource_t* resource, coap_session_t* session,
@@ -66,14 +84,19 @@ void Resource::putRequestCallback(coap_resource_t* resource, coap_session_t* ses
 {
     // 处理 PUT 请求
     auto resourceWrapper = static_cast<Resource*>(coap_resource_get_userdata(resource));
-    try {
-        auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Put);
-        // TODO: 参数未实现
-        //imp->onRequest(session, request, query, response);
-    } catch(...) {
-        coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+    if(resourceWrapper != nullptr) {
+        try {
+            auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Put);
+            auto string = query == nullptr ? "" : std::string((const char*)query->s, query->length);
+            auto token = coap_pdu_get_token(request);
+            imp->onRequest(session, string, response, RequestPdu(const_cast<coap_pdu_t*>(request), BinaryConst::Create(token.length, token.s)));
+        } catch(std::exception& e) {
+            coap_log_warn("Resource::putRequestCallback error: %s, path:%s\n", e.what(), resourceWrapper->getUriPath().c_str());
+            coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+        }
     }
-    logPdu(const_cast<coap_pdu_t*>(request), response);
+    coap_show_pdu(LOG_DEBUG, request);
+    coap_show_pdu(LOG_DEBUG, response);
 }
 
 void Resource::postRequestCallback(coap_resource_t* resource, coap_session_t* session,
@@ -81,12 +104,19 @@ void Resource::postRequestCallback(coap_resource_t* resource, coap_session_t* se
 {
     // 处理 POST 请求
     auto resourceWrapper = static_cast<Resource*>(coap_resource_get_userdata(resource));
-    try {
-        auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Post);
-    } catch(...) {
-        coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+    if(resourceWrapper != nullptr) {
+        try {
+            auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Post);
+            auto string = query == nullptr ? "" : std::string((const char*)query->s, query->length);
+            auto token = coap_pdu_get_token(request);
+            imp->onRequest(session, string, response, RequestPdu(const_cast<coap_pdu_t*>(request), BinaryConst::Create(token.length, token.s)));
+        } catch(std::exception& e) {
+            coap_log_warn("Resource::postRequestCallback error: %s, path:%s\n", e.what(), resourceWrapper->getUriPath().c_str());
+            coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+        }
     }
-    logPdu(const_cast<coap_pdu_t*>(request), response);
+    coap_show_pdu(LOG_DEBUG, request);
+    coap_show_pdu(LOG_DEBUG, response);
 }
 
 void Resource::deleteRequestCallback(coap_resource_t* resource, coap_session_t* session,
@@ -94,13 +124,19 @@ void Resource::deleteRequestCallback(coap_resource_t* resource, coap_session_t* 
 {
     // 处理 DELETE 请求
     auto resourceWrapper = static_cast<Resource*>(coap_resource_get_userdata(resource));
-    try {
-        auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Delete);
-        //imp->onRequest(session, request, query, response);
-    } catch(...) {
-        coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+    if(resourceWrapper != nullptr) {
+        try {
+            auto imp = resourceWrapper->getResourceInterface(Information::RequestCode::Delete);
+            auto string = query == nullptr ? "" : std::string((const char*)query->s, query->length);
+            auto token = coap_pdu_get_token(request);
+            imp->onRequest(session, string, response, RequestPdu(const_cast<coap_pdu_t*>(request), BinaryConst::Create(token.length, token.s)));
+        } catch(std::exception& e) {
+            coap_log_warn("Resource::deleteRequestCallback error: %s, path:%s\n", e.what(), resourceWrapper->getUriPath().c_str());
+            coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));
+        }
     }
-    logPdu(const_cast<coap_pdu_t*>(request), response);
+    coap_show_pdu(LOG_DEBUG, request);
+    coap_show_pdu(LOG_DEBUG, response);
 }
 
 bool Resource::initResource() noexcept
@@ -115,20 +151,22 @@ bool Resource::initResource() noexcept
     }
 
     // 设置回调函数
-    coap_register_handler(m_resource, COAP_REQUEST_GET, Resource::getRequestCallback);
-    coap_register_handler(m_resource, COAP_REQUEST_PUT, Resource::putRequestCallback);
-    coap_register_handler(m_resource, COAP_REQUEST_POST, Resource::postRequestCallback);
-    coap_register_handler(m_resource, COAP_REQUEST_DELETE, Resource::deleteRequestCallback);
+    coap_register_request_handler(m_resource, COAP_REQUEST_GET, Resource::getRequestCallback);
+    coap_register_request_handler(m_resource, COAP_REQUEST_PUT, Resource::putRequestCallback);
+    coap_register_request_handler(m_resource, COAP_REQUEST_POST, Resource::postRequestCallback);
+    coap_register_request_handler(m_resource, COAP_REQUEST_DELETE, Resource::deleteRequestCallback);
 
     coap_resource_set_userdata(m_resource, this);
     coap_resource_set_get_observable(m_resource, m_observable ? 1 : 0);
     m_isInit = true;
+    getUriPath();// 00000000000000000000000
     return true;
 }
 
 void Resource::freeResource() noexcept
 {
     if (m_resource) {
+        coap_resource_set_userdata(m_resource, nullptr);
         coap_delete_resource(nullptr, m_resource);
         m_resource = nullptr;
     }
@@ -141,19 +179,6 @@ ResourceInterface *Resource::getResourceInterface(Information::RequestCode reque
         throw TargetNotFoundException("ResourceInterface not found");
     }
     return iter->second;
-}
-
-void Resource::logPdu(coap_pdu_t *request, coap_pdu_t *response) noexcept
-{
-    if (request && response) {
-        auto raw_token = coap_pdu_get_token(request);
-        if(raw_token.length > 0 && raw_token.s != nullptr) {
-            RequestPdu requestPdu(request, BinaryConst::Create(raw_token.length, raw_token.s));
-            ResponsePdu responsePdu(response);
-            Pdu::LogPdu(LOG_LEVEL::DEBUG, &requestPdu);
-            Pdu::LogPdu(LOG_LEVEL::DEBUG, &responsePdu);
-        }
-    }
 }
 
 } // namespace CoapPlusPlus

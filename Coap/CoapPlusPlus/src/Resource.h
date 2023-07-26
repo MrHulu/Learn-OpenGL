@@ -38,7 +38,7 @@ public:
      * 
      * @return URI路径
      */
-    std::string getUriPath() const noexcept { return m_uriPath; }
+    std::string getUriPath() const noexcept;
 
     /**
      * @brief 获取资源是否可观察
@@ -68,11 +68,13 @@ public:
      * @brief 注册资源的回应接口，当收到请求时，会调用该接口。
      * 
      * @param resourceInterface 资源回应接口
-     * @note 一个资源的请求码对应一个回应接口最多可注册四个接口。如果某个请求码没有对应的回应接口，会回应5.01——NotImplemented。
      * @see ResourceInterface
      * 
+     * @note 一个资源的请求码对应一个回应接口最多可注册四个接口。如果某个请求码没有对应的回应接口，会回应5.01——NotImplemented。
+     * @exception std::invalid_argument 资源回应接口为空
+     * @exception AlreadyExistException 此请求码已经注册过回应接口
      */
-    void registerInterface(std::unique_ptr<ResourceInterface> resourceInterface) noexcept;
+    void registerInterface(std::unique_ptr<ResourceInterface> resourceInterface);
 
 private:
     static void getRequestCallback(coap_resource_t* resource, coap_session_t* session,
@@ -89,7 +91,6 @@ private:
     void freeResource() noexcept; // ResourceManager调用
 
     ResourceInterface* getResourceInterface(Information::RequestCode requestCode);
-    static void logPdu(coap_pdu_t* request, coap_pdu_t* response) noexcept;
 
 private:
     coap_resource_t* m_resource = nullptr;
