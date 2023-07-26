@@ -68,7 +68,7 @@ public:
      *        一个DNS可解析的名称或一个Unix域套接字名称，它被编码为一个unix文件名，用%2F替换文件名中的每个/，这样就可以很容易地确定路径的起点。
      * @details 任何路径或查询都会被分解成单独的分段路径或查询选项然后和端口选项被插入到该对象。
      * 
-     * @param path URI字符串，例如："coap://[::1]:40288/coapcpp/pdu/option?a=1&b=2"
+     * @param path URI字符串，例如："coap://[::1]:40288/coapcpp/pdu/option?a=1&b=2", 或者 "/coapcpp/pdu/option?a=1&b=2"
      * @return 是否插入成功
      * 
      * @exception std::invalid_argument 传入的path不是一个合法的URI  
