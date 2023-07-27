@@ -6,6 +6,7 @@
 #include "coap/DataStruct/Address.h"
 #include "coap/Pdu/RequestPdu.h"
 #include "coap/Pdu/ResponsePdu.h"
+#include "coap/Pdu/Option.h"
 
 namespace CoapPlusPlus
 {
@@ -33,10 +34,6 @@ public:
 
     void onRequest(Session session, std::string query, ResponsePdu response, RequestPdu request) override
     {
-        Log::Logging(INFO, "LocalPort:%d, RemotePort:%d\n", session.getLocalAddress().getPort(), session.getRemoteAddress().getPort());
-        Log::Logging(INFO, "Request:"); Pdu::LogPdu(INFO, &request);
-        Log::Logging(INFO, "Response:"); Pdu::LogPdu(INFO, &response);
-        Log::Logging(INFO, "Query:%s\n", query.c_str());
         auto code = request.code();
         switch (code)
         {
@@ -53,7 +50,28 @@ public:
             m_data->m_number = m_data->m_number * m_data->m_number;
             break;
         }
+        auto testlog = [](Pdu* pdu) {
+            Log::Logging(INFO, "Mid[%d] Type[%d]\n", pdu->messageId(), pdu->messageType());
+            Log::Logging(INFO, "Option[ ");
+            for(auto opt: pdu->getOptions())
+                Log::Logging(INFO, " %d ", opt.getNumber());
+            Log::Logging(INFO, " ]\n");
+            auto vec = pdu->payload().data();
+            Log::Logging(INFO, "Payload[ %s ]\n", std::string(vec.begin(), vec.end()).c_str());
+            Log::Logging(INFO, "*********************\n");
+        };
+        Log::Logging(INFO, "\n******** request  ******\n");
+        Log::Logging(INFO, "Token[%s]\n", request.token().toHexString().c_str());
+        Log::Logging(INFO, "Code[%d]\n", request.code());
+        testlog(&request);
+
+        Log::Logging(INFO, "\n******** response  ******\n");
+        Log::Logging(INFO, "Code[%d]\n", response.code());
+        testlog(&response);
         
+        Log::Logging(INFO, "LocalPort:%d, RemotePort:%d\n", session.getLocalAddress().getPort(), session.getRemoteAddress().getPort());
+        Log::Logging(INFO, "Request:"); Pdu::LogPdu(INFO, &request);
+        Log::Logging(INFO, "Response:"); Pdu::LogPdu(INFO, &response);
     }
 
     TestResourceInterfaceData* data() noexcept { return m_data; }

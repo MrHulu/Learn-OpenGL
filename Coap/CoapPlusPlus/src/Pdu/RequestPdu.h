@@ -68,6 +68,9 @@ public:
     BinaryConstView token() const noexcept { return BinaryConstView(m_token); }
 
 private:
+    void init() noexcept;
+
+private:
     RequestCode m_requestCode;
     std::optional<Payload> m_payload;
     BinaryConst m_token;

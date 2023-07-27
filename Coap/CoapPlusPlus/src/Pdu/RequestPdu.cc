@@ -1,7 +1,11 @@
 #include <coap3/coap.h>
 #include "RequestPdu.h"
 #include "Options.h"
+#include "Option.h"
+#include "OptFilter.h"
 #include "Encoder.h"
+#include "Decoder.h"
+#include "Payload.h"
 
 namespace CoapPlusPlus {
 
@@ -9,9 +13,7 @@ RequestPdu::RequestPdu(coap_pdu_t *rawPdu, BinaryConst token)
     : Pdu(rawPdu)
     , m_token(std::move(token))
 {
-    m_requestCode = static_cast<RequestCode>(coap_pdu_get_code(rawPdu));
-    if(coap_pdu_get_token(rawPdu).length == 0)
-        coap_add_token(rawPdu, m_token.size(), m_token.data().data());
+    init();
 }
 
 RequestPdu::~RequestPdu()
@@ -61,6 +63,30 @@ bool RequestPdu::setCode(RequestCode code) noexcept
         m_requestCode = code;
     }
     return true;
+}
+
+void RequestPdu::init() noexcept
+try{
+    if(m_rawPdu == nullptr)
+        return;
+    m_requestCode = static_cast<RequestCode>(coap_pdu_get_code(m_rawPdu));
+    if(coap_pdu_get_token(m_rawPdu).length == 0)
+        coap_add_token(m_rawPdu, m_token.size(), m_token.data().data());
+
+    if(m_payload.has_value() == false){
+        size_t pdu_data_length;
+        const uint8_t *pdu_data;
+        auto data = coap_get_data(m_rawPdu, &pdu_data_length, &pdu_data);
+        if(data != 0){
+            auto opts = getOptions(OptFilter(std::vector<Information::OptionNumber>{Information::ContentFormat}));
+            if(opts.size() > 0) {
+                auto value = static_cast<Information::ContentFormatType>(Decoder::Decode(opts[0].getData()));
+                m_payload = Payload(pdu_data_length, pdu_data, value);
+            }
+        }
+    }
+}catch(std::exception &e){
+    coap_log_err(e.what());
 }
 
 }; // namespace CoapPlusPlus

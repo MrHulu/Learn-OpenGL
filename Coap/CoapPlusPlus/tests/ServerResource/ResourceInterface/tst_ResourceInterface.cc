@@ -72,6 +72,14 @@ void tst_ResourceInterface::test_Interface()
     
     // 发送 GET 请求
     coap_pdu_t *request = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
+    
+    // token
+    size_t size;
+    uint8_t tokenData[8];
+    coap_session_new_token(m_session, &size, tokenData);
+    coap_add_token(request, size, tokenData);
+    
+    // url
     std::string path = "/coapcpp/test/resource";
     coap_uri_t uri;
     uint8_t buf[1024];

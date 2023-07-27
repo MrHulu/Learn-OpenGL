@@ -2,14 +2,18 @@
 #include "ResponsePdu.h"
 #include "coap/DataStruct/BinaryConstView.h"
 #include "Options.h"
+#include "Option.h"
+#include "OptFilter.h"
 #include "Encoder.h"
+#include "Decoder.h"
+#include "Payload.h"
 
 namespace CoapPlusPlus {
 
 ResponsePdu::ResponsePdu(coap_pdu_t *pdu)
     : Pdu(pdu)
 {
-    m_responseCode = static_cast<ResponseCode>(coap_pdu_get_code(pdu));
+    init();
 }
 
 ResponsePdu::~ResponsePdu()
@@ -66,6 +70,32 @@ BinaryConstView ResponsePdu::requestToken() const noexcept
         return BinaryConstView(nullptr);
     auto coap_token = coap_pdu_get_token(m_rawPdu);
     return BinaryConstView(&coap_token);
+}
+
+void ResponsePdu::init() noexcept
+try{
+    if(m_rawPdu == nullptr)
+        return;
+    // code
+    m_responseCode = static_cast<ResponseCode>(coap_pdu_get_code(m_rawPdu));
+
+    // type 已在父类实现
+    // token requestToken()
+    // payload
+    if(m_payload.has_value() == false){
+        size_t pdu_data_length;
+        const uint8_t *pdu_data;
+        auto data = coap_get_data(m_rawPdu, &pdu_data_length, &pdu_data);
+        if(data != 0){
+            auto opts = getOptions(OptFilter(std::vector<Information::OptionNumber>{Information::ContentFormat}));
+            if(opts.size() > 0) {
+                auto value = static_cast<Information::ContentFormatType>(Decoder::Decode(opts[0].getData()));
+                m_payload = Payload(pdu_data_length, pdu_data, value);
+            }
+        }
+    }
+}catch(std::exception &e){
+    coap_log_err("ResponsePdu::init():%s", e.what());
 }
 
 }; // namespace CoapPlusPlus
