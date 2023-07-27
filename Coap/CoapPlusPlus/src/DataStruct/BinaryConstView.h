@@ -30,7 +30,7 @@ public:
     
     BinaryConstView(const BinaryConst& binary) : m_rawData(binary.rawData())  { }
 
-    ~BinaryConstView() noexcept = default;
+    ~BinaryConstView() noexcept { };
 
     bool operator== (const BinaryConstView &other) const noexcept;
 

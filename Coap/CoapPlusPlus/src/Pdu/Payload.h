@@ -36,7 +36,7 @@ public:
     //     m_data = other.m_data;
     // }
 
-    ~Payload() noexcept = default;
+    ~Payload() noexcept {}
 
     bool operator== (const Payload &other) const noexcept {
         return m_type == other.m_type && std::ranges::equal(m_data, other.m_data);
