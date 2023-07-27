@@ -37,7 +37,7 @@ public:
         WsLayerFailure,         // 表示 WebSocket 层出现故障。
         WsFailure,              // 未能建立连接或连接意外关闭。
     };
-
+    
     Handling(int mid, BinaryConst token) noexcept;
     virtual ~Handling() noexcept;
 
@@ -94,6 +94,13 @@ public:
      */
     BinaryConstView token() const noexcept;
 
+    /**
+     * @brief 将NAckReason转换为字符串
+     * 
+     * @param reason NAckReason
+     * @return const char* 字符串
+     */
+    static const char* NAckReasonToString(NAckReason reason) noexcept;
 private:
     int         m_mid;
     BinaryConst* m_token = nullptr;
