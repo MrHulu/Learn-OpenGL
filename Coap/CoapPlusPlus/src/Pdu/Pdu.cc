@@ -10,11 +10,16 @@ namespace CoapPlusPlus
 
 void Pdu::LogPdu(LOG_LEVEL level, const Pdu* pdu) noexcept
 {
-    if(pdu == nullptr)
+    auto l = static_cast<coap_log_t>(level);
+    if(pdu == nullptr) {
+        coap_log(l, "pdu is null\n");
         return;
-    if(pdu->m_rawPdu == nullptr)
+    }
+    if(pdu->m_rawPdu == nullptr){
+        coap_log(l, "pdu is null\n");
         return;
-    coap_show_pdu(static_cast<coap_log_t>(level), pdu->m_rawPdu);
+    }
+    coap_show_pdu(l, pdu->m_rawPdu);
 }
 
 bool Pdu::setMessageType(MessageType type) noexcept

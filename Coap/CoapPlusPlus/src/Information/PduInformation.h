@@ -103,6 +103,52 @@ public:
         auto head = getResponseStatusHead(code);
         return head * 100 + (code & 0x1F);
     }
+
+    /**
+     * @brief 消息类型字符串
+     * 
+     * @param type 
+     * @return const char* 
+     */
+    static const char* MessageTypeToString(MessageType type)
+    {
+        switch (type)
+        {
+        case MessageType::Confirmable:
+            return "Confirmable";
+        case MessageType::NonConfirmable:
+            return "NonConfirmable";
+        case MessageType::Acknowledgement:
+            return "Acknowledgement";
+        case MessageType::Reset:
+            return "Reset";
+        default:
+            return "Unknown";
+        }
+    }
+
+    static const char* RequestCodeToString(RequestCode code)
+    {
+        switch(code)
+        {
+        case RequestCode::Get:
+            return "Get";
+        case RequestCode::Post:
+            return "Post";
+        case RequestCode::Put:
+            return "Put";
+        case RequestCode::Delete:
+            return "Delete";
+        case RequestCode::Fetch:
+            return "Fetch";
+        case RequestCode::Patch:
+            return "Patch";
+        case RequestCode::IPatch:
+            return "IPatch";
+        default:
+            return "Unknown";
+        }
+    }
 };
 
 };// namespace Information

@@ -13,9 +13,15 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "编译类型，默认是RelWithDebInfo" FORCE)
 endif()
 
+# option
 option(ENABLE_TESTS "构建测试" ON)
+option(ENABLE_EXAMPLES "构建示例" ON)
 option(ENABLE_DOCS  "构建Doxygen文档" ON)
 option(MAKE_LIBRARY "将${PROJECT_NAME}模块编译成库" ON)
+message(STATUS "构建测试: ${ENABLE_TESTS}")
+message(STATUS "构建示例: ${ENABLE_EXAMPLES}")
+message(STATUS "构建Doxygen文档: ${ENABLE_DOCS}")
+message(STATUS "将${PROJECT_NAME}模块编译成库: ${MAKE_LIBRARY}")
 
 include(CMakePrintHelpers) # CMakePrintHelpers模块 参见 https://cmake.org/cmake/help/latest/module/CMakePrintHelpers.html
 cmake_print_variables(
@@ -60,10 +66,13 @@ if (ENABLE_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif (ENABLE_TESTS)
+ 
+if (ENABLE_EXAMPLES)
+  add_subdirectory(examples)
+endif (ENABLE_EXAMPLES)
 
 if(ENABLE_DOCS)
   find_package(Doxygen)
-
   if(Doxygen_FOUND)
     set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in)
     set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
@@ -85,11 +94,9 @@ if(ENABLE_DOCS)
       DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/doc"
       TYPE DOC
       )
-
   else(Doxygen_FOUND)
     message(WARNING "需要安装Doxygen来生成Doxygen文档")
   endif(Doxygen_FOUND)
-
 endif(ENABLE_DOCS)
 
 
