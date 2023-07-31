@@ -140,8 +140,8 @@ bool SendersManager::removeHandling(const BinaryConstView &token) noexcept
     auto iter = m_handlings.find(t);
     if (iter != m_handlings.end()) {
         iter->second->readyDestroyed();
-        m_handlings.erase(iter);
         delete iter->second;
+        m_handlings.erase(iter);
         return true;
     } else {
         return false;
