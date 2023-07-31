@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Pdu.h"
-#include "payload.h"
+#include "Payload.h"
 #include <optional>
 
 namespace CoapPlusPlus {
