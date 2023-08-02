@@ -1,6 +1,7 @@
 #include <coap3/coap.h>
 #include "BinaryConstView.h"
-
+#include <cstdio>
+#include <cstring>
 namespace CoapPlusPlus
 {
 
@@ -55,7 +56,7 @@ std::string BinaryConstView::toHexString() const
     std::string result;
     for (size_t i = 0; i < size(); ++i) {
         char buf[4];
-        sprintf_s(buf, "%02X", m_rawData->s[i]); 
+        std::sprintf(buf, "%02X", m_rawData->s[i]); 
         result += buf;
     }
     return result;

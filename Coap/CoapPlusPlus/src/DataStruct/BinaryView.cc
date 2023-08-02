@@ -1,5 +1,6 @@
 #include <coap3/coap.h>
 #include "BinaryView.h"
+#include <cstring>
 
 namespace CoapPlusPlus {
 

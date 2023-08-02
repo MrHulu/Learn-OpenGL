@@ -11,6 +11,7 @@
 #pragma once
 
 #include <vector>
+#include <cstdint>
 #include <stdexcept>
 
 namespace CoapPlusPlus

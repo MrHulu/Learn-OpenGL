@@ -1,6 +1,14 @@
 #include <coap3/coap.h>
 #include "Address.h"
 
+#ifdef _WIN32
+#include <winsock2.h>
+#else
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#endif
+
 namespace CoapPlusPlus
 {
 

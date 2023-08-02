@@ -20,17 +20,17 @@ public:
     ~HandlingExample() noexcept {  }
 
     bool onAck(Session& session, const RequestPdu* request, const ResponsePdu* response) noexcept override {
-        Log::Logging(LOG_LEVEL::INFO, "onAck(Request) "); Pdu::LogPdu(LOG_LEVEL::INFO, request);
-        Log::Logging(LOG_LEVEL::INFO, "onAck(Response) ");Pdu::LogPdu(LOG_LEVEL::INFO, response);
-        std::flush(std::cout);
+        // Log::Logging(LOG_LEVEL::INFO, "onAck(Request) "); Pdu::LogPdu(LOG_LEVEL::INFO, request);
+        // Log::Logging(LOG_LEVEL::INFO, "onAck(Response) ");Pdu::LogPdu(LOG_LEVEL::INFO, response);
+        // std::flush(std::cout);
         return true;
     }
 
     void onNAck(Session& session, RequestPdu request, NAckReason reason) noexcept override 
     {
-        Log::Logging(LOG_LEVEL::INFO, "onNAck: %s\n", NAckReasonToString(reason));
-        Pdu::LogPdu(LOG_LEVEL::INFO, &request);
-        std::flush(std::cout);
+        // Log::Logging(LOG_LEVEL::INFO, "onNAck: %s\n", NAckReasonToString(reason));
+        // Pdu::LogPdu(LOG_LEVEL::INFO, &request);
+        // std::flush(std::cout);
     }
 
     void readyDestroyed() noexcept override { }

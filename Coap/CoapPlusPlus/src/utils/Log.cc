@@ -1,4 +1,11 @@
 #include <coap3/coap.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <cstdarg>
+#endif
+
 #include "Log.h"
 #include "config.h"
 

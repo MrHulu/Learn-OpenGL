@@ -17,7 +17,39 @@
 #include "coap/Pdu/Options.h"
 #include "coap/Pdu/Payload.h"
 
-#include <conio.h>
+#ifdef _WIN32  // Windows
+  #include <conio.h>
+#else  // Linux
+  #include <iostream>
+  #include <sys/select.h>
+  #include <termios.h>
+  #include <unistd.h>
+
+  int _kbhit()
+  {
+    struct timeval tv;
+    fd_set fds;
+    tv.tv_sec = 0;
+    tv.tv_usec = 0;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+    return FD_ISSET(STDIN_FILENO, &fds);
+  }
+
+  int _getch()
+  {
+    int ch;
+    struct termios old_termios, new_termios;
+    tcgetattr(STDIN_FILENO, &old_termios);
+    new_termios = old_termios;
+    new_termios.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_termios);
+    ch = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
+    return ch;
+  }
+#endif
 
 using namespace CoapPlusPlus;
 int main(void)
@@ -40,6 +72,8 @@ int main(void)
   Log::Logging(LOG_LEVEL::INFO, "press P to send Put pdu\n");
   Log::Logging(LOG_LEVEL::INFO, "press D to send Delete pdu\n");
   Log::Logging(LOG_LEVEL::INFO, "press ESC to quit\n");
+  auto getflag = true;
+  auto putflag = true;
   while(true) {
     if(_kbhit()) {
       int key = _getch();

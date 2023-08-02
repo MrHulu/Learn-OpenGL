@@ -14,6 +14,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cstdint>
 
 struct coap_optlist_t;
 namespace CoapPlusPlus

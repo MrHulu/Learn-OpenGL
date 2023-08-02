@@ -3,6 +3,7 @@
 
 #include <coap3/coap.h>
 #include <stdexcept>
+#include <cstring>
 
 namespace CoapPlusPlus {
 

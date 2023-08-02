@@ -12,6 +12,7 @@
 
 #include "coap/Information/OptionInformation.h"
 #include <vector>
+#include <cstdint>
 
 typedef uint8_t coap_opt_t;
 namespace CoapPlusPlus

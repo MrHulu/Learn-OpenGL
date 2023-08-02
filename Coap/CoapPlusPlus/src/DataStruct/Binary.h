@@ -11,6 +11,7 @@
 #pragma once
 
 #include <span>
+#include <cstdint>
 
 struct coap_binary_t;
 namespace CoapPlusPlus {
