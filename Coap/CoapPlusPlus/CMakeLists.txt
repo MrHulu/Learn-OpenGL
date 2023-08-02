@@ -14,9 +14,9 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # option
-option(ENABLE_TESTS "构建测试" ON)
+option(ENABLE_TESTS "构建测试" OFF)
 option(ENABLE_EXAMPLES "构建示例" ON)
-option(ENABLE_DOCS  "构建Doxygen文档" ON)
+option(ENABLE_DOCS  "构建Doxygen文档" OFF)
 option(MAKE_LIBRARY "将${PROJECT_NAME}模块编译成库" ON)
 message(STATUS "构建测试: ${ENABLE_TESTS}")
 message(STATUS "构建示例: ${ENABLE_EXAMPLES}")
