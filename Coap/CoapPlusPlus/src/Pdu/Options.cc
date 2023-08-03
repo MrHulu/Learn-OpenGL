@@ -17,10 +17,11 @@ Options::Options(Information::OptionNumber number, std::vector<uint8_t> data)
 Options::Options(const Options &other)
 {  
     for(auto node = other.m_optList; node != nullptr; node = node->next) {
-        auto optlist = (coap_optlist_t*)coap_malloc(sizeof(coap_optlist_t));
+        // 必须在这里给optlist->data分配内存，因为coap_delete_optlist 仅仅会释放optlist本身的内存，不会释放optlist->data指向的内存
+        auto optlist = (coap_optlist_t*)coap_malloc(sizeof(coap_optlist_t) + node->length);
         optlist->number = node->number;
         optlist->length = node->length;
-        optlist->data = (uint8_t*)coap_malloc(node->length);
+        optlist->data = (uint8_t*)(optlist + 1); // optlist->data 指向 optlist 后面的内存
         memcpy(optlist->data, node->data, node->length);
         coap_insert_optlist(&m_optList, optlist);
     }
