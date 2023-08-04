@@ -3,10 +3,10 @@
 #include <QDebug>
 
 #include <coap3/coap.h>
-#include "Coap/DataStruct/Binary.h"
-#include "Coap/DataStruct/BinaryView.h"
-#include "Coap/DataStruct/BinaryConst.h"
-#include "Coap/DataStruct/BinaryConstView.h"
+#include "coap/DataStruct/Binary.h"
+#include "coap/DataStruct/BinaryView.h"
+#include "coap/DataStruct/BinaryConst.h"
+#include "coap/DataStruct/BinaryConstView.h"
 #include "coap/DataStruct/Address.h"
 
 using namespace CoapPlusPlus;
