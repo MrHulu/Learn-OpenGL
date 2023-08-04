@@ -25,6 +25,7 @@ public:
         coap_set_log_level(LOG_INFO);
         QVERIFY(m_context);
         coap_address_t address;
+        coap_address_init(&address);
         address.addr.sin.sin_family = AF_INET;
         address.addr.sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         address.addr.sin.sin_port = htons(5683);
