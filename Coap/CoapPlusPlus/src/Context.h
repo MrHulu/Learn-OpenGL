@@ -17,6 +17,7 @@
 struct coap_context_t;
 namespace CoapPlusPlus {
 
+class EventHandling;
 class Context 
 {
     Context& operator=(const Context&) = delete;
@@ -40,6 +41,13 @@ public:
     //  * 
     //  */
     // void stopIOProcess() noexcept;
+
+    /**
+     * @brief 注册一个事件处理器，用于处理Coap事件, 如果要取消注册，可以将参数设置为nullptr
+     * 
+     * @param eventHandling 事件处理器，生命周期将由class Context管理 @see EventHandling
+     */
+    void registerEventHandling(std::unique_ptr<EventHandling> eventHandling) noexcept;
 
     /**
      * @brief 进行一次网络I/O的处理
@@ -98,7 +106,7 @@ private:
     bool m_isBusy = false;
 
 private: 
-    //void startIOProcessThreadFunc(int waitMs) noexcept;
+    EventHandling* m_eventHandling = nullptr;
 };
 
 
