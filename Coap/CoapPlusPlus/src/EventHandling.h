@@ -10,6 +10,7 @@
  */
 #pragma once
 
+struct coap_session_t;
 namespace CoapPlusPlus
 {
 
@@ -20,10 +21,34 @@ namespace CoapPlusPlus
 class Session;
 class EventHandling
 {
+    enum EventType {
+        DTLS_CLOSED = 0x0000,
+        DTLS_CONNECTED = 0x01DE,
+        DTLS_RENEGOTIATION = 0x01DF,
+        DTLS_ERROR = 0x0200,
+        TCP_CONNECTED = 0x1001,
+        TCP_CLOSED = 0x1002,
+        TCP_FAILED = 0x1003,
+        TCP_SESSION_CONNECTED = 0x2001,
+        TCP_SESSION_CLOSED = 0x2002,
+        TCP_SESSION_FAILED = 0x2003,
+        PARTIAL_BLOCK = 0x3001,
+        XMIT_BLOCK_FAILED = 0x3002,
+        NEW_CLIENT = 0x4001,
+        DEL_CLIENT = 0x4002,
+        BAD_PACKET = 0x5001,
+        MSG_RESEND_FAILED = 0x5002,
+        KEEPALIVE_FAILED = 0x8003,
+    };
     friend class Context;
 public:
     EventHandling() noexcept {}
     ~EventHandling() noexcept {}
+
+    //const char* toString(EventType type) noexcept;
+
+private: 
+    static void onEvent(EventType type, coap_session_t* session) noexcept;
 
 protected:
     /**

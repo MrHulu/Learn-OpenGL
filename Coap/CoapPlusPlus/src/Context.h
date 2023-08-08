@@ -20,6 +20,7 @@ namespace CoapPlusPlus {
 class EventHandling;
 class Context 
 {
+    friend class EventHandling;
     Context& operator=(const Context&) = delete;
     Context& operator=(Context&&) = delete;
     Context(const Context&) = delete;

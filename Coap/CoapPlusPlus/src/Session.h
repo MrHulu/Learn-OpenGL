@@ -32,6 +32,7 @@ public:
      * @brief Construct a new Session object
      * 
      * @param raw_session
+     * @param own 是否由Session管理Coap会话的生命周期
      * 
      * @exception invalid_argument raw_session 为空 
      */

@@ -1,6 +1,5 @@
 #include "Context.h"
 #include "EventHandling.h"
-#include "coap/Session.h"
 #include <coap3/coap.h>
 #include "coap/exception.h"
 namespace CoapPlusPlus {
@@ -33,7 +32,7 @@ namespace CoapPlusPlus {
 // }
 
 void Context::registerEventHandling(std::unique_ptr<EventHandling> eventHandling) noexcept
-try{
+{
     if(m_eventHandling != nullptr) {
         delete m_eventHandling;
         m_eventHandling = nullptr;
@@ -41,30 +40,13 @@ try{
     if(eventHandling != nullptr) {
         m_eventHandling = eventHandling.release();
         coap_register_event_handler(m_ctx, [](coap_session_t* session, const coap_event_t event) {
-            if(session == nullptr)
-                throw std::runtime_error("session is nullptr");
-            auto ctx = coap_session_get_context(session);
-            if(ctx == nullptr)
-                throw std::runtime_error("coap context is nullptr");
-            auto context = static_cast<Context*>(coap_get_app_data(ctx));
-            if(context == nullptr)
-                throw std::runtime_error("context is nullptr");
-            auto handling = context->m_eventHandling;
-            if(handling) {
-                switch(event) {
-                case COAP_EVENT_DTLS_CLOSED:
-                    handling->onDtlsClosed(Session(session, false));
-                    break;
-                }
-            }
+            EventHandling::onEvent(static_cast<EventHandling::EventType>(event), session);
             return 0;
         });
     }
     else {
         coap_register_event_handler(m_ctx, nullptr); 
     } 
-}catch(std::exception &e) {
-    coap_log_warn("EventHandling: %s\n", e.what());
 }
 
 int Context::ioProcess(int waitMs)
