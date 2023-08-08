@@ -52,7 +52,7 @@ bool ContextServer::enablePersist(bool isEnable) noexcept {
 
 int ContextServer::getSessionCloseTimeout() const noexcept
 {
-    coap_context_get_session_timeout(getContext());
+    return coap_context_get_session_timeout(getContext());
 }
 
 void ContextServer::setSessionCloseTimeout(int seconds) noexcept
