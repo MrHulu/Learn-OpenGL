@@ -35,7 +35,7 @@ public:
      * 
      * @exception invalid_argument raw_session 为空 
      */
-    Session(coap_session_t* raw_session);
+    Session(coap_session_t* raw_session, bool own = true);
     ~Session();
 
     /**
@@ -159,6 +159,7 @@ private:
 private:
     coap_session_t* m_session = nullptr;
     SendersManager* m_senderManager = nullptr;
+    bool m_onw = true;
 };
 
 

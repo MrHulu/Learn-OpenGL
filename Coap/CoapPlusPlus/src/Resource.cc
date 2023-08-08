@@ -69,7 +69,7 @@ void Resource::getRequestCallback(coap_resource_t* resource, coap_session_t* ses
             
             auto string = query == nullptr ? "" : std::string((const char*)query->s, query->length);
             auto token = coap_pdu_get_token(request); // 如果请求没有token，虽然长度为0的，data是null但是token不为空，所以BinaryConst::Create不会抛出异常
-            imp->onRequest(session, string, response, RequestPdu(const_cast<coap_pdu_t*>(request), BinaryConst::Create(token.length, token.s)));
+            imp->onRequest(Session(session,false), string, response, RequestPdu(const_cast<coap_pdu_t*>(request), BinaryConst::Create(token.length, token.s)));
         } catch(std::exception& e) {
             coap_log_warn("Resource::getRequestCallback error: %s, path:%s\n", e.what(), resourceWrapper->getUriPath().c_str());
             coap_pdu_set_code(response, static_cast<coap_pdu_code_t>(Information::NotImplemented));

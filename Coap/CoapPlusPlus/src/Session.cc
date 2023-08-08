@@ -7,7 +7,7 @@
 namespace CoapPlusPlus
 {
 
-Session::Session(coap_session_t *raw_session) : m_session(raw_session)
+Session::Session(coap_session_t *raw_session,bool own) : m_session(raw_session), m_onw(own)
 {
     if(raw_session == nullptr)
         throw std::invalid_argument("Failed to construct a new Session object, session is nullptr");
@@ -16,7 +16,7 @@ Session::Session(coap_session_t *raw_session) : m_session(raw_session)
 
 Session::~Session()
 {
-    if(m_session) {
+    if(m_session && m_onw) {
         coap_session_set_app_data(m_session, nullptr);
         coap_session_release(m_session);
     }
