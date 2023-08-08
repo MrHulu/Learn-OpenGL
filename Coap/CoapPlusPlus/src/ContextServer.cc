@@ -50,6 +50,16 @@ bool ContextServer::enablePersist(bool isEnable) noexcept {
     return true;
 }
 
+int ContextServer::getSessionCloseTimeout() const noexcept
+{
+    coap_context_get_session_timeout(getContext());
+}
+
+void ContextServer::setSessionCloseTimeout(int seconds) noexcept
+{
+    coap_context_set_session_timeout(getContext(), seconds);
+}
+
 bool ContextServer::addEndPoint(uint16_t port, Information::Protocol pro) noexcept {
     // 检查端点是否已存在
     if (m_endpoints.find(port) != m_endpoints.end()) {

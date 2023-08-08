@@ -2,8 +2,8 @@
  * @file ContextServer.h
  * @author Hulu
  * @brief 服务器端Context类定义
- * @version 0.1
- * @date 2023-05-31
+ * @version 0.2
+ * @date 2023-08-7
  * 
  * @copyright Copyright (c) 2023
  * 
@@ -48,6 +48,20 @@ public:
      * @see  https://libcoap.net/doc/reference/develop/man_coap_persist_startup.html
      */
     bool enablePersist(bool isEnable) noexcept;
+
+    /**
+     * @brief 得到与客户端会话超时时间，当客户端超过该时间没有发送消息时，会话会被关闭
+     * 
+     * @return int 超时时间，单位为秒，默认为300秒
+     */
+    int getSessionCloseTimeout() const noexcept;
+
+    /**
+     * @brief 设置与客户端会话超时时间，当客户端超过该时间没有发送消息时，会话会被关闭
+     * 
+     * @param seconds 
+     */
+    void setSessionCloseTimeout(int seconds) noexcept;
 
     /**
      * @brief 为服务器Context添加一个端点，用于与对等体进行通信。
