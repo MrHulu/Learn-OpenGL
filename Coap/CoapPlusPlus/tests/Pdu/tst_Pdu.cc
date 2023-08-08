@@ -25,12 +25,13 @@ public:
         coap_set_log_level(LOG_INFO);
         QVERIFY(m_context);
         coap_address_t address;
-        coap_address_init(&address);
+        coap_address_init(&address); //TODO: In linux, error without this line; 
         address.addr.sin.sin_family = AF_INET;
         address.addr.sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         address.addr.sin.sin_port = htons(5683);
         coap_startup();
         m_session = coap_new_client_session(m_context, nullptr, &address, COAP_PROTO_UDP);
+        QVERIFY(m_session);
     }
     ~tst_Pdu() {
         coap_session_release(m_session);
@@ -57,7 +58,7 @@ private slots:
 
 void tst_Pdu::test_Option()
 {
-    const char* uri = "coap://[::1]:40288/coapcpp/test/pdu/option";
+    const char* uri = "coap://[::]:40288/coapcpp/test/pdu/option";
     uint8_t buf[1024];
     uint8_t* sbuf = buf;
     size_t buflen;
@@ -98,7 +99,7 @@ void tst_Pdu::test_Option()
     option = Option((Information::OptionNumber)opt_iter.number, coap_option_next(&opt_iter));
     QCOMPARE(QString::fromUtf8((const char*)option.getData().data(), option.getData().size()), "");
     option = Option((Information::OptionNumber)opt_iter.number, coap_option_next(&opt_iter));
-    QCOMPARE(QString::fromUtf8((const char*)option.getData().data(), option.getData().size()), "[::1]:40288");
+    QCOMPARE(QString::fromUtf8((const char*)option.getData().data(), option.getData().size()), "[::]:40288");
     option = Option((Information::OptionNumber)opt_iter.number, coap_option_next(&opt_iter));
     QCOMPARE(QString::fromUtf8((const char*)option.getData().data(), option.getData().size()), "coapcpp");
     option = Option((Information::OptionNumber)opt_iter.number, coap_option_next(&opt_iter));
@@ -114,12 +115,13 @@ void tst_Pdu::test_Option()
 void tst_Pdu::test_Options()
 {
     Options options;
-    std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
+    std::string uri = "coap://[::]:40288/coapcpp/test/pdu/options?a=1&b=2";
 
     QVERIFY(options.insertOsberveOption(false));
     QVERIFY(options.insertURIOption(uri));
     QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::TextPlain));
 
+    qDebug() << m_session;
     auto pdu = coap_new_pdu(COAP_MESSAGE_CON, COAP_REQUEST_CODE_GET, m_session);
     QVERIFY(pdu);
 
@@ -178,7 +180,7 @@ void tst_Pdu::test_Options1()
 
     // 正常插入
     Options options;
-    std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
+    std::string uri = "coap://[::]:40288/coapcpp/test/pdu/options?a=1&b=2";
     QVERIFY(options.insertOsberveOption(false));
     QVERIFY(options.insertURIOption(uri));
     QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::Json));
@@ -208,7 +210,7 @@ void tst_Pdu::test_Options2()
 
     // 正常插入
     Options options;
-    std::string uri = "coap://[::1]:40288/coapcpp/test/pdu/options?a=1&b=2";
+    std::string uri = "coap://[::]:40288/coapcpp/test/pdu/options?a=1&b=2";
     QVERIFY(options.insertURIOption(uri));
     QVERIFY(options.insertContentFormatOption(Information::ContentFormatType::TextPlain));
     ResponsePdu respone(pdu);
@@ -233,7 +235,7 @@ void tst_Pdu::test_Options2()
 
 void tst_Pdu::test_OptFilter()
 {
-    std::string path = "coap://[::1]:40288/coapcpp/test/pdu/OptFilter?a=1&b=2";
+    std::string path = "coap://[::]:40288/coapcpp/test/pdu/OptFilter?a=1&b=2";
     coap_uri_t uri;
     coap_optlist_t *optlist = nullptr;
     QVERIFY2( !coap_split_uri((uint8_t *)(path.c_str()), path.size(), &uri), "coap_split_uri failed" );
