@@ -15,14 +15,16 @@
 #include "coap/Information/GeneralInformation.h"
 
 #include <map>
+#include <cstdint>
 
 struct coap_session_t;
 namespace CoapPlusPlus
 {
-
 class Session;
+class ResponsePdu;
 class ContextClient : public Context
 {
+    static std::function<void(Session, ResponsePdu, int)> HandsharkeResponedFunction;
 public:
     /**
      * @brief 构造一个管理客户端相关信息的Context对象
@@ -33,6 +35,20 @@ public:
      */
     ContextClient();
     ~ContextClient() noexcept;
+
+    /**
+     * @brief 注册一个与服务器握手响应处理函数，用于处理握手响应
+     * 
+     * @param handler 
+     */
+    void registerHandshakeResponedFunction(std::function<void(Session, ResponsePdu, int)> handler) noexcept;
+
+    /**
+     * @brief 设置握手间隔时间，如果会话在给定的秒数内处于非活动状态（即没有发送或接收数据包），则将保持握手。
+     * 
+     * @param seconds 握手的间隔间隔时间，单位秒。0表示不进行握手
+     */
+    void setHandshakeInterval(uint16_t seconds) noexcept;
 
     /**
      * @brief 为客户端Context添加一个会话，用于客户端与服务器之间的一个单独的交互。
@@ -92,6 +108,7 @@ private:
 private:
     using SessionKey = std::pair<uint16_t, Information::Protocol>;
     std::map<SessionKey, Session*> m_sessions;
+
 };
 
 

@@ -2,8 +2,8 @@
 #include "EventHandling.h"
 #include <coap3/coap.h>
 #include "coap/exception.h"
-namespace CoapPlusPlus {
 
+namespace CoapPlusPlus {
 
 // bool Context::startIOProcess(int waitMs) noexcept
 // {

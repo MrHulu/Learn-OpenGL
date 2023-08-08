@@ -2,9 +2,12 @@
 #include "ContextClient.h"
 #include "coap/Session.h"
 #include "coap/exception.h"
+#include "coap/Pdu/ResponsePdu.h"
 
 namespace CoapPlusPlus
 {
+
+std::function<void(Session, ResponsePdu, int)> ContextClient::HandsharkeResponedFunction;
 
 ContextClient::ContextClient() : Context()
 {
@@ -18,6 +21,20 @@ ContextClient::~ContextClient() noexcept
         delete pair.second;
     }
     m_sessions.clear();
+}
+
+void ContextClient::registerHandshakeResponedFunction(std::function<void(Session, ResponsePdu, int)> handler) noexcept
+{
+    HandsharkeResponedFunction = handler;
+    coap_register_pong_handler(m_ctx, [](coap_session_t* session, const coap_pdu_t* received, const coap_mid_t id) {
+        if(HandsharkeResponedFunction)
+            HandsharkeResponedFunction(Session(session, false), const_cast<coap_pdu_t*>(received), id);
+    });
+}
+
+void ContextClient::setHandshakeInterval(uint16_t seconds) noexcept
+{
+    coap_context_set_keepalive(m_ctx, seconds);
 }
 
 bool ContextClient::addSession(uint16_t port, Information::Protocol pro) noexcept

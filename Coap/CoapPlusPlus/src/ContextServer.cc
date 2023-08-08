@@ -12,9 +12,13 @@
 #include "ContextServer.h"
 #include "ResourceManager.h"
 #include "EndPoint.h"
+#include "coap/Session.h"
+#include "coap/Pdu/ResponsePdu.h"
 #include "coap/exception.h"
 
 namespace CoapPlusPlus {
+
+std::function<void(Session, ResponsePdu, int)> ContextServer::HandsharkeResponedFunction;
 
 ContextServer::ContextServer() : Context() {
     m_resourceManager = new ResourceManager(*this);
@@ -58,6 +62,15 @@ int ContextServer::getSessionCloseTimeout() const noexcept
 void ContextServer::setSessionCloseTimeout(int seconds) noexcept
 {
     coap_context_set_session_timeout(getContext(), seconds);
+}
+
+void ContextServer::registerHandshakeResponedFunction(std::function<void(Session, ResponsePdu, int)> handler) noexcept
+{
+    HandsharkeResponedFunction = handler;
+    coap_register_ping_handler(m_ctx, [](coap_session_t* session, const coap_pdu_t* received, const coap_mid_t id) {
+        if(HandsharkeResponedFunction)
+            HandsharkeResponedFunction(Session(session, false), const_cast<coap_pdu_t*>(received), id);
+    });
 }
 
 bool ContextServer::addEndPoint(uint16_t port, Information::Protocol pro) noexcept {

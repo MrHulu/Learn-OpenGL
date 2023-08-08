@@ -21,10 +21,12 @@ namespace CoapPlusPlus
 
 class ResourceManager;
 class EndPoint;
-
+class Session;
+class ResponsePdu;
 class ContextServer : public Context
 {
     friend class ResourceManager;
+    static std::function<void(Session, ResponsePdu, int)> HandsharkeResponedFunction;
 public:
     /**
      * @brief 构造一个管理服务器相关信息的Context对象
@@ -62,6 +64,13 @@ public:
      * @param seconds 
      */
     void setSessionCloseTimeout(int seconds) noexcept;
+
+    /**
+     * @brief 注册一个与客户端握手响应处理函数，用于处理握手响应
+     * 
+     * @param handler 
+     */
+    void registerHandshakeResponedFunction(std::function<void(Session, ResponsePdu, int)> handler) noexcept;
 
     /**
      * @brief 为服务器Context添加一个端点，用于与对等体进行通信。

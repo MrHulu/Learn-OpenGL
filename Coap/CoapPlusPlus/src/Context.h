@@ -13,6 +13,7 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <functional>
 
 struct coap_context_t;
 namespace CoapPlusPlus {
