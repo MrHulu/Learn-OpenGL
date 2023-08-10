@@ -13,6 +13,8 @@ find_package(OpenSSL REQUIRED)
 
 add_executable(tst_Communication
   "tst_Communication.cc"
+  "TestEventHandling.h"
+  "TestEventHandling.cc"
   )
 set_target_properties(tst_Communication 
   PROPERTIES
