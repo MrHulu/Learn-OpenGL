@@ -1,87 +1,55 @@
-#include <coap3/coap.h>
+
 #include "Address.h"
-
-#ifdef _WIN32
-#include <winsock2.h>
-#else
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#endif
-
+#include "AddressWrapper.h"
 namespace CoapPlusPlus
 {
 
 Address::Address(const sockaddr_in &address) noexcept
 {
-    coap_address_t temp;
-    coap_address_init(&temp);
-    temp.size = sizeof(temp.addr.sin);
-    temp.addr.sin = address;
-    m_rawAddr = temp;
+    m_Impl = new AddressImpl(address);
 }
 
 Address::Address(const sockaddr_in6 &address) noexcept
 {
-    coap_address_t temp;
-    coap_address_init(&temp);
-    temp.size = sizeof(temp.addr.sin6);
-    temp.addr.sin6 = address;
-    m_rawAddr = temp;
+    m_Impl = new AddressImpl(address);
 }
 
 Address::Address(const std::string &ip, uint16_t port)
 {
-    struct addrinfo hints, *res;
-
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC; // Use AF_INET6 to force IPv6
-    hints.ai_socktype = SOCK_STREAM;
-    auto error = getaddrinfo(ip.c_str(), NULL, &hints, &res);
-    if (error != 0) {
-        std::string message = std::string("Invalid IP address: ") + gai_strerror(error);
-        coap_log_warn("无法构造Address(%s, %d)对象，%s\n",ip.c_str() ,port ,message.c_str());
-        throw std::invalid_argument(message.c_str());
-    }
-    coap_address_t temp;
-    coap_address_init(&temp);
-    if (res->ai_family == AF_INET) {
-        temp.size = sizeof(temp.addr.sin);
-        temp.addr.sin = *((struct sockaddr_in*) res->ai_addr);
-        temp.addr.sin.sin_port = htons(port);
-    } else if (res->ai_family == AF_INET6) {
-        temp.size = sizeof(temp.addr.sin6);
-        temp.addr.sin6 = *((struct sockaddr_in6*) res->ai_addr);
-        temp.addr.sin6.sin6_port = htons(port);
-    } else {
-        freeaddrinfo(res);
-        throw std::invalid_argument("Invalid IP address");
-    }
-    m_rawAddr = temp;
-    freeaddrinfo(res);
+    m_Impl = new AddressImpl(ip, port);
 }
 
 Address::Address(const coap_address_t &address)
 {
-    if (!(address.size == sizeof(address.addr.sin) || address.size == sizeof(address.addr.sin6)))
-    {
-        throw std::invalid_argument("Unknown address type");
-    }
-    m_rawAddr = address;
+    m_Impl = new AddressImpl(address);
 }
 
-Address::Address(Address &&other) : m_rawAddr(std::move(other.m_rawAddr)) 
+Address::~Address()
+{
+    if(m_Impl) {
+        delete m_Impl;
+        m_Impl = nullptr;
+    }
+}
+
+Address::Address(const Address & other)
+{
+    m_Impl = new AddressImpl(other.m_Impl->m_rawAddr); // todo: 是否需要判断m_Impl是否为空
+}
+
+Address::Address(Address &&other) : m_Impl(other.m_Impl)
 { 
-    coap_address_t temp;
-    coap_address_init(&temp);
-    temp.size = 0; 
-    other.m_rawAddr = temp;
+    other.m_Impl = nullptr;
 }
 
 Address &Address::operator=(const Address &other)
 {
     if (this != &other) {
-        m_rawAddr = other.m_rawAddr;
+        if(m_Impl) {
+            delete m_Impl;
+            m_Impl = nullptr;
+        }
+        m_Impl = new AddressImpl(other.m_Impl->m_rawAddr);
     }
     return *this;
 }
@@ -89,26 +57,27 @@ Address &Address::operator=(const Address &other)
 Address &Address::operator=(Address &&other)
 {
     if (this != &other) {
-        m_rawAddr = std::move(other.m_rawAddr);
-        coap_address_t temp;
-        coap_address_init(&temp);
-        temp.size = 0; 
-        other.m_rawAddr = temp;
+        std::swap(m_Impl, other.m_Impl);
     }
     return *this;
 }
 
 bool Address::operator==(const Address &other) const noexcept
 {
-    auto temp = std::get<coap_address_t>(m_rawAddr);
-    auto otherTemp = std::get<coap_address_t>(other.m_rawAddr);
-    return temp.size == otherTemp.size && 
-            memcmp(&temp.addr, &otherTemp.addr, temp.size) == 0;
+    if(m_Impl == nullptr || other.m_Impl == nullptr) {
+        return true;
+    }
+    else if(m_Impl && other.m_Impl) {
+        return coap_address_equals(&m_Impl->m_rawAddr, &other.m_Impl->m_rawAddr);
+    }
+    else {
+        return false;
+    }
 }
 
 std::string Address::getIpAddress() const noexcept
 {
-    auto value = std::get<coap_address_t>(m_rawAddr);
+    auto value = m_Impl->m_rawAddr;
     if (value.size == sizeof(value.addr.sin))
     {
         char ipstr[INET_ADDRSTRLEN];
@@ -127,7 +96,7 @@ std::string Address::getIpAddress() const noexcept
 
 uint16_t Address::getPort() const noexcept
 {
-    auto value = std::get<coap_address_t>(m_rawAddr);
+    auto value = m_Impl->m_rawAddr;
     if (value.size == sizeof(value.addr.sin))
     {
         return ntohs(value.addr.sin.sin_port);

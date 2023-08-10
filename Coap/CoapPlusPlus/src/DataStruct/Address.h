@@ -44,11 +44,10 @@ public:
      * @exception std::invalid_argument 无效的coap_address_t地址
      */
     Address(const coap_address_t& address);
+    ~Address();
 
-    Address(const Address& other) : m_rawAddr(other.m_rawAddr) {}
+    Address(const Address& other);
     Address(Address&& other);
-    ~Address() = default;
-
     Address& operator=(const Address& other);
     Address& operator=(Address&& other);
     bool operator==(const Address& other) const noexcept;
@@ -68,7 +67,8 @@ public:
     uint16_t getPort() const noexcept;
 
 private:
-    std::variant<coap_address_t> m_rawAddr;
+    class AddressImpl;
+    AddressImpl* m_Impl = nullptr;
 };
 
 
