@@ -43,7 +43,7 @@ class EventHandling
     friend class Context;
 public:
     EventHandling() noexcept {}
-    ~EventHandling() noexcept {}
+    virtual ~EventHandling() noexcept {}
 
     //const char* toString(EventType type) noexcept;
 
