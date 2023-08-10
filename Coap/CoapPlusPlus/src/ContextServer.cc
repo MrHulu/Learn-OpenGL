@@ -18,7 +18,7 @@
 
 namespace CoapPlusPlus {
 
-std::function<void(Session, ResponsePdu, int)> ContextServer::HandsharkeResponedFunction;
+std::function<void(const Session*, const ResponsePdu*, int)> ContextServer::HandsharkeResponedFunction;
 
 ContextServer::ContextServer() : Context() {
     m_resourceManager = new ResourceManager(*this);
@@ -64,12 +64,15 @@ void ContextServer::setSessionCloseTimeout(int seconds) noexcept
     coap_context_set_session_timeout(getContext(), seconds);
 }
 
-void ContextServer::registerHandshakeResponedFunction(std::function<void(Session, ResponsePdu, int)> handler) noexcept
+void ContextServer::registerHandshakeResponedFunction(std::function<void(const Session*, const ResponsePdu*, int)> handler) noexcept
 {
     HandsharkeResponedFunction = handler;
     coap_register_ping_handler(m_ctx, [](coap_session_t* session, const coap_pdu_t* received, const coap_mid_t id) {
-        if(HandsharkeResponedFunction)
-            HandsharkeResponedFunction(Session(session, false), const_cast<coap_pdu_t*>(received), id);
+        if(HandsharkeResponedFunction) {
+            auto s = Session(session, false);
+            auto r = ResponsePdu(const_cast<coap_pdu_t*>(received));
+            HandsharkeResponedFunction(&s, &r, id);
+        }
     });
 }
 
