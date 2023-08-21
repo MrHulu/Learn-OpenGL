@@ -285,6 +285,7 @@ void tst_Pdu::test_Encoder_Decoder()
 
     opt = Option((Information::OptionNumber)opt_iter.number, coap_check_option(pdu, Information::UriPort, &opt_iter));
     QCOMPARE(Decoder::Decode(opt.getData()), 40288);
+    coap_delete_pdu(pdu);
 }
 
 void tst_Pdu::test_token()
