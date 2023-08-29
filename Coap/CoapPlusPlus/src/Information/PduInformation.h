@@ -12,6 +12,7 @@ enum MessageType {
 };
 
 enum ResponseCode {
+    Empty = 0,      // 0.00 空报文
     Created = 65,   // 2.01 已创建
     Deleted = 66,   // 2.02 已删除
     Valid = 67,     // 2.03 有效
@@ -72,6 +73,7 @@ public:
      * 
      * @param code 响应的code 
      * @return Coap状态
+     *      @retval 0   ResponseCode::Empty(重置)
      *      @retval 201 ResponseCode::Created（资源已成功创建）
      *      @retval 202 ResponseCode::Deleted（资源已成功删除）
      *      @retval 203 ResponseCode::Valid（请求已验证，但不会返回新数据）
