@@ -33,6 +33,9 @@ include(CMakeDependentOption) # CMakeDependentOption模块 参见 https://cmake.
 cmake_dependent_option(
   MAKE_STATIC_LIBRARY "将${PROJECT_NAME}模块编译成静态库" ON
   "MAKE_LIBRARY" ON)
+# 安装头文件
+include (cmake/install_include_dir.cmake)
+install_include_dir()
 
 # Config
 configure_file(${CMAKE_CURRENT_LIST_DIR}/config.h.in
@@ -42,21 +45,6 @@ configure_file(${CMAKE_CURRENT_LIST_DIR}/config.h.in
 file(GLOB_RECURSE source_files "src/*.cc" "src/*.h" ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 file(GLOB_RECURSE header_files "include/*.h" )
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-set(INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR} CACHE PATH "库的安装目录")
-set(INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR} CACHE PATH "可执行文件的安装目录")
-set(INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE PATH "头文件的安装目录")
-if(WIN32 AND NOT CYGWIN)
-  set(DEF_INSTALL_CMAKEDIR CMake)
-else()
-  set(DEF_INSTALL_CMAKEDIR share/cmake/${PROJECT_NAME})
-endif()
-set(INSTALL_CMAKEDIR share/cmake/${PROJECT_NAME} CACHE PATH "CMake文件的安装目录")
-foreach(p LIB BIN INCLUDE CMAKE)
-  file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX}/${INSTALL_${p}DIR} _path )
-  message(STATUS "将 ${p} 安装到 ${_path}")
-  unset(_path)
-endforeach()
 
 # add_sub
 add_subdirectory(src)

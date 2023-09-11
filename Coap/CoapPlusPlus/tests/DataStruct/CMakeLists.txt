@@ -25,13 +25,13 @@ set_target_properties(tst_DataStruct
     INCLUDE_CURRENT_DIR ON)
 target_include_directories(tst_DataStruct
   PRIVATE
-    ${PROJECT_NAME}-objs
+    ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(tst_DataStruct 
   PRIVATE
     Qt${QT_VERSION_MAJOR}::Test
     Qt5::Core
     libcoap::coap-3
-    ${PROJECT_NAME}-objs)
+    ${PROJECT_NAME})
 
 add_test(NAME tst_DataStruct COMMAND  tst_DataStruct)

@@ -11,12 +11,12 @@ add_executable(server
 target_compile_features(server PRIVATE cxx_std_20)
 target_include_directories(server
 PRIVATE
-${PROJECT_NAME}-objs
+${PROJECT_NAME}
 ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(server 
 PRIVATE
 libcoap::coap-3
-${PROJECT_NAME}-objs)
+${PROJECT_NAME})
 
 # client 
 add_executable(client  
@@ -26,12 +26,12 @@ add_executable(client
 target_compile_features(client PRIVATE cxx_std_20)
 target_include_directories(client
   PRIVATE
-    ${PROJECT_NAME}-objs
+    ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(client 
   PRIVATE
     libcoap::coap-3
-    ${PROJECT_NAME}-objs)
+    ${PROJECT_NAME})
 
 
 

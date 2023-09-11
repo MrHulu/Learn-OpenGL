@@ -3,59 +3,69 @@ cmake_minimum_required(VERSION 3.20.0)
 find_package(libcoap REQUIRED CONFIG)
 find_package(OpenSSL REQUIRED)
 
+include(GNUInstallDirs)
+set(INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
+set(INSTALL_BINDIR ${CMAKE_INSTALL_BINDIR} )
+set(INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR} )
+set(INSTALL_CMAKEDIR ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
+
 # 编译二进制版本
-add_library(${PROJECT_NAME}-objs OBJECT)
-target_sources(${PROJECT_NAME}-objs 
+add_library(${PROJECT_NAME} STATIC)
+target_sources(${PROJECT_NAME} 
   PRIVATE
     ${source_files})
-set_target_properties(${PROJECT_NAME}-objs
+set_target_properties(${PROJECT_NAME}
   PROPERTIES
     CXX_STANDARD 20
     CXX_EXTENSIONS OFF
     CXX_STANDARD_REQUIRED ON
     INCLUDE_CURRENT_DIR ON
     DEBUG_POSTFIX "_d")
-target_include_directories(${PROJECT_NAME}-objs
+target_include_directories(${PROJECT_NAME}
   PUBLIC
-    ${PROJECT_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME}-objs
-  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${INSTALL_INCLUDEDIR}>)
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
     libcoap::coap-3  
     OpenSSL::SSL)
-add_compile_options(${PROJECT_NAME}-objs
+add_compile_options(${PROJECT_NAME}
   PRIVATE 
     ${CXX_FLAGS}
     $<$<CONFIG:Debug>:${CXX_FLAGS_DEBUG}>
     $<$<CONFIG:Release>:${CXX_FLAGS_RELEASE}>
     $<$<CONFIG:Release>:${CXX_FLAGS_RELWITHDEBINFO}>)
 
-# 编译静态库
-if(MAKE_STATIC_LIBRARY)
-  add_library(${PROJECT_NAME}-static
-    STATIC
-      $<TARGET_OBJECTS:${PROJECT_NAME}-objs>)
-  set_target_properties(${PROJECT_NAME}-static
-    PROPERTIES
-      DEBUG_POSTFIX "_d"
-       OUTPUT_NAME ${PROJECT_NAME})
-endif()
 
 install(
-  TARGETS
-    ${PROJECT_NAME}-static
-    # ${PROJECT_NAME}-shared
-  ARCHIVE
-    DESTINATION ${INSTALL_LIBDIR}
-    COMPONENT lib
+  TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets 
+  ARCHIVE DESTINATION ${INSTALL_LIBDIR} COMPONENT lib
+  LIBRARY DESTINATION ${INSTALL_LIBDIR} COMPONENT lib
   RUNTIME
     DESTINATION ${INSTALL_BINDIR}
     COMPONENT bin
-  LIBRARY
-    DESTINATION ${INSTALL_LIBDIR}
-    COMPONENT lib
 )
-
-# target_include_directories(server PRIVATE ${PROJECT_SOURCE_DIR}/Utils)
-# target_link_libraries(server PRIVATE libcoap::coap-3 OpenSSL::SSL Utils)
-# set_target_properties(server PROPERTIES CXX_STANDARD 14)
- 
+install(
+  EXPORT ${PROJECT_NAME}Targets
+  DESTINATION ${INSTALL_CMAKEDIR}
+  COMPONENT dev
+)
+include (CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+configure_package_config_file(
+  ${PROJECT_SOURCE_DIR}/cmake/Config.cmake.in
+  ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+  INSTALL_DESTINATION ${INSTALL_CMAKEDIR}
+)
+install(
+  FILES 
+    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
+    ${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake
+  DESTINATION ${INSTALL_CMAKEDIR}
+  COMPONENT dev
+)

@@ -26,13 +26,13 @@ set_target_properties(tst_SendersManager
     INCLUDE_CURRENT_DIR ON)
 target_include_directories(tst_SendersManager
   PRIVATE
-    ${PROJECT_NAME}-objs
+    ${PROJECT_NAME}
     ${PROJECT_SOURCE_DIR}/include)
 target_link_libraries(tst_SendersManager 
   PRIVATE
     Qt${QT_VERSION_MAJOR}::Test
     Qt5::Core
     libcoap::coap-3
-    ${PROJECT_NAME}-objs)
+    ${PROJECT_NAME})
 
 add_test(NAME tst_SendersManager COMMAND  tst_SendersManager)
