@@ -16,11 +16,16 @@
 namespace CoapPlusPlus
 {
 
+class Resource;
 class Session;
 class ResponsePdu;
 class RequestPdu;
 class ResourceInterface
 {
+    friend class Resource;
+private:
+    void setResource(Resource* resource);
+    Resource* r = nullptr;
 protected:
     ResourceInterface(Information::RequestCode code) noexcept : m_code(code) {} 
 public:
@@ -48,6 +53,12 @@ public:
      * @see Information::RequestCode
      */
     Information::RequestCode code() const noexcept { return m_code; }
+
+    /**
+     * @brief 对资源的所有观察者发送观察包
+     * 
+     */
+    void notifyObserver() noexcept;
 
 private:
     Information::RequestCode m_code;

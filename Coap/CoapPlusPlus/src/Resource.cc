@@ -1,7 +1,7 @@
 #include <coap3/coap.h> 
 #include "Resource.h"
-#include "coap/Session.h"
 #include "ResourceInterface.h"
+#include "coap/Session.h"
 #include "coap/exception.h"
 #include "coap/Pdu/RequestPdu.h"
 #include "coap/Pdu/ResponsePdu.h"
@@ -54,6 +54,7 @@ void Resource::registerInterface(std::unique_ptr<ResourceInterface> resourceInte
     if(m_resourceInterface.find(resourceInterface->code()) != m_resourceInterface.end())
         throw AlreadyExistException("resourceInterface already exist");
     auto code = resourceInterface->code();
+    resourceInterface->setResource(this);
     m_resourceInterface.insert(std::make_pair(code, resourceInterface.release()));
 }
 
