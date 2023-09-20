@@ -16,7 +16,7 @@ bool SendersManager::DefaultHandling::onAck(Session &session, const RequestPdu *
     Log::Logging(LOG_LEVEL::INFO, "The corresponding Handling is not found for onAck, use the DefaultHandling instead.\n");
     Pdu::LogPdu(LOG_LEVEL::INFO, request);
     Pdu::LogPdu(LOG_LEVEL::INFO, response);
-    std::flush(std::cout);
+    //std::flush(std::cout);
     return true;
 }
 
@@ -24,7 +24,7 @@ void SendersManager::DefaultHandling::onNAck(Session &session, RequestPdu reques
 {
     Log::Logging(LOG_LEVEL::INFO, "The corresponding Handling is not found for onNAck, use the DefaultHandling instead.\n");
     Pdu::LogPdu(LOG_LEVEL::INFO, &request);
-    std::flush(std::cout);
+    //std::flush(std::cout);
 }
 
 }; // namespace CoapPlusPlus

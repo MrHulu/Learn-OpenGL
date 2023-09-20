@@ -78,7 +78,7 @@ public:
         Log::Logging(INFO, "LocalPort:%d, RemotePort:%d\n", session.getLocalAddress().getPort(), session.getRemoteAddress().getPort());
         Log::Logging(INFO, "Request:"); Pdu::LogPdu(INFO, &request);
         Log::Logging(INFO, "Response:"); Pdu::LogPdu(INFO, &response);
-        std::flush(std::cout);
+        //std::flush(std::cout);
     }
 private: 
     std::string m_text;

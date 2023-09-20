@@ -44,7 +44,7 @@ int main(void)
   }
 
   Log::Logging(LOG_LEVEL::INFO, "server start!\n");
-  std::flush(std::cout);
+  //std::flush(std::cout);
   while (true)
   {
     server.ioProcess(0);
