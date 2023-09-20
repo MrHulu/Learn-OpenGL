@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14.0)
 
 project(libcoapcpp 
-  VERSION 0.4.0
+  VERSION 0.5.0
   DESCRIPTION "基于libcoap的C++封装库"
   HOMEPAGE_URL "http://git.gudsen-rd.com/rs21/rs21-pc/module/libcoapcpp"
   LANGUAGES CXX)
