@@ -64,7 +64,7 @@ bool SendersManager::send(RequestPdu pdu, std::unique_ptr<Handling> handling)
             //coap_log_warn("send: %s\n", error.c_str());
             throw AlreadyExistException(error.c_str());
         }
-        m_handlings.insert(std::make_pair(*token, handling.release()));
+        m_handlings.insert(std::make_pair(BinaryConst(*token), handling.release()));
     }
     auto mid = coap_send(m_coap_session, coap_pdu);
     return mid != COAP_INVALID_MID;

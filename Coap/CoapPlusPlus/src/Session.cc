@@ -105,7 +105,8 @@ const Context *Session::GetContext(const Session *session)
 void Session::sessionInit() noexcept
 {
     m_senderManager = new SendersManager(*m_session);
-    coap_session_set_app_data(m_session, this);
+    if(m_onw)
+        coap_session_set_app_data(m_session, this);
 }
 
 } // namespace CoapPlusPlus
