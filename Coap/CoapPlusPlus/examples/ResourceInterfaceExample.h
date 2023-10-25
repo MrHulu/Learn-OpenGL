@@ -1,6 +1,5 @@
 #pragma once
 
-#include <coap3/coap.h>
 #include "coap/ResourceInterface.h"
 #include "coap/Session.h"
 #include "coap/DataStruct/Address.h"
