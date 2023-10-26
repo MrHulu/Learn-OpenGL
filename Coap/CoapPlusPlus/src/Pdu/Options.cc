@@ -41,7 +41,7 @@ bool Options::insertURIOption(std::string path)
     if(parsePathResult < 0)
         throw std::invalid_argument("invalid path");
     uint8_t buf[1024]; // TODO: 1024 是否合适？
-    return !coap_uri_into_options(&uri, &m_optList, 1, buf, sizeof(buf));
+    return !coap_uri_into_options(&uri, nullptr, &m_optList, 1, buf, sizeof(buf));
 }
 
 bool Options::insertOsberveOption(bool enable) noexcept

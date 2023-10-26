@@ -1,7 +1,12 @@
-cmake_minimum_required(VERSION 3.20.0)
+cmake_minimum_required(VERSION 3.14.0)
 
 find_package(libcoap REQUIRED CONFIG)
 find_package(OpenSSL REQUIRED)
+if(libcoap_FOUND)
+  message(STATUS "Found libcoap version ${libcoap_VERSION}, minimum_required is 4.3.4")
+else()
+  message(FATAL_ERROR "libcoap_FOUND not found")
+endif()
 
 include(GNUInstallDirs)
 set(INSTALL_LIBDIR ${CMAKE_INSTALL_LIBDIR})
