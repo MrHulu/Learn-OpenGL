@@ -60,12 +60,23 @@ int main(void)
   Log::SetLevel(LOG_LEVEL::INFO);
 
   /* 添加客户端会话 */
-  if( client.addSession(5688, Information::Udp) == false ) {
+  if( client.addSession(40266, Information::Udp) == false ) {
     Log::Logging(LOG_LEVEL::ERR, "add session failed!");
     return -1;
   }
-  auto session = client.getSession(5688, Information::Udp);
+  auto session = client.getSession(40266, Information::Udp);
   auto &manager = session->getSendersManager();
+
+  auto state = false;
+  client.registerHandshakeResponedFunction([&state](const CoapPlusPlus::Session* session, 
+                                                const CoapPlusPlus::ResponsePdu* response, int id) 
+    {
+        if(session) {
+            state = true;
+            Log::Logging(LOG_LEVEL::INFO, "handshake success!\n");
+        }
+    });
+  client.setHandshakeInterval(3);
 
   Log::Logging(LOG_LEVEL::INFO, "client start!\n");
   Log::Logging(LOG_LEVEL::INFO, "press G to send Get pdu\n");
@@ -74,6 +85,7 @@ int main(void)
   Log::Logging(LOG_LEVEL::INFO, "press ESC to quit\n");
   auto getflag = true;
   auto putflag = true;
+  
   while(true) {
     if(_kbhit()) {
       int key = _getch();
@@ -86,7 +98,8 @@ int main(void)
           /* Get消息数据包和响应处理器 */
           auto pdu = manager.createRequest(Information::Confirmable, Information::Get);
           Options options;
-          options.insertURIOption("/libcoapcpp/hello");
+          options.insertURIOption("/MOZARacing/ProductDevice");
+          options.insertOsberveOption(true);
           pdu.addOptions(options);
           auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
           if (manager.send(std::move(pdu), std::move(handling)) == false)
@@ -95,19 +108,102 @@ int main(void)
           }
           break;
         }
-        case 112: // key: p
+        case 49:  // key 1
+        {
+          auto pdu = manager.createRequest(Information::Confirmable, Information::Get);
+          Options options;
+          options.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4");
+          pdu.addOptions(options);
+          auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
+          manager.send(std::move(pdu), std::move(handling));
+          break;
+        }
+        case 50: // key 2
+        {
+          auto pdu = manager.createRequest(Information::Confirmable, Information::Get);
+          Options options;
+          options.insertOsberveOption(true);
+          options.insertURIOption("/MOZARacing/ProductDevice/5853f8eb/AccOutDir");
+          pdu.addOptions(options);
+          auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
+          manager.send(std::move(pdu), std::move(handling));
+          break;
+        }
+        case 51: // key 3
+        {
+          auto pdu = manager.createRequest(Information::Confirmable, Information::Get);
+          Options options;
+          options.insertOsberveOption(true);
+          options.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/NaturalFriction");
+          pdu.addOptions(options);
+          auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
+          manager.send(std::move(pdu), std::move(handling));
+          break;
+        }
+        case 52: //key 4
+        {
+          auto pdu = manager.createRequest(Information::Confirmable, Information::Get);
+          Options options;
+          options.insertOsberveOption(true);
+          options.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/LimitAngle");
+          pdu.addOptions(options);
+          auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
+          manager.send(std::move(pdu), std::move(handling));
+          break;
+        }
+        case 53: // key: 5
+        {
+          auto pdu = manager.createRequest(Information::Confirmable, Information::Get);
+          Options options;
+          options.insertOsberveOption(true);
+          options.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/ScreenUIList");
+          pdu.addOptions(options);
+          auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
+          manager.send(std::move(pdu), std::move(handling));
+          break;
+        }
+        case 112: // key: p 
+        {
+            /* Put消息数据包 */
+          auto pdu2 = manager.createRequest(Information::Confirmable, Information::Put);
+          Options options1;
+          std::string path1 = "MOZARacing";
+          std::string path2 = "ProductDevice";
+          std::string path3 = "5853f8eb";
+          std::string path4 = "AccOutDir";
+          options1.insert(Information::UriPath, std::vector<uint8_t>(path1.begin(), path1.end()));
+          options1.insert(Information::UriPath, std::vector<uint8_t>(path2.begin(), path2.end()));
+          options1.insert(Information::UriPath, std::vector<uint8_t>(path3.begin(), path3.end()));
+          options1.insert(Information::UriPath, std::vector<uint8_t>(path4.begin(), path4.end()));
+          options1.insertContentFormatOption(Information::OctetStream);
+          pdu2.addOptions(options1);
+          int value = 0;
+          Payload payload(sizeof(int), reinterpret_cast<const uint8_t*>(&value), Information::OctetStream);
+          pdu2.setPayload(payload);
+          auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
+          if (manager.send(std::move(pdu2), std::move(handling2)) == false)
+          {
+            Log::Logging(LOG_LEVEL::ERR, "send Put pdu failed!");
+          }
+          break;
+        }
         case 80:  // key: P
         {
           /* Put消息数据包 */
-          auto pdu2 = manager.createRequest(Information::NonConfirmable, Information::Put);
+          auto pdu2 = manager.createRequest(Information::Confirmable, Information::Put);
           Options options1;
-          std::string path1 = "libcoapcpp";
-          std::string path2 = "name";
+          std::string path1 = "MOZARacing";
+          std::string path2 = "ProductDevice";
+          std::string path3 = "5853f8eb";
+          std::string path4 = "AccOutDir";
           options1.insert(Information::UriPath, std::vector<uint8_t>(path1.begin(), path1.end()));
           options1.insert(Information::UriPath, std::vector<uint8_t>(path2.begin(), path2.end()));
-          options1.insertContentFormatOption(Information::TextPlain);
+          options1.insert(Information::UriPath, std::vector<uint8_t>(path3.begin(), path3.end()));
+          options1.insert(Information::UriPath, std::vector<uint8_t>(path4.begin(), path4.end()));
+          options1.insertContentFormatOption(Information::OctetStream);
           pdu2.addOptions(options1);
-          Payload payload(4, (uint8_t *)"MOZA", Information::TextPlain);
+          int value = 1;
+          Payload payload(sizeof(int), reinterpret_cast<const uint8_t*>(&value), Information::OctetStream);
           pdu2.setPayload(payload);
           auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
           if (manager.send(std::move(pdu2), std::move(handling2)) == false)
@@ -117,18 +213,91 @@ int main(void)
           break;
         }
         case 100: // key: d
+        {
+          auto pdu2 = manager.createRequest(Information::NonConfirmable, Information::Post);
+          Options options;
+          options.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/CenterWheel");
+          pdu2.addOptions(options);
+          auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
+          if (manager.send(std::move(pdu2), std::move(handling2)) == false)
+          {
+            Log::Logging(LOG_LEVEL::ERR, "send Put pdu failed!");
+          }
+          break;
+        }
         case 68:  // key: D
         {
-          /* Delete消息数据包和响应处理器 */
-          auto pdu = manager.createRequest(Information::Confirmable, Information::Delete);
+          auto pdu2 = manager.createRequest(Information::NonConfirmable, Information::Put);
           Options options;
-          options.insertURIOption("/libcoapcpp/hello");
-          pdu.addOptions(options);
-          auto handling = std::make_unique<HandlingExample>(std::move(pdu.token().toBinaryConst()));
-          if (manager.send(std::move(pdu), std::move(handling)) == false)
+          options.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/HandsOffProtection");
+          pdu2.addOptions(options);
+          int value = 1;
+          Payload payload(sizeof(int), reinterpret_cast<const uint8_t*>(&value), Information::OctetStream);
+          pdu2.setPayload(payload);
+          auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
+          if (manager.send(std::move(pdu2), std::move(handling2)) == false)
           {
-            Log::Logging(LOG_LEVEL::ERR, "send Delete pdu failed!\n");
+            Log::Logging(LOG_LEVEL::ERR, "send Put pdu failed!");
           }
+          break;
+        }
+        case 99: // key: c
+        {
+          auto pdu2 = manager.createRequest(Information::Confirmable, Information::Put);
+          Options options1;
+          options1.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/NaturalFriction");
+          options1.insertOsberveOption(true);
+          options1.insertContentFormatOption(Information::OctetStream);
+          pdu2.addOptions(options1);
+          int value = 50;
+          Payload payload(sizeof(int), reinterpret_cast<const uint8_t*>(&value), Information::OctetStream);
+          pdu2.setPayload(payload);
+          auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
+          if (manager.send(std::move(pdu2), std::move(handling2)) == false)
+          {
+            Log::Logging(LOG_LEVEL::ERR, "send Put pdu failed!");
+          }
+          break;
+        }
+        case 67: // key: C
+        {
+          auto pdu2 = manager.createRequest(Information::Confirmable, Information::Put);
+          Options options1;
+          options1.insertURIOption("/MOZARacing/ProductDevice/050d36ef6f3930e4/LimitAngle");
+          options1.insertContentFormatOption(Information::Cbor);
+          pdu2.addOptions(options1);
+
+          const char* cborHexData = "a26a4c696d6974416e676c6518967047616d654d6178696d756d416e676c6518c8";
+          size_t length = std::strlen(cborHexData) / 2;
+          std::vector<uint8_t> cborBytes(length);
+          for (size_t i = 0; i < length; ++i) {
+              std::sscanf(&cborHexData[i * 2], "%2hhx", &cborBytes[i]);
+          }
+          Payload payload((int)cborBytes.size(), reinterpret_cast<const uint8_t*>(cborBytes.data()), Information::Cbor);
+          pdu2.setPayload(payload);
+          auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
+          if (manager.send(std::move(pdu2), std::move(handling2)) == false)
+          {
+            Log::Logging(LOG_LEVEL::ERR, "send Put pdu failed!");
+          }
+          break;
+        }
+        case 115: // key: s
+        {
+          auto pdu2 = manager.createRequest(Information::Confirmable, Information::Put);
+          Options options1;
+          options1.insertURIOption("/MOZARacing/ProductDevice/dd0d38f77dfd/CluthPaddleAxisMode");
+          options1.insertContentFormatOption(Information::OctetStream);
+          pdu2.addOptions(options1);
+          int value = 1;
+          Payload payload(sizeof(int), reinterpret_cast<const uint8_t*>(&value), Information::OctetStream);
+          pdu2.setPayload(payload);
+          auto handling2 = std::make_unique<HandlingExample>(std::move(pdu2.token().toBinaryConst()));
+          if (manager.send(std::move(pdu2), std::move(handling2)) == false)
+          {
+            Log::Logging(LOG_LEVEL::ERR, "send Put pdu failed!");
+          }
+          break;
           break;
         }
         case 27: // key: ESC

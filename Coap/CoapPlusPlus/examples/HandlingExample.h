@@ -22,7 +22,28 @@ public:
     bool onAck(Session& session, const RequestPdu* request, const ResponsePdu* response) noexcept override {
         Log::Logging(LOG_LEVEL::INFO, "onAck(Request) "); Pdu::LogPdu(LOG_LEVEL::INFO, request);
         Log::Logging(LOG_LEVEL::INFO, "onAck(Response) ");Pdu::LogPdu(LOG_LEVEL::INFO, response);
-        //std::flush(std::cout);
+        if(response) {
+            auto payload = response->payload();
+            // if(response->isContainOption(Information::ContentFormat) == false) {
+            //     Log::Logging(LOG_LEVEL::INFO, "response没有包含ContentFormat选项\n");     
+            //     return false;
+            // }
+            // if(payload.size() == 0) {
+            //     Log::Logging(LOG_LEVEL::INFO, "response没有包含payload\n");
+            //     return false;
+            // }
+            // if(payload.type() != Information::Cbor) {
+            //     Log::Logging(LOG_LEVEL::INFO, "response的payload不是cbor格式\n");
+            //     return false;
+            // }
+            auto span = payload.data();
+            // std::vector<char> byteArray(reinterpret_cast<const char*>(span.data()), reinterpret_cast<const char*>(span.data() + span.size()));
+            // Log::Logging(LOG_LEVEL::INFO, "payload[%d]: %hex\n", payload.size(), payload.data().data());   
+            for(uint8_t i = 0; i < span.size(); i++) {
+                printf("%02x", span.data()[i]);
+            }
+            Log::Logging(LOG_LEVEL::INFO, "\n");
+        }
         return true;
     }
 
